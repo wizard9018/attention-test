@@ -1,0 +1,651 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASR 模型对比测试 - 语音识别基准</title>
+<style>
+  :root {
+    --green: #58cc02; --green-dark: #58a700; --green-light: #d7ffb8;
+    --blue: #1cb0f6;  --blue-dark: #1899d6;  --blue-light: #ddf4ff;
+    --yellow: #ffc800; --yellow-dark: #e5a500; --yellow-light: #fff5cc;
+    --red: #ff4b4b;   --red-dark: #ea2b2b;   --red-light: #ffdfe0;
+    --purple: #ce82ff; --purple-dark: #aa50f0; --purple-light: #f5e6ff;
+    --border: #e5e5e5; --border-dark: #cecece;
+    --bg: #f8fafc; --text: #1e293b; --muted: #64748b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg); color: var(--text); min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .container { width: 100%; max-width: 1000px; padding: 24px 16px 80px; }
+  .page-header {
+    background: #fff; border: 2px solid var(--border); border-bottom: 4px solid var(--border-dark);
+    border-radius: 20px; padding: 18px 24px; margin-bottom: 24px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .page-header h1 { font-size: 1.4rem; font-weight: 900; color: var(--text); }
+  .page-header p  { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+  .badge {
+    background: var(--blue-light); color: var(--blue-dark);
+    font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px;
+  }
+  .pinyin-card {
+    background: #fff; border: 2px solid var(--border); border-bottom: 4px solid var(--border-dark);
+    border-radius: 20px; padding: 32px 24px; margin-bottom: 20px; text-align: center;
+  }
+  .pinyin-label { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 12px; }
+  .pinyin-display {
+    font-size: 2.8rem; font-weight: 900; letter-spacing: 0.15em; color: var(--text);
+    line-height: 1.4; min-height: 5rem;
+    display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px;
+  }
+  .pinyin-char {
+    display: inline-flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 8px 12px; border-radius: 12px; background: var(--bg);
+    border: 2px solid var(--border); transition: all .25s;
+  }
+  .pinyin-char .hanzi { font-size: 2rem; font-weight: 900; }
+  .pinyin-char .py    { font-size: 1rem; color: var(--blue-dark); font-weight: 700; }
+  .pinyin-char.highlight { background: var(--yellow-light); border-color: var(--yellow-dark); }
+  .pinyin-char.correct   { background: var(--green-light);  border-color: var(--green-dark);  }
+  .pinyin-char.wrong     { background: var(--red-light);    border-color: var(--red-dark);    }
+  .controls { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-bottom: 24px; }
+  .btn {
+    font-size: 1rem; font-weight: 700; border: none; border-radius: 14px;
+    padding: 12px 24px; cursor: pointer; transition: all .15s;
+    border-bottom: 4px solid transparent;
+  }
+  .btn-green  { background: var(--green);  color: #fff; border-bottom-color: var(--green-dark); }
+  .btn-green:hover  { background: #4db400; }
+  .btn-red    { background: var(--red);    color: #fff; border-bottom-color: var(--red-dark);   }
+  .btn-red:hover    { background: #e03030; }
+  .btn-blue   { background: var(--blue);   color: #fff; border-bottom-color: var(--blue-dark);  }
+  .btn-blue:hover   { background: #1590cc; }
+  .btn-gray   { background: #e2e8f0; color: var(--text); border-bottom-color: #c7d0d9; }
+  .btn-gray:hover   { background: #d0d9e4; }
+  .btn:active { transform: translateY(2px); border-bottom-width: 2px; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; border-bottom-width: 4px; }
+  .recording-pulse {
+    display: none; align-items: center; gap: 10px;
+    background: var(--red-light); border: 2px solid var(--red); border-radius: 14px;
+    padding: 10px 20px; font-weight: 700; color: var(--red-dark); font-size: 1rem;
+  }
+  .recording-pulse.visible { display: flex; }
+  .pulse-dot {
+    width: 14px; height: 14px; border-radius: 50%; background: var(--red);
+    animation: pulse-anim 1s infinite;
+  }
+  @keyframes pulse-anim {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%       { transform: scale(1.4); opacity: .6; }
+  }
+  .timer-bar-wrap {
+    height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin: 8px 0;
+    display: none;
+  }
+  .timer-bar-wrap.visible { display: block; }
+  .timer-bar { height: 100%; background: var(--red); transition: width .1s linear; border-radius: 3px; }
+  .results-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px; margin-bottom: 24px;
+  }
+  .model-card {
+    background: #fff; border: 2px solid var(--border); border-bottom: 4px solid var(--border-dark);
+    border-radius: 16px; padding: 16px; position: relative; overflow: hidden;
+  }
+  .model-card .model-name {
+    font-size: 0.8rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em;
+    margin-bottom: 8px;
+  }
+  .model-card .model-result {
+    font-size: 1.15rem; font-weight: 800; color: var(--text); min-height: 2.5rem;
+    line-height: 1.4; word-break: break-all;
+  }
+  .model-card .model-score {
+    margin-top: 8px; font-size: 0.85rem; font-weight: 700;
+  }
+  .model-card .model-score.pass  { color: var(--green-dark); }
+  .model-card .model-score.fail  { color: var(--red-dark);   }
+  .model-card .model-score.wait  { color: var(--muted);      }
+  .model-card .status-chip {
+    position: absolute; top: 12px; right: 12px;
+    font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px;
+  }
+  .chip-idle     { background: var(--bg);          color: var(--muted);     }
+  .chip-running  { background: var(--yellow-light); color: var(--yellow-dark); }
+  .chip-done     { background: var(--green-light);  color: var(--green-dark);  }
+  .chip-error    { background: var(--red-light);    color: var(--red-dark);    }
+  .model-card .manual-wrap { margin-top: 10px; display: none; }
+  .model-card .manual-wrap.visible { display: flex; gap: 6px; }
+  .model-card input[type=text] {
+    flex: 1; border: 2px solid var(--border); border-radius: 10px;
+    padding: 6px 10px; font-size: 0.95rem; font-family: inherit; outline: none;
+    transition: border-color .2s;
+  }
+  .model-card input[type=text]:focus { border-color: var(--blue); }
+  .model-card .submit-manual {
+    background: var(--blue); color: #fff; border: none; border-radius: 10px;
+    padding: 6px 14px; font-size: 0.9rem; font-weight: 700; cursor: pointer;
+  }
+  .model-card .submit-manual:hover { background: var(--blue-dark); }
+  .summary-card {
+    background: #fff; border: 2px solid var(--border); border-bottom: 4px solid var(--border-dark);
+    border-radius: 16px; padding: 20px 24px; margin-bottom: 24px; display: none;
+  }
+  .summary-card.visible { display: block; }
+  .summary-title { font-size: 1.1rem; font-weight: 900; margin-bottom: 14px; }
+  .summary-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  .summary-table th, .summary-table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+  .summary-table th { font-weight: 700; color: var(--muted); font-size: 0.78rem; text-transform: uppercase; }
+  .score-bar-cell { width: 120px; }
+  .score-bar { height: 8px; border-radius: 4px; background: var(--border); overflow: hidden; }
+  .score-bar-fill { height: 100%; border-radius: 4px; transition: width .4s; }
+  .word-set-row {
+    display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+    align-items: center; margin: 12px 0;
+  }
+  .set-btn {
+    background: var(--bg); border: 2px solid var(--border); border-radius: 10px;
+    padding: 6px 14px; font-size: 0.9rem; font-weight: 700; cursor: pointer;
+    transition: all .15s; color: var(--text);
+  }
+  .set-btn:hover { border-color: var(--blue); color: var(--blue-dark); background: var(--blue-light); }
+  .set-btn.active { background: var(--blue); color: #fff; border-color: var(--blue-dark); }
+  .round-info {
+    text-align: center; font-size: 0.85rem; color: var(--muted); font-weight: 700; margin-bottom: 10px;
+  }
+  .acc-pill {
+    display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 0.8rem; font-weight: 800;
+  }
+  .acc-high   { background: var(--green-light);  color: var(--green-dark);  }
+  .acc-mid    { background: var(--yellow-light); color: var(--yellow-dark); }
+  .acc-low    { background: var(--red-light);    color: var(--red-dark);    }
+  .history-card {
+    background: #fff; border: 2px solid var(--border); border-bottom: 4px solid var(--border-dark);
+    border-radius: 16px; padding: 20px 24px; margin-bottom: 24px;
+  }
+  .history-title { font-size: 1.0rem; font-weight: 900; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+  .history-empty { color: var(--muted); font-size: 0.88rem; text-align: center; padding: 16px 0; }
+  .history-list  { list-style: none; }
+  .history-item  {
+    display: flex; gap: 12px; align-items: flex-start; padding: 10px 0;
+    border-bottom: 1px solid var(--border); font-size: 0.85rem;
+  }
+  .history-item:last-child { border-bottom: none; }
+  .history-item .hi-round { font-weight: 800; color: var(--blue-dark); min-width: 40px; }
+  .history-item .hi-scores { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .hi-score-chip {
+    font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="page-header">
+    <div style="flex:1">
+      <h1>🎙️ ASR 模型横向对比测试</h1>
+      <p>显示拼音 → 你朗读 → 对比各模型识别准确率</p>
+    </div>
+    <span class="badge" id="roundBadge">第 1 轮</span>
+  </div>
+
+  <div class="pinyin-card" style="padding:16px 24px 20px">
+    <div class="pinyin-label">选择测试词组难度</div>
+    <div class="word-set-row" id="wordSetRow"></div>
+  </div>
+
+  <div class="pinyin-card">
+    <div class="pinyin-label" id="pinyinLabel">当前测试词组 — 请朗读以下汉字（看拼音）</div>
+    <div class="pinyin-display" id="pinyinDisplay">
+      <span style="color:var(--muted);font-size:1.2rem;font-weight:600">按「开始录音」启动测试</span>
+    </div>
+    <div class="timer-bar-wrap" id="timerBarWrap">
+      <div class="timer-bar" id="timerBar" style="width:100%"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-green" id="btnNext">🔀 换一组词</button>
+    <button class="btn btn-blue"  id="btnRecord">🎙️ 开始录音</button>
+    <button class="btn btn-red"   id="btnStop" disabled>⏹ 停止录音</button>
+    <div class="recording-pulse" id="recPulse">
+      <div class="pulse-dot"></div> <span>正在录音…</span>
+    </div>
+  </div>
+  <div class="round-info" id="roundInfo" style="display:none"></div>
+
+  <div class="results-grid" id="resultsGrid"></div>
+
+  <div class="summary-card" id="summaryCard">
+    <div class="summary-title">📊 本轮打分结果</div>
+    <table class="summary-table" id="summaryTable">
+      <thead>
+        <tr>
+          <th>模型</th>
+          <th>识别文本</th>
+          <th>准确率</th>
+          <th class="score-bar-cell">得分条</th>
+          <th>等级</th>
+        </tr>
+      </thead>
+      <tbody id="summaryBody"></tbody>
+    </table>
+  </div>
+
+  <div class="history-card">
+    <div class="history-title">
+      <span>📈 历史记录</span>
+      <button class="btn btn-gray" id="btnClearHistory" style="font-size:0.8rem;padding:6px 14px">清空记录</button>
+    </div>
+    <div class="history-empty" id="historyEmpty">暂无记录，请先完成一轮测试。</div>
+    <ul class="history-list" id="historyList"></ul>
+  </div>
+
+</div>
+<script src="./assets/vendor/pinyin-pro/pinyin-pro.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  const MODELS = [
+    { id: 'web_speech',       name: 'Web Speech API',  subtitle: '浏览器原生（基准）', color: '#1cb0f6', mode: 'web_speech' },
+    { id: 'sherpa_zipformer', name: 'Sherpa-onnx',     subtitle: 'Zipformer-PPN',   color: '#58cc02', mode: 'manual', placeholder: '粘贴 Sherpa 识别结果…', serverUrl: 'http://localhost:8001/recognize' },
+    { id: 'pocketsphinx',     name: 'PocketSphinx',   subtitle: 'Phoneme Mode',    color: '#ffc800', mode: 'manual', placeholder: '粘贴 PocketSphinx 结果…', serverUrl: 'http://localhost:8002/recognize' },
+    { id: 'funasr',           name: 'FunASR',          subtitle: 'FSMN-CTC',        color: '#ce82ff', mode: 'manual', placeholder: '粘贴 FunASR 结果…', serverUrl: 'http://localhost:8003/recognize' },
+    { id: 'sensevoice',       name: 'SenseVoice',      subtitle: 'Small',           color: '#ff6b35', mode: 'manual', placeholder: '粘贴 SenseVoice 结果…', serverUrl: 'http://localhost:8004/recognize' },
+  ];
+
+  const WORD_SETS = [
+    { label: '3字·简单',     items: [{h:'东',p:'dōng'},{h:'明',p:'míng'},{h:'海',p:'hǎi'}] },
+    { label: '5字·中等',     items: [{h:'水',p:'shuǐ'},{h:'天',p:'tiān'},{h:'木',p:'mù'},{h:'风',p:'fēng'},{h:'光',p:'guāng'}] },
+    { label: '5字·声调混合', items: [{h:'书',p:'shū'},{h:'茶',p:'chá'},{h:'马',p:'mǎ'},{h:'豆',p:'dòu'},{h:'春',p:'chūn'}] },
+    { label: '7字·中难',     items: [{h:'红',p:'hóng'},{h:'纸',p:'zhǐ'},{h:'炉',p:'lú'},{h:'草',p:'cǎo'},{h:'年',p:'nián'},{h:'走',p:'zǒu'},{h:'白',p:'bái'}] },
+    { label: '8字·声调均衡', items: [{h:'飞',p:'fēi'},{h:'桥',p:'qiáo'},{h:'女',p:'nǚ'},{h:'利',p:'lì'},{h:'花',p:'huā'},{h:'渔',p:'yú'},{h:'表',p:'biǎo'},{h:'路',p:'lù'}] },
+    { label: '平翘舌混合',   items: [{h:'子',p:'zǐ'},{h:'知',p:'zhī'},{h:'词',p:'cí'},{h:'车',p:'chē'},{h:'四',p:'sì'},{h:'时',p:'shí'}] },
+    { label: '前后鼻音',     items: [{h:'心',p:'xīn'},{h:'星',p:'xīng'},{h:'真',p:'zhēn'},{h:'整',p:'zhěng'},{h:'根',p:'gēn'},{h:'更',p:'gèng'}] },
+    { label: '随机10字',     items: [] },
+  ];
+
+  const CHAR_POOL = [
+    {h:'东',p:'dōng'},{h:'南',p:'nán'},{h:'西',p:'xī'},{h:'北',p:'běi'},
+    {h:'上',p:'shàng'},{h:'下',p:'xià'},{h:'左',p:'zuǒ'},{h:'右',p:'yòu'},
+    {h:'大',p:'dà'},{h:'小',p:'xiǎo'},{h:'中',p:'zhōng'},{h:'长',p:'cháng'},
+    {h:'高',p:'gāo'},{h:'低',p:'dī'},{h:'前',p:'qián'},{h:'后',p:'hòu'},
+    {h:'山',p:'shān'},{h:'水',p:'shuǐ'},{h:'火',p:'huǒ'},{h:'土',p:'tǔ'},
+    {h:'金',p:'jīn'},{h:'木',p:'mù'},{h:'风',p:'fēng'},{h:'云',p:'yún'},
+    {h:'日',p:'rì'},{h:'月',p:'yuè'},{h:'星',p:'xīng'},{h:'天',p:'tiān'},
+    {h:'海',p:'hǎi'},{h:'湖',p:'hú'},{h:'河',p:'hé'},{h:'鱼',p:'yú'},
+    {h:'鸟',p:'niǎo'},{h:'马',p:'mǎ'},{h:'牛',p:'niú'},{h:'羊',p:'yáng'},
+    {h:'花',p:'huā'},{h:'草',p:'cǎo'},{h:'树',p:'shù'},{h:'叶',p:'yè'},
+    {h:'红',p:'hóng'},{h:'黄',p:'huáng'},{h:'绿',p:'lǜ'},{h:'白',p:'bái'},
+    {h:'黑',p:'hēi'},{h:'蓝',p:'lán'},{h:'紫',p:'zǐ'},{h:'橙',p:'chéng'},
+    {h:'春',p:'chūn'},{h:'夏',p:'xià'},{h:'秋',p:'qiū'},
+    {h:'早',p:'zǎo'},{h:'晚',p:'wǎn'},{h:'快',p:'kuài'},{h:'慢',p:'màn'},
+    {h:'开',p:'kāi'},{h:'关',p:'guān'},{h:'来',p:'lái'},{h:'去',p:'qù'},
+    {h:'书',p:'shū'},{h:'茶',p:'chá'},{h:'桥',p:'qiáo'},{h:'路',p:'lù'},
+    {h:'门',p:'mén'},{h:'灯',p:'dēng'},{h:'桌',p:'zhuō'},
+    {h:'纸',p:'zhǐ'},{h:'笔',p:'bǐ'},{h:'刀',p:'dāo'},
+  ];
+
+  function generateRandom10() {
+    return CHAR_POOL.slice().sort(() => Math.random() - .5).slice(0, 10);
+  }
+
+  let currentSetIdx = 0, currentItems = [], roundNumber = 1;
+  let isRecording = false, mediaRecorder = null, audioChunks = [], audioBlob = null;
+  let recognition = null, timerInterval = null, recordDuration = 0;
+  let history = JSON.parse(localStorage.getItem('asr_test_history') || '[]');
+  const modelState = {};
+  MODELS.forEach(m => { modelState[m.id] = { text: '', score: null, status: 'idle' }; });
+
+  const wordSetRow    = document.getElementById('wordSetRow');
+  const pinyinDisplay = document.getElementById('pinyinDisplay');
+  const btnNext       = document.getElementById('btnNext');
+  const btnRecord     = document.getElementById('btnRecord');
+  const btnStop       = document.getElementById('btnStop');
+  const recPulse      = document.getElementById('recPulse');
+  const timerBarWrap  = document.getElementById('timerBarWrap');
+  const timerBar      = document.getElementById('timerBar');
+  const roundBadge    = document.getElementById('roundBadge');
+  const roundInfo     = document.getElementById('roundInfo');
+  const resultsGrid   = document.getElementById('resultsGrid');
+  const summaryCard   = document.getElementById('summaryCard');
+  const summaryBody   = document.getElementById('summaryBody');
+  const historyEmpty  = document.getElementById('historyEmpty');
+  const historyList   = document.getElementById('historyList');
+  const btnClearHistory = document.getElementById('btnClearHistory');
+
+  function init() {
+    buildWordSetBtns();
+    buildResultsGrid();
+    loadSet(0);
+    renderHistory();
+    btnNext.addEventListener('click', nextSet);
+    btnRecord.addEventListener('click', startRecording);
+    btnStop.addEventListener('click', stopRecording);
+    btnClearHistory.addEventListener('click', () => {
+      if (confirm('确定清空所有历史记录？')) {
+        history = []; localStorage.removeItem('asr_test_history'); renderHistory();
+      }
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const a = document.activeElement;
+        if (a && a.tagName === 'INPUT') {
+          const id = a.id.replace('input-', '');
+          if (modelState[id] !== undefined) submitManual(id);
+        }
+      }
+    });
+  }
+
+  function buildWordSetBtns() {
+    WORD_SETS.forEach((ws, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'set-btn' + (i === 0 ? ' active' : '');
+      btn.textContent = ws.label;
+      btn.addEventListener('click', () => loadSet(i));
+      wordSetRow.appendChild(btn);
+    });
+  }
+
+  function loadSet(idx) {
+    currentSetIdx = idx;
+    document.querySelectorAll('.set-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+    if (idx === WORD_SETS.length - 1) WORD_SETS[idx].items = generateRandom10();
+    currentItems = WORD_SETS[idx].items;
+    renderPinyin(); resetModelStates(); summaryCard.classList.remove('visible');
+  }
+
+  function nextSet() {
+    if (currentSetIdx === WORD_SETS.length - 1) {
+      WORD_SETS[currentSetIdx].items = generateRandom10();
+      currentItems = WORD_SETS[currentSetIdx].items;
+      renderPinyin(); resetModelStates(); summaryCard.classList.remove('visible');
+    } else { loadSet((currentSetIdx + 1) % (WORD_SETS.length - 1)); }
+  }
+
+  function renderPinyin(charResults) {
+    pinyinDisplay.innerHTML = '';
+    currentItems.forEach((item, i) => {
+      const div = document.createElement('div');
+      div.className = 'pinyin-char';
+      if (charResults) {
+        if (charResults[i] === 'correct') div.classList.add('correct');
+        else if (charResults[i] === 'wrong') div.classList.add('wrong');
+      }
+      div.innerHTML = `<span class="hanzi">${item.h}</span><span class="py">${item.p}</span>`;
+      pinyinDisplay.appendChild(div);
+    });
+  }
+
+  function buildResultsGrid() {
+    resultsGrid.innerHTML = '';
+    MODELS.forEach(m => {
+      const card = document.createElement('div');
+      card.className = 'model-card'; card.id = 'card-' + m.id;
+      card.style.borderTopColor = m.color; card.style.borderTopWidth = '4px';
+      card.innerHTML = `
+        <div class="model-name">${m.name} <small style="font-weight:500;text-transform:none;color:#94a3b8">${m.subtitle}</small></div>
+        <span class="status-chip chip-idle" id="chip-${m.id}">待机</span>
+        <div class="model-result" id="result-${m.id}" style="color:var(--muted);font-weight:500;font-size:0.95rem">-</div>
+        <div class="model-score wait" id="score-${m.id}"></div>
+        ${m.mode === 'manual' ? `<div class="manual-wrap" id="manual-${m.id}"><input type="text" id="input-${m.id}" placeholder="${m.placeholder}" /><button class="submit-manual" onclick="submitManual('${m.id}')">✓</button></div>` : ''}
+      `;
+      resultsGrid.appendChild(card);
+    });
+  }
+
+  function resetModelStates() {
+    MODELS.forEach(m => {
+      modelState[m.id] = { text: '', score: null, status: 'idle' };
+      setChip(m.id, 'idle', '待机');
+      const r = document.getElementById('result-' + m.id);
+      r.textContent = '-'; r.style.color = 'var(--muted)'; r.style.fontWeight = '500'; r.style.fontSize = '0.95rem';
+      const s = document.getElementById('score-' + m.id);
+      s.textContent = ''; s.className = 'model-score wait';
+      const mw = document.getElementById('manual-' + m.id);
+      if (mw) { mw.classList.remove('visible'); document.getElementById('input-' + m.id).value = ''; }
+    });
+  }
+
+  function setChip(id, type, label) {
+    const c = document.getElementById('chip-' + id);
+    if (c) { c.className = 'status-chip chip-' + type; c.textContent = label; }
+  }
+
+  function startRecording() {
+    if (isRecording) return;
+    summaryCard.classList.remove('visible'); resetModelStates();
+    navigator.mediaDevices.getUserMedia({ audio: { channelCount:1, sampleRate:16000, echoCancellation:true, noiseSuppression:true, autoGainControl:true } })
+    .then(stream => {
+      isRecording = true; audioChunks = []; recordDuration = 0;
+      btnRecord.disabled = true; btnNext.disabled = true; btnStop.disabled = false;
+      recPulse.classList.add('visible'); timerBarWrap.classList.add('visible');
+      timerBar.style.width = '100%'; timerBar.style.background = 'var(--red)';
+      const maxSec = Math.min(currentItems.length * 2.5 + 3, 30);
+      const startTime = Date.now();
+      timerInterval = setInterval(() => {
+        const elapsed = (Date.now() - startTime) / 1000;
+        recordDuration = elapsed;
+        const pct = Math.max(0, 100 - (elapsed / maxSec) * 100);
+        timerBar.style.width = pct + '%';
+        if (pct < 30) timerBar.style.background = 'var(--yellow)';
+        if (pct < 10) timerBar.style.background = 'var(--green)';
+        if (elapsed >= maxSec) stopRecording();
+      }, 100);
+      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+      mediaRecorder.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        processRecording();
+      };
+      mediaRecorder.start(200);
+      startWebSpeechRecognition();
+    }).catch(err => alert('无法访问麦克风: ' + err.message));
+  }
+
+  function stopRecording() {
+    if (!isRecording) return;
+    isRecording = false; clearInterval(timerInterval);
+    btnRecord.disabled = false; btnNext.disabled = false; btnStop.disabled = true;
+    recPulse.classList.remove('visible'); timerBarWrap.classList.remove('visible');
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+    if (recognition) { try { recognition.stop(); } catch(e) {} }
+  }
+
+  function startWebSpeechRecognition() {
+    const WSR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!WSR) {
+      setChip('web_speech', 'error', '不支持');
+      document.getElementById('result-web_speech').textContent = '浏览器不支持 Web Speech API'; return;
+    }
+    setChip('web_speech', 'running', '识别中…');
+    recognition = new WSR();
+    recognition.lang = 'zh-CN'; recognition.continuous = false;
+    recognition.interimResults = false; recognition.maxAlternatives = 3;
+    recognition.onresult = e => {
+      const best = e.results[0][0].transcript.trim();
+      setModelResult('web_speech', best);
+    };
+    recognition.onerror = e => {
+      if (!modelState['web_speech'].text) {
+        setChip('web_speech', 'error', '无结果');
+        document.getElementById('result-web_speech').textContent = '未识别到（' + e.error + '）';
+      }
+    };
+    try { recognition.start(); } catch(e) {}
+  }
+
+  function processRecording() {
+    MODELS.forEach(m => {
+      if (m.mode !== 'manual') return;
+      setChip(m.id, 'running', '请求中…');
+      tryFetchRecognize(m);
+    });
+    roundInfo.style.display = 'block';
+    roundInfo.textContent = `第 ${roundNumber} 轮录音完成（${recordDuration.toFixed(1)}s）。本地后端模型结果请手动粘贴到下方输入框。`;
+    roundBadge.textContent = `第 ${roundNumber + 1} 轮`;
+  }
+
+  function tryFetchRecognize(model) {
+    if (!audioBlob) return;
+    const fd = new FormData();
+    fd.append('audio', audioBlob, 'recording.webm');
+    fetch(model.serverUrl, { method: 'POST', body: fd, signal: AbortSignal.timeout(6000) })
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(data => {
+      const t = data.text || data.result || data.transcript || '';
+      if (t) { setModelResult(model.id, t); } else { throw new Error('empty'); }
+    })
+    .catch(() => {
+      setChip(model.id, 'idle', '手动输入');
+      document.getElementById('result-' + model.id).textContent = '请在下方粘贴识别文本';
+      document.getElementById('result-' + model.id).style.color = 'var(--muted)';
+      const mw = document.getElementById('manual-' + model.id);
+      if (mw) mw.classList.add('visible');
+    });
+  }
+
+  window.submitManual = function(modelId) {
+    const inp = document.getElementById('input-' + modelId);
+    const t = (inp.value || '').trim();
+    if (!t) { inp.focus(); return; }
+    setModelResult(modelId, t);
+    const mw = document.getElementById('manual-' + modelId);
+    if (mw) mw.classList.remove('visible');
+    inp.value = '';
+  };
+
+  function setModelResult(modelId, text) {
+    modelState[modelId].text = text; modelState[modelId].status = 'done';
+    const score = computeScore(text); modelState[modelId].score = score;
+    const r = document.getElementById('result-' + modelId);
+    r.textContent = text; r.style.color = 'var(--text)'; r.style.fontWeight = '800'; r.style.fontSize = '1.1rem';
+    const s = document.getElementById('score-' + modelId);
+    const { pct, label, cls } = scoreLabel(score);
+    s.textContent = `准确率 ${pct}% — ${label}`; s.className = 'model-score ' + cls;
+    setChip(modelId, 'done', '完成');
+    renderPinyin(computeCharResults(text));
+    checkAllDone();
+  }
+
+  function computeScore(recognized) {
+    const target = currentItems.map(c => c.h).join('');
+    const actual = (recognized || '').replace(/[^\u4e00-\u9fa5]/g, '');
+    if (!actual) return 0;
+    return fuzzyPinyinScore(target, actual);
+  }
+
+  function fuzzyPinyinScore(target, actual) {
+    const T = charsToPinyin(target), A = charsToPinyin(actual);
+    const m = T.length, n = A.length;
+    if (!m) return 0;
+    const dp = Array.from({length:m+1},()=>Array(n+1).fill(0));
+    for(let i=0;i<=m;i++) dp[i][0]=i;
+    for(let j=0;j<=n;j++) dp[0][j]=j;
+    for(let i=1;i<=m;i++) for(let j=1;j<=n;j++) {
+      const c = charDist(T[i-1],A[j-1]);
+      dp[i][j] = Math.min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+c);
+    }
+    return Math.max(0, Math.round((1 - dp[m][n]/m)*100));
+  }
+
+  function charsToPinyin(str) {
+    return str.split('').map(c => {
+      if (window.pinyinPro) {
+        try {
+          const r = window.pinyinPro.pinyin(c,{toneType:'num',type:'all'});
+          if (r && r[0]) return {char:c,full:r[0].pinyin,init:r[0].initial||'',fin:r[0].final||'',tone:r[0].num||0};
+        } catch(e) {}
+      }
+      return {char:c,full:c,init:'',fin:'',tone:0};
+    });
+  }
+
+  function charDist(t,a) {
+    if (t.char===a.char) return 0;
+    if (t.full&&a.full&&t.full===a.full) return 0.05;
+    if (t.init&&a.init&&t.init===a.init&&t.fin===a.fin) return 0.15;
+    const si=areSimilarInitials(t.init,a.init), sf=areSimilarFinals(t.fin,a.fin);
+    if (si&&t.fin===a.fin) return 0.25;
+    if (t.init===a.init&&sf) return 0.25;
+    return 1.0;
+  }
+
+  function areSimilarInitials(a,b) {
+    return [['z','zh'],['c','ch'],['s','sh'],['l','n']].some(([x,y])=>(a===x&&b===y)||(a===y&&b===x));
+  }
+  function areSimilarFinals(a,b) {
+    return [['an','ang'],['en','eng'],['in','ing']].some(([x,y])=>(a===x&&b===y)||(a===y&&b===x));
+  }
+
+  function computeCharResults(recognized) {
+    const T = charsToPinyin(currentItems.map(c=>c.h).join(''));
+    const A = charsToPinyin((recognized||'').replace(/[^\u4e00-\u9fa5]/g,''));
+    return T.map((t,i)=>{ const a=A[i]; if(!a) return 'wrong'; return charDist(t,a)<=0.25?'correct':'wrong'; });
+  }
+
+  function scoreLabel(pct) {
+    if (pct>=90) return {pct,label:'优秀 🏆',cls:'pass'};
+    if (pct>=70) return {pct,label:'良好 ✓',cls:'pass'};
+    if (pct>=50) return {pct,label:'一般 ⚠️',cls:'fail'};
+    return {pct,label:'较差 ✗',cls:'fail'};
+  }
+
+  function checkAllDone() {
+    if (MODELS.some(m=>modelState[m.id].status==='done')) renderSummary();
+  }
+
+  function renderSummary() {
+    summaryBody.innerHTML = '';
+    const targetStr = currentItems.map(c=>c.h).join('');
+    const roundData = { round:roundNumber, target:targetStr, pinyin:currentItems.map(c=>c.p).join(' '), models:{} };
+    MODELS.forEach(m => {
+      const s = modelState[m.id];
+      if (s.status !== 'done') return;
+      const {pct,label,cls} = scoreLabel(s.score);
+      const color = pct>=90?'#58cc02':pct>=70?'#1cb0f6':pct>=50?'#ffc800':'#ff4b4b';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${m.name}</strong><br><small style="color:var(--muted)">${m.subtitle}</small></td>
+        <td style="font-weight:700">${s.text||'-'}</td>
+        <td><span class="acc-pill ${pct>=70?'acc-high':pct>=50?'acc-mid':'acc-low'}">${pct}%</span></td>
+        <td class="score-bar-cell"><div class="score-bar"><div class="score-bar-fill" style="width:${pct}%;background:${color}"></div></div></td>
+        <td style="font-weight:700;color:${color}">${label}</td>
+      `;
+      summaryBody.appendChild(tr);
+      roundData.models[m.id] = {text:s.text,score:s.score};
+    });
+    summaryCard.classList.add('visible');
+    summaryCard.scrollIntoView({behavior:'smooth',block:'nearest'});
+    history.unshift(roundData);
+    if (history.length>50) history.pop();
+    localStorage.setItem('asr_test_history', JSON.stringify(history));
+    roundNumber++; renderHistory();
+  }
+
+  function renderHistory() {
+    if (!history.length) { historyEmpty.style.display='block'; historyList.innerHTML=''; return; }
+    historyEmpty.style.display='none'; historyList.innerHTML='';
+    history.slice(0,20).forEach(r => {
+      const li = document.createElement('li'); li.className='history-item';
+      const chips = MODELS.map(m=>{
+        const md=r.models[m.id]; if(!md) return '';
+        const cls=md.score>=70?'acc-high':md.score>=50?'acc-mid':'acc-low';
+        return `<span class="hi-score-chip ${cls}" title="${m.name}: ${md.text}">${m.subtitle}: ${md.score}%</span>`;
+      }).join('');
+      li.innerHTML=`<span class="hi-round">#${r.round}</span><div style="flex:1"><div><strong>${r.target}</strong><small style="color:var(--muted);margin-left:8px">${r.pinyin}</small></div><div class="hi-scores">${chips}</div></div>`;
+      historyList.appendChild(li);
+    });
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>

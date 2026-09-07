@@ -1,0 +1,2482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>视觉专注力测试 - 清良思维</title>
+<style>
+  :root {
+    --duo-green: #58cc02;
+    --duo-green-dark: #58a700;
+    --duo-green-light: #d7ffb8;
+    --duo-blue: #1cb0f6;
+    --duo-blue-dark: #1899d6;
+    --duo-blue-light: #ddf4ff;
+    --duo-yellow: #ffc800;
+    --duo-yellow-dark: #e5a500;
+    --duo-yellow-light: #fff5cc;
+    --duo-red: #ff4b4b;
+    --duo-red-dark: #ea2b2b;
+    --duo-red-light: #ffdfe0;
+    --duo-border: #e5e5e5;
+    --duo-border-dark: #cecece;
+    --duo-bg-gray: #f7f7f7;
+    --duo-text-dark: #1e293b;
+    --duo-text-body: #475569;
+    --duo-text-muted: #94a3b8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    color: var(--duo-text-body);
+    background-color: #f8fafc;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 900px;
+    padding: 24px 16px 80px;
+  }
+
+  /* TOP HEADER */
+  .duo-header {
+    background: #ffffff;
+    border: 2px solid var(--duo-border);
+    border-bottom: 4px solid var(--duo-border-dark);
+    border-radius: 20px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .header-titles h1 {
+    font-size: 1.45rem;
+    font-weight: 900;
+    color: var(--duo-text-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .header-titles p {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--duo-text-muted);
+    margin-top: 2px;
+  }
+
+  /* METADATA BAR */
+  .meta-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .meta-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--duo-text-dark);
+  }
+  .meta-field input {
+    border: 2px solid var(--duo-border);
+    border-radius: 10px;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    font-family: inherit;
+    color: var(--duo-text-dark);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .meta-field input:focus {
+    border-color: var(--duo-blue);
+  }
+
+  /* DUOLINGO 3D TACTILE BUTTONS */
+  .duo-btn {
+    appearance: none;
+    border: none;
+    border-radius: 16px;
+    padding: 11px 22px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 900;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    transition: filter 0.15s, transform 0.08s, border-bottom 0.08s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    user-select: none;
+    outline: none;
+  }
+  .duo-btn:hover:not(:disabled) {
+    filter: brightness(1.05);
+  }
+  .duo-btn:active:not(:disabled) {
+    transform: translateY(2px);
+  }
+
+  .btn-green {
+    background: var(--duo-green);
+    color: #fff;
+    border-bottom: 4px solid var(--duo-green-dark);
+  }
+  .btn-green:active:not(:disabled) {
+    border-bottom-width: 2px;
+  }
+
+  .btn-blue {
+    background: var(--duo-blue);
+    color: #fff;
+    border-bottom: 4px solid var(--duo-blue-dark);
+  }
+  .btn-blue:active:not(:disabled) {
+    border-bottom-width: 2px;
+  }
+
+  .btn-gray {
+    background: #fff;
+    color: var(--duo-text-dark);
+    border: 2px solid var(--duo-border);
+    border-bottom: 4px solid var(--duo-border-dark);
+  }
+  .btn-gray:active:not(:disabled) {
+    border-bottom-width: 2px;
+  }
+
+  .btn-danger {
+    background: var(--duo-red);
+    color: #fff;
+    border-bottom: 4px solid var(--duo-red-dark);
+  }
+  .btn-danger:active:not(:disabled) {
+    border-bottom-width: 2px;
+  }
+
+  .duo-btn:disabled {
+    background: #e2e8f0;
+    color: #94a3b8;
+    border-bottom: 3px solid #cbd5e1;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* STEPPER PROGRESS ROAD */
+  .stepper-card {
+    background: #ffffff;
+    border: 2px solid var(--duo-border);
+    border-bottom: 4px solid var(--duo-border-dark);
+    border-radius: 18px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+  }
+  .stepper-road {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding: 0 8px;
+  }
+  .stepper-line {
+    position: absolute;
+    top: 20px;
+    left: 30px;
+    right: 30px;
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+    z-index: 1;
+  }
+  .stepper-line-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--duo-green);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+  .step-node {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .node-bubble {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 3px solid #e2e8f0;
+    border-bottom: 5px solid #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 900;
+    color: #94a3b8;
+    transition: all 0.25s ease;
+  }
+  .step-node.active .node-bubble {
+    background: var(--duo-blue);
+    border-color: #fff;
+    border-bottom: 5px solid var(--duo-blue-dark);
+    color: #fff;
+    transform: scale(1.12);
+    box-shadow: 0 4px 12px rgba(28, 176, 246, 0.35);
+  }
+  .step-node.passed .node-bubble {
+    background: var(--duo-green);
+    border-color: #fff;
+    border-bottom: 5px solid var(--duo-green-dark);
+    color: #fff;
+  }
+  .node-title {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #94a3b8;
+  }
+  .step-node.active .node-title {
+    color: var(--duo-blue-dark);
+  }
+  .step-node.passed .node-title {
+    color: var(--duo-green-dark);
+  }
+
+  /* STATUS BAR */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: #f1f5f9;
+    border-radius: 12px;
+    padding: 10px 16px;
+    margin-top: 14px;
+    font-size: 0.88rem;
+    font-weight: 800;
+  }
+  .badge-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 900;
+  }
+  .badge-blue { background: var(--duo-blue-light); color: var(--duo-blue-dark); }
+  .badge-amber { background: var(--duo-yellow-light); color: #b45309; }
+  .badge-red { background: var(--duo-red-light); color: var(--duo-red-dark); }
+  .badge-green { background: var(--duo-green-light); color: var(--duo-green-dark); }
+
+  /* MAIN TESTING CARD */
+  .main-card {
+    background: #ffffff;
+    border: 2px solid var(--duo-border);
+    border-bottom: 5px solid var(--duo-border-dark);
+    border-radius: 22px;
+    padding: 28px 20px;
+    min-height: 440px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* TIMER CHIP */
+  .timer-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 18px;
+    background: var(--duo-blue-light);
+    border: 2px solid var(--duo-blue);
+    border-radius: 30px;
+    font-weight: 900;
+    color: var(--duo-blue-dark);
+    font-size: 1.05rem;
+    margin-bottom: 16px;
+  }
+
+  /* 10x10 GRID */
+  .grid-wrap {
+    padding: 12px;
+    background: #f8fafc;
+    border: 2px solid var(--duo-border);
+    border-radius: 18px;
+    display: inline-block;
+  }
+  .grid, .result-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 34px);
+    grid-template-rows: repeat(10, 34px);
+    gap: 3px;
+  }
+  .cell {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: #ffffff;
+    border: 2px solid var(--duo-border);
+    border-bottom: 3px solid #cbd5e1;
+    cursor: pointer;
+    transition: all 0.12s ease;
+  }
+  .grid .cell:hover {
+    background: #f0fdf4;
+    border-color: var(--duo-green);
+  }
+  .cell:active {
+    transform: translateY(1px);
+    border-bottom-width: 2px;
+  }
+  .cell.blue {
+    background: var(--duo-blue);
+    border-color: var(--duo-blue-dark);
+    border-bottom-color: #0b7db5;
+  }
+  .cell.green {
+    background: var(--duo-green);
+    border-color: var(--duo-green-dark);
+    border-bottom-color: #468500;
+  }
+  .cell.red {
+    background: var(--duo-red);
+    border-color: var(--duo-red-dark);
+    border-bottom-color: #b91c1c;
+  }
+  .cell.orange {
+    background: var(--duo-yellow);
+    border-color: var(--duo-yellow-dark);
+    border-bottom-color: #c98c00;
+  }
+
+  /* MATH QUIZ BOX */
+  .math-box {
+    width: 100%;
+    max-width: 440px;
+    background: #f8fafc;
+    border: 2px solid var(--duo-border);
+    border-radius: 20px;
+    padding: 24px;
+    text-align: center;
+  }
+  .math-formula {
+    font-size: 2.6rem;
+    font-weight: 900;
+    color: var(--duo-text-dark);
+    margin: 14px 0 18px;
+    letter-spacing: 2px;
+  }
+  .math-input {
+    width: 160px;
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 900;
+    padding: 8px 12px;
+    border-radius: 14px;
+    border: 2px solid var(--duo-border);
+    border-bottom: 4px solid var(--duo-border-dark);
+    outline: none;
+    font-family: inherit;
+    color: var(--duo-text-dark);
+    background: #fff;
+    margin-right: 10px;
+  }
+  .math-input:focus {
+    border-color: var(--duo-blue);
+  }
+
+  /* COMPARISON VIEW */
+  .compare-row {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .compare-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .compare-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+    color: var(--duo-text-dark);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .legend-row {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--duo-text-muted);
+    margin-top: 14px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .legend-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+  }
+
+  /* INLINE ROUND FEEDBACK BANNER */
+  .round-banner {
+    width: 100%;
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .round-banner.pass {
+    background: var(--duo-green-light);
+    border: 2px solid var(--duo-green);
+  }
+  .round-banner.fail-retry {
+    background: var(--duo-yellow-light);
+    border: 2px solid var(--duo-yellow-dark);
+  }
+  .round-banner.fail-end {
+    background: var(--duo-red-light);
+    border: 2px solid var(--duo-red);
+  }
+  .banner-msg-title {
+    font-size: 1.15rem;
+    font-weight: 900;
+  }
+  .banner-msg-sub {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--duo-text-body);
+    margin-top: 2px;
+  }
+
+  /* FINAL COMPREHENSIVE REPORT */
+  .report-wrap {
+    width: 100%;
+    text-align: center;
+  }
+  .score-badge-circle {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--duo-yellow), #f59e0b);
+    border: 4px solid #fff;
+    box-shadow: 0 4px 0 #d97706, 0 10px 24px rgba(245, 158, 11, 0.25);
+    margin: 16px auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+  .score-badge-num {
+    font-size: 3.4rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .report-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .stat-card {
+    background: #f8fafc;
+    border: 2px solid var(--duo-border);
+    border-radius: 16px;
+    padding: 12px;
+    text-align: center;
+  }
+  .stat-val {
+    font-size: 1.35rem;
+    font-weight: 900;
+    color: var(--duo-text-dark);
+  }
+  .stat-lbl {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--duo-text-muted);
+    margin-top: 2px;
+  }
+
+  /* REPORT TABLE */
+  .report-card-section {
+    background: #ffffff;
+    border: 2px solid var(--duo-border);
+    border-radius: 18px;
+    overflow: hidden;
+    margin: 20px 0;
+    text-align: left;
+  }
+  .report-card-header {
+    background: #f8fafc;
+    padding: 14px 18px;
+    font-weight: 900;
+    font-size: 0.98rem;
+    color: var(--duo-text-dark);
+    border-bottom: 2px solid var(--duo-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  th, td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: left;
+  }
+  th {
+    font-weight: 800;
+    color: var(--duo-text-muted);
+    background: #fafafa;
+  }
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* ADVICE CARD */
+  .advice-item {
+    margin-bottom: 12px;
+    padding-left: 12px;
+    border-left: 3px solid var(--duo-blue);
+  }
+  .advice-item:last-child {
+    margin-bottom: 0;
+  }
+  .advice-item-title {
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--duo-text-dark);
+  }
+  .advice-item-desc {
+    font-size: 0.88rem;
+    color: var(--duo-text-body);
+    margin-top: 2px;
+    line-height: 1.6;
+  }
+
+  /* LEADERBOARD SECTION */
+  .leaderboard-section {
+    margin-top: 28px;
+    border: 2px solid var(--duo-border);
+    border-bottom: 4px solid var(--duo-border-dark);
+    border-radius: 20px;
+    padding: 20px;
+    background: #fff;
+  }
+
+  @media (max-width: 620px) {
+    .grid, .result-grid {
+      grid-template-columns: repeat(10, 27px);
+      grid-template-rows: repeat(10, 27px);
+      gap: 2px;
+    }
+    .cell {
+      width: 27px;
+      height: 27px;
+      border-radius: 6px;
+    }
+    .duo-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .round-banner {
+      flex-direction: column;
+      align-items: stretch;
+      text-align: center;
+    }
+  }
+  /* CAROUSEL ONBOARDING STYLES */
+  .guide-carousel {
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: left;
+  }
+  .carousel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--duo-border);
+  }
+  .carousel-title-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .carousel-icon-pill {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #e5f6fd;
+    border: 2px solid #84d8ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+  .carousel-step-counter {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--duo-blue);
+    background: #e5f6fd;
+    border: 1px solid #84d8ff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .carousel-viewport {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: #fafafa;
+    border: 2px solid var(--duo-border);
+    border-radius: 18px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+  }
+  .carousel-track {
+    display: flex;
+    width: 100%;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .carousel-slide {
+    min-width: 100%;
+    box-sizing: border-box;
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  .slide-head {
+    margin-bottom: 14px;
+  }
+  .slide-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    padding: 3px 10px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  .slide-title {
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: var(--duo-text-dark);
+    margin: 0 0 6px 0;
+  }
+  .slide-desc {
+    font-size: 0.92rem;
+    color: var(--duo-text-body);
+    line-height: 1.6;
+    margin: 0;
+  }
+  .slide-card-box {
+    background: #fff;
+    border: 2px solid var(--duo-border);
+    border-radius: 14px;
+    padding: 16px;
+    margin-top: 12px;
+  }
+  .slide-grid-spec {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+  }
+  @media (max-width: 540px) {
+    .slide-grid-spec {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  .spec-item {
+    background: #f7f9fa;
+    border: 1px solid var(--duo-border);
+    border-radius: 10px;
+    padding: 8px 10px;
+    text-align: center;
+  }
+  .spec-level {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--duo-blue);
+  }
+  .spec-tiles {
+    font-size: 1.05rem;
+    font-weight: 900;
+    color: var(--duo-text-dark);
+    margin: 2px 0;
+  }
+  .spec-desc {
+    font-size: 0.72rem;
+    color: var(--duo-text-muted);
+  }
+  .carousel-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    padding: 0 4px;
+  }
+  .carousel-dots {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .carousel-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #e5e5e5;
+    color: #777;
+    font-size: 0.8rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+  }
+  .carousel-dot:hover {
+    background: #d4d4d4;
+  }
+  .carousel-dot.active {
+    background: var(--duo-green);
+    color: #fff;
+    border-color: var(--duo-green-dark);
+    box-shadow: 0 2px 6px rgba(88, 204, 2, 0.4);
+    transform: scale(1.1);
+  }
+  .checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: var(--duo-text-dark);
+    font-weight: 700;
+    line-height: 1.4;
+  }
+  .checklist-item:last-child {
+    margin-bottom: 0;
+  }
+  .check-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #e8f7d9;
+    color: var(--duo-green-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+  /* BRAND LOGO & HEADER STYLES */
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .brand-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    user-select: none;
+  }
+  .brand-logo-wrap {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 4px 8px rgba(88, 204, 2, 0.28));
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .brand-logo-wrap:hover {
+    transform: scale(1.08) rotate(-2deg);
+  }
+  .brand-logo-svg {
+    width: 48px;
+    height: 48px;
+    display: block;
+  }
+  .brand-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .brand-headline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .brand-name {
+    font-size: 1.32rem;
+    font-weight: 900;
+    color: var(--duo-text-dark);
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+  }
+  .brand-pill {
+    font-size: 0.65rem;
+    font-weight: 900;
+    color: var(--duo-green-dark);
+    background: #e8f7d9;
+    border: 1px solid #c2ea96;
+    padding: 1px 6px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+  }
+  .brand-slogan {
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: var(--duo-text-muted);
+    letter-spacing: 0.2px;
+  }
+  .header-vdivider {
+    width: 2px;
+    height: 38px;
+    background: var(--duo-border);
+    border-radius: 2px;
+  }
+  @media (max-width: 820px) {
+    .header-vdivider {
+      display: none;
+    }
+    .header-left {
+      gap: 12px;
+    }
+  }
+  .report-brand-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f0fdf4;
+    border: 1.5px solid #bbf7d0;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.84rem;
+    font-weight: 800;
+    color: var(--duo-green-dark);
+    margin-bottom: 8px;
+  }
+  /* SCREENSHOT PREVIEW FRAMES FOR SLIDES */
+  .slide-flex-content {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  @media (max-width: 620px) {
+    .slide-flex-content {
+      flex-direction: column-reverse;
+      align-items: stretch;
+    }
+  }
+  .slide-preview-frame {
+    position: relative;
+    background: #ffffff;
+    border: 2px solid var(--duo-border);
+    border-bottom: 3px solid var(--duo-border-dark);
+    border-radius: 14px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+  }
+  .preview-badge {
+    position: absolute;
+    top: -9px;
+    right: 12px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    background: var(--duo-blue);
+    color: #fff;
+    padding: 1px 7px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(28, 176, 246, 0.3);
+  }
+  .preview-img-responsive {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+  /* LEVEL SHOWCASE SINGLE ROW IN STEP 4 */
+  .level-showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin-top: 8px;
+    margin-bottom: 10px;
+  }
+  @media (max-width: 560px) {
+    .level-showcase-grid {
+      display: flex;
+      overflow-x: auto;
+      gap: 6px;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .level-card-item {
+      flex: 0 0 78px;
+    }
+  }
+  .level-card-item {
+    background: #ffffff;
+    border: 1.5px solid var(--duo-border);
+    border-bottom: 3px solid var(--duo-border-dark);
+    border-radius: 10px;
+    padding: 5px 3px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    min-width: 0;
+  }
+  .level-card-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  }
+  .level-card-img-box {
+    width: 100%;
+    background: #f8fafc;
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+  }
+  .level-card-thumb {
+    width: 100%;
+    max-width: 86px;
+    height: auto;
+    display: block;
+    border-radius: 4px;
+    object-fit: contain;
+  }
+  .level-card-meta {
+    margin-top: 4px;
+    text-align: center;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .level-badge-pill {
+    font-size: 0.62rem;
+    font-weight: 800;
+    color: var(--duo-blue-dark);
+    background: #e5f6fd;
+    border: 1px solid #84d8ff;
+    padding: 1px 3px;
+    border-radius: 4px;
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .level-tiles-num {
+    font-size: 0.78rem;
+    font-weight: 900;
+    color: var(--duo-text-dark);
+    margin-top: 1px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- TOP HEADER -->
+  <header class="duo-header">
+    <div class="header-left">
+      <!-- BRAND LOGO & CORPORATE IDENTITY -->
+      <div class="brand-box">
+        <div class="brand-logo-wrap" title="清良思维 · 认知与思维发展实验室">
+          <svg class="brand-logo-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="4" width="44" height="42" rx="12" fill="#46A302"/>
+            <rect x="2" y="2" width="44" height="41" rx="12" fill="#58CC02"/>
+            <rect x="4" y="4" width="40" height="18" rx="9" fill="white" fill-opacity="0.18"/>
+            <polygon points="24,9 35,16 24,23 13,16" fill="#38BDF8"/>
+            <polygon points="13,16 24,23 24,35 13,28" fill="#15803D"/>
+            <polygon points="24,23 35,16 35,28 24,35" fill="#FBBF24"/>
+            <path d="M24 13L25.8 20.2L33 22L25.8 23.8L24 31L22.2 23.8L15 22L22.2 20.2L24 13Z" fill="#FFFFFF"/>
+            <circle cx="24" cy="22" r="2.6" fill="#0F172A"/>
+            <circle cx="24" cy="22" r="1.4" fill="#58CC02"/>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <div class="brand-headline">
+            <span class="brand-name">清良思维</span>
+            <span class="brand-pill">QINGLIANG</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-vdivider"></div>
+
+      <!-- TEST TITLE -->
+      <div class="header-titles">
+        <h1>视觉专注力测试</h1>
+        <a href="综合专注力测试.html" class="duo-btn btn-blue" style="text-decoration:none; padding:5px 12px; font-size:0.8rem; margin-top:3px;">
+          <span>⚡ 切换为视听双通道综合测评 ➔</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="meta-bar">
+      <div class="meta-field">
+        <span>考生:</span>
+        <input type="text" id="playerName" value="" placeholder="请输入姓名" style="width:110px;">
+      </div>
+      <div class="meta-field">
+        <span>学校:</span>
+        <input type="text" id="playerSchool" value="" placeholder="请输入学校" style="width:130px;">
+      </div>
+      <button id="resetTestBtn" class="duo-btn btn-gray" style="padding:6px 14px; font-size:0.85rem; display:none;">
+        退出评测
+      </button>
+    </div>
+  </header>
+
+  <!-- STATUS BAR -->
+  <section class="stepper-card" style="padding:10px 16px; margin-bottom:16px;">
+    <div class="status-bar" style="margin-top:0; background:transparent; padding:0;">
+      <div>
+        <span class="badge-tag badge-blue" id="currentLevelBadge">试答练习 · 3 格</span>
+        <span class="badge-tag badge-amber" id="attemptBadge">热身试答</span>
+      </div>
+      <div style="display:flex; gap:16px; align-items:center;">
+        <span>得分：<strong id="scoreBadgeText" style="color:var(--duo-blue-dark)">--</strong></span>
+        <span>用时：<strong id="timerText">00:00</strong></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN TESTING ARENA -->
+  <main class="main-card" id="mainCard">
+
+    <!-- VIEW 0: WELCOME READY & ONBOARDING CAROUSEL -->
+    <div id="welcomeView" class="guide-carousel">
+      <div class="carousel-header">
+        <div class="carousel-title-box">
+          <div class="carousel-icon-pill" id="carouselIcon">👁️</div>
+          <div>
+            <h2 style="font-size:1.15rem; font-weight:900; color:var(--duo-text-dark); margin:0;">评测使用指南与规则</h2>
+          </div>
+        </div>
+        <div class="carousel-step-counter" id="carouselStepText">1 / 4 步</div>
+      </div>
+
+      <!-- Viewport with sliding track -->
+      <div class="carousel-viewport">
+        <div class="carousel-track" id="carouselTrack">
+
+          <!-- SLIDE 1: 阶段一 图像观察记忆 -->
+          <div class="carousel-slide">
+            <div class="slide-head">
+              <span class="slide-tag" style="background:#e8f7d9; color:var(--duo-green-dark);">第 1 步 · 观察图案</span>
+              <h3 class="slide-title">👁️ 记住蓝色方块的位置</h3>
+              <p class="slide-desc">
+                屏幕中央会展示一组蓝色方块，请仔细记住它们在网格中的位置。
+              </p>
+            </div>
+            <div class="slide-card-box slide-flex-content">
+              <div style="flex:1;">
+                <div style="font-size:0.9rem; font-weight:800; color:var(--duo-text-dark); margin-bottom:8px;">📋 操作方法：</div>
+                <div style="font-size:0.86rem; color:var(--duo-text-body); line-height:1.6;">
+                  • 观察限时 <strong>20 秒</strong>；<br>
+                  • 记好后可点击 <strong>【⚡ 记好了，开始答题】</strong> 提前进入下一步。
+                </div>
+              </div>
+              <div class="slide-preview-frame">
+                <div class="preview-badge">实测界面</div>
+                <img src="assets/stage1_sample.png" alt="阶段一实测界面" class="preview-img-responsive" style="max-height:130px; object-fit:contain;">
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 2: 阶段二 心算认知干扰 -->
+          <div class="carousel-slide">
+            <div class="slide-head">
+              <span class="slide-tag" style="background:#fef3c7; color:#b45309;">第 2 步 · 快速心算</span>
+              <h3 class="slide-title">🧠 计算并输入答案</h3>
+              <p class="slide-desc">
+                屏幕会出现一道简单的 1 位数加减法（如 7 + 5 或 9 - 4）。
+              </p>
+            </div>
+            <div class="slide-card-box slide-flex-content">
+              <div style="flex:1;">
+                <div style="font-size:0.9rem; font-weight:800; color:var(--duo-text-dark); margin-bottom:8px;">📋 操作方法：</div>
+                <div style="font-size:0.86rem; color:var(--duo-text-body); line-height:1.6;">
+                  • 在输入框输入计算结果；<br>
+                  • 点击 <strong>【确认】</strong> 或直接按键盘 <strong>回车键</strong> 即可进入下一步。
+                </div>
+              </div>
+              <div class="slide-preview-frame">
+                <div class="preview-badge">实测界面</div>
+                <img src="assets/stage2_sample.png" alt="阶段二实测界面" class="preview-img-responsive" style="max-height:85px; object-fit:contain;">
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 3: 阶段三 复原与容错规则 -->
+          <div class="carousel-slide">
+            <div class="slide-head">
+              <span class="slide-tag" style="background:#e0e7ff; color:#3730a3;">第 3 步 · 点击还原</span>
+              <h3 class="slide-title">🖱️ 点亮你刚才记住的方块</h3>
+              <p class="slide-desc">
+                在空白 10×10 网格中，点击还原之前看到的方块位置。
+              </p>
+            </div>
+            <div class="slide-card-box">
+              <div style="font-size:0.86rem; color:var(--duo-text-body); line-height:1.6; margin-bottom:12px;">
+                • <strong>点击方块变绿</strong>表示选中，再次点击可取消；选好后点击 <strong>【✓ 提交】</strong> 查看对比。
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:10px;">
+                  <div style="font-weight:800; color:var(--duo-green-dark); font-size:0.88rem; margin-bottom:4px;">🎯 试答练习：可多次尝试</div>
+                  <div style="font-size:0.8rem; color:#166534; line-height:1.4;">
+                    3 格热身练习，做对后才开启正式测试。
+                  </div>
+                </div>
+                <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:10px; padding:10px;">
+                  <div style="font-weight:800; color:var(--duo-red); font-size:0.88rem; margin-bottom:4px;">❌ 正式测试：无重试机会</div>
+                  <div style="font-size:0.8rem; color:#991b1b; line-height:1.4;">
+                    正式测评中只要做错 1 次即结束并生成报告。
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 4: 级别规则与开始测试 (合并原第一步与第五步) -->
+          <div class="carousel-slide">
+            <div class="slide-head">
+              <span class="slide-tag" style="background:#fdf2f8; color:#9d174d;">第 4 步 · 级别规则与开始</span>
+              <h3 class="slide-title">🎯 难度级别与开始测试</h3>
+              <p class="slide-desc">
+                点击下方按钮先进行【3格试答练习】，正确完成后开始正式测试。正式测试无重试机会。
+              </p>
+            </div>
+            <div class="slide-card-box">
+              <div style="font-size:0.85rem; font-weight:800; color:var(--duo-text-dark); margin-bottom:8px;">
+                📊 难度级别：
+              </div>
+              <div class="level-showcase-grid">
+                <div class="level-card-item">
+                  <div class="level-card-img-box">
+                    <img src="assets/level_5.png" alt="5 级 (10格)" class="level-card-thumb">
+                  </div>
+                  <div class="level-card-meta">
+                    <div class="level-badge-pill">5 级 (起步)</div>
+                    <div class="level-tiles-num">10 格</div>
+                  </div>
+                </div>
+
+                <div class="level-card-item">
+                  <div class="level-card-img-box">
+                    <img src="assets/level_6.png" alt="6 级 (12格)" class="level-card-thumb">
+                  </div>
+                  <div class="level-card-meta">
+                    <div class="level-badge-pill">6 级</div>
+                    <div class="level-tiles-num">12 格</div>
+                  </div>
+                </div>
+
+                <div class="level-card-item">
+                  <div class="level-card-img-box">
+                    <img src="assets/level_7.png" alt="7 级 (15格)" class="level-card-thumb">
+                  </div>
+                  <div class="level-card-meta">
+                    <div class="level-badge-pill">7 级</div>
+                    <div class="level-tiles-num">15 格</div>
+                  </div>
+                </div>
+
+                <div class="level-card-item">
+                  <div class="level-card-img-box">
+                    <img src="assets/level_8.png" alt="8 级 (17格)" class="level-card-thumb">
+                  </div>
+                  <div class="level-card-meta">
+                    <div class="level-badge-pill">8 级</div>
+                    <div class="level-tiles-num">17 格</div>
+                  </div>
+                </div>
+
+                <div class="level-card-item">
+                  <div class="level-card-img-box">
+                    <img src="assets/level_9.png" alt="9 级 (20格)" class="level-card-thumb">
+                  </div>
+                  <div class="level-card-meta">
+                    <div class="level-badge-pill">9 级</div>
+                    <div class="level-tiles-num">20 格</div>
+                  </div>
+                </div>
+
+                <div class="level-card-item">
+                  <div class="level-card-img-box">
+                    <img src="assets/level_10.png" alt="10 级 (双图各10格)" class="level-card-thumb">
+                  </div>
+                  <div class="level-card-meta">
+                    <div class="level-badge-pill" style="color:#d97706; background:#fef3c7; border-color:#fde68a;">10 级 (终极)</div>
+                    <div class="level-tiles-num" style="font-size:0.75rem;">双图各10格</div>
+                  </div>
+                </div>
+              </div>
+              <div class="checklist-item">
+                <span class="check-icon">✓</span>
+                <span style="font-size:0.85rem;">循环流程：<strong>看图记位置 ➔ 1位数口算 ➔ 网格点选还原</strong></span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Controls: Prev, Dots, Next -->
+      <div class="carousel-controls">
+        <button id="carouselPrevBtn" class="duo-btn btn-gray" style="padding:8px 18px; font-size:0.9rem;" disabled>
+          ◀ 上一步
+        </button>
+
+        <div class="carousel-dots" id="carouselDots">
+          <div class="carousel-dot active" data-index="0">1</div>
+          <div class="carousel-dot" data-index="1">2</div>
+          <div class="carousel-dot" data-index="2">3</div>
+          <div class="carousel-dot" data-index="3">4</div>
+        </div>
+
+        <button id="carouselNextBtn" class="duo-btn btn-blue" style="padding:8px 18px; font-size:0.9rem;">
+          下一步 ▶
+        </button>
+      </div>
+
+      <!-- Final Start Button (User Confirmation) -->
+      <div style="margin-top:20px; text-align:center;">
+        <button id="welcomeStartBtn" class="duo-btn btn-green" style="padding:14px 36px; font-size:1.05rem; width:100%;">
+          🚀 开始试答 (3格)
+        </button>
+      </div>
+    </div>
+
+    <!-- VIEW 1: STAGE 1 - VIEWING (20s) -->
+    <div id="stage1View" style="display:none; text-align:center; width:100%;">
+      <div class="timer-chip">
+        <span>⏱️ 观察记忆：</span>
+        <span id="stage1Timer">20s</span>
+      </div>
+
+      <div>
+        <div class="grid-wrap">
+          <div id="displayGrid" class="grid"></div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px;">
+        <button id="skipViewBtn" class="duo-btn btn-gray" style="font-size:0.88rem; padding:8px 18px;">
+          ⚡ 记好了，开始答题 ➔
+        </button>
+      </div>
+    </div>
+
+    <!-- VIEW 2: STAGE 2 - MATH QUIZ -->
+    <div id="stage2View" class="math-box" style="display:none;">
+      <span class="badge-tag badge-amber" style="margin-bottom:8px;">
+        阶段二：快速口算
+      </span>
+      <p style="font-size:0.95rem; font-weight:700; color:var(--duo-text-dark); margin-top:8px;">
+        请计算并输入答案：
+      </p>
+      <div class="math-formula" id="mathExp">7 + 5 = ?</div>
+      <div style="display:flex; justify-content:center; align-items:center;">
+        <input type="number" id="mathInput" class="math-input" placeholder="输入答案" inputmode="numeric">
+        <button id="mathSubmitBtn" class="duo-btn btn-blue" style="padding:9px 20px;">确认</button>
+      </div>
+      <div id="mathFeedback" style="min-height:24px; font-size:0.92rem; font-weight:800; margin-top:10px;"></div>
+      <div style="font-size:0.95rem; font-weight:800; color:var(--duo-text-dark); margin-top:8px;">
+        ⏱️ 倒计时：<span id="mathTimer" style="color:var(--duo-blue-dark); font-weight:900;">20s</span>
+      </div>
+    </div>
+
+    <!-- VIEW 3: STAGE 3 - RECALL CLICKING -->
+    <div id="stage3View" style="display:none; text-align:center; width:100%;">
+      <div style="margin-bottom:12px;">
+        <span class="badge-tag badge-green">
+          阶段三：点击复原
+        </span>
+        <div style="margin-top:8px; font-size:0.92rem; font-weight:800; color:var(--duo-text-dark);">
+          需选 <strong id="targetBlockCount" style="color:var(--duo-blue)">-</strong> 格 &nbsp;|&nbsp; 
+          已选 <strong id="currentSelectedCount" style="color:var(--duo-green-dark)">0</strong> 格
+        </div>
+      </div>
+
+      <div class="grid-wrap">
+        <div id="recallGrid" class="grid"></div>
+      </div>
+
+      <div style="display:flex; gap:12px; justify-content:center; margin-top:18px;">
+        <button id="clearRecallBtn" class="duo-btn btn-gray" style="padding:9px 18px;">清空</button>
+        <button id="submitRecallBtn" class="duo-btn btn-green" style="padding:10px 32px; font-size:1rem;">
+          ✓ 提交
+        </button>
+      </div>
+    </div>
+
+    <!-- VIEW 4: ROUND RESULT & COMPARISON -->
+    <div id="roundResultView" style="display:none; text-align:center; width:100%;">
+      <div class="compare-row">
+        <div class="compare-col">
+          <div class="compare-title">👤 左边：用户输入</div>
+          <div class="grid-wrap">
+            <div id="userResultGrid" class="result-grid"></div>
+          </div>
+        </div>
+        <div class="compare-col">
+          <div class="compare-title">🎯 右边：正确格子位置</div>
+          <div class="grid-wrap">
+            <div id="answerResultGrid" class="result-grid"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="legend-row">
+        <div class="legend-item"><span class="legend-dot" style="background:var(--duo-green)"></span> 你的输入</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--duo-blue)"></span> 正确位置</div>
+      </div>
+
+      <!-- INLINE ACTION BANNER -->
+      <div class="round-banner" id="roundBanner">
+        <div>
+          <div class="banner-msg-title" id="bannerTitle">答对啦！</div>
+          <div class="banner-msg-sub" id="bannerSub">本级复原完全正确，正在晋级...</div>
+        </div>
+        <button id="bannerActionBtn" class="duo-btn btn-green">
+          继续 ➔
+        </button>
+      </div>
+    </div>
+
+    <!-- VIEW 5: FINAL REPORT -->
+    <div id="reportView" class="report-wrap" style="display:none;">
+      <div style="text-align:center; margin-bottom:12px;">
+        <div class="report-brand-badge">
+          <span>🧠 清良思维 · 认知与思维发展实验室官方认证</span>
+        </div>
+        <h2 style="font-size:1.55rem; font-weight:900; color:var(--duo-text-dark);">
+          📊 视觉专注力测试报告
+        </h2>
+        <p style="color:var(--duo-text-dark); font-size:0.95rem; font-weight:700; margin-top:4px;">
+          考生：<span id="reportPlayerName" style="color:var(--duo-blue-dark); font-weight:900;">-</span> &nbsp;|&nbsp; 
+          学校：<span id="reportPlayerSchool" style="color:var(--duo-blue-dark); font-weight:900;">-</span>
+        </p>
+      </div>
+
+      <!-- SCORE BADGE -->
+      <div class="score-badge-circle">
+        <div class="score-badge-num" id="reportScoreDisplay">7</div>
+      </div>
+
+      <!-- METRICS -->
+      <div class="report-stats-grid">
+        <div class="stat-card">
+          <div class="stat-val" id="reportMaxLevel" style="color:var(--duo-blue-dark)">第 7 级</div>
+          <div class="stat-lbl">最高通关等级</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="reportAccuracy" style="color:var(--duo-green-dark)">94%</div>
+          <div class="stat-lbl">平均命中率</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="reportTime" style="color:#b45309">02:18</div>
+          <div class="stat-lbl">累计测试耗时</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="reportRoundsCount">4 轮</div>
+          <div class="stat-lbl">作答轮次</div>
+        </div>
+      </div>
+
+      <!-- TABLE: BENCHMARK TIME BREAKDOWN -->
+      <div class="report-card-section">
+        <div class="report-card-header">
+          <span>⏱️ 各级别耗时与常模标准对比 (K12 空间工作记忆常模)</span>
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>测试级别 / 轮次</th>
+                <th>阶段耗时 (看图/计算/复原)</th>
+                <th>实际总用时</th>
+                <th>常模标准</th>
+                <th>耗时评估</th>
+                <th>复原判定</th>
+              </tr>
+            </thead>
+            <tbody id="benchmarkTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- COGNITIVE ANALYSIS -->
+      <div class="report-card-section" style="padding:18px;">
+        <h3 style="font-size:1rem; font-weight:900; color:var(--duo-blue-dark); margin-bottom:8px;">
+          🧠 视觉空间工作记忆深度剖析
+        </h3>
+        <p id="cognitiveAnalysisText" style="font-size:0.9rem; font-weight:600; color:var(--duo-text-body); line-height:1.65;"></p>
+      </div>
+
+      <!-- TRAINING ADVICE -->
+      <div class="report-card-section" style="padding:18px;">
+        <h3 style="font-size:1rem; font-weight:900; color:var(--duo-green-dark); margin-bottom:12px;">
+          💡 针对性视觉专注力提升建议
+        </h3>
+        <div id="adviceContent"></div>
+      </div>
+
+      <div style="display:flex; gap:12px; justify-content:center; margin-top:22px;">
+        <button id="retestBtn" class="duo-btn btn-green" style="padding:11px 28px;">
+          🔄 重新评测
+        </button>
+        <button id="viewBoardBtn" class="duo-btn btn-gray" style="padding:11px 22px;">
+          🏆 查看排行榜
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- LEADERBOARD -->
+  <section class="leaderboard-section" id="leaderboardSection">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+      <h2 style="font-size:1.18rem; font-weight:900; color:var(--duo-text-dark);">🏆 视觉专注力测试等级排行榜</h2>
+    </div>
+
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>排名</th>
+            <th>考生姓名</th>
+            <th>学校</th>
+            <th>评定得分</th>
+            <th>平均命中率</th>
+            <th>总耗时</th>
+            <th>日期</th>
+          </tr>
+        </thead>
+        <tbody id="boardTbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ================= 1. 等级配置 & 常模参考值 =================
+  var LEVELS_CONFIG = {
+    trial: { shapes: 1, min: 3, max: 3, title: "试答练习 (3格)", benchmarkSec: 20, minDegree1: 1, desc: "试答练习 · 3格" },
+    5: { shapes: 1, min: 10, max: 10, title: "单图 10 格", benchmarkSec: 36, minDegree1: 3, desc: "单图形 · 10格" },
+    6: { shapes: 1, min: 12, max: 12, title: "单图 12 格", benchmarkSec: 40, minDegree1: 3, desc: "单图形 · 12格" },
+    7: { shapes: 1, min: 15, max: 15, title: "单图 15 格", benchmarkSec: 46, minDegree1: 3, desc: "单图形 · 15格" },
+    8: { shapes: 1, min: 17, max: 17, title: "单图 17 格", benchmarkSec: 52, minDegree1: 3, desc: "单图形 · 17格" },
+    9: { shapes: 1, min: 20, max: 20, title: "单图 20 格", benchmarkSec: 60, minDegree1: 4, desc: "单图形 · 20格" },
+    10: { shapes: 2, min: 10, max: 10, title: "双图各 10 格", benchmarkSec: 68, minDegree1: 2, desc: "双图形 · 各10格(共20格)" }
+  };
+
+  var GRID_SIZE = 10;
+  var BB_STORAGE_KEY = "k12_visual_attention_records_pro_v1";
+  var BB_SEEDED_FLAG = "k12_visual_attention_seeded_pro_v1";
+
+  // 状态变量
+  var currentLevel = "trial";
+  var currentLevelFails = 0; // 本级做错次数
+  var pattern = [];
+  var userSelection = new Set();
+  var passedLevels = [];
+  var totalTestTime = 0;
+  var timerInterval = null;
+  var totalTimerInterval = null;
+  var mathAnswer = 0;
+  var mathTimerLeft = 20;
+
+  // 阶段用时统计
+  var stage1StartTime = 0;
+  var stage1Duration = 0;
+  var stage2StartTime = 0;
+  var stage2Duration = 0;
+  var stage3StartTime = 0;
+  var stage3Duration = 0;
+
+  var levelHistory = [];
+
+  // DOM 元素
+  var playerNameInput = document.getElementById("playerName");
+  var playerSchoolInput = document.getElementById("playerSchool");
+  var currentLevelBadge = document.getElementById("currentLevelBadge");
+  var attemptBadge = document.getElementById("attemptBadge");
+  var scoreBadgeText = document.getElementById("scoreBadgeText");
+  var timerText = document.getElementById("timerText");
+  var stepperFill = document.getElementById("stepperFill");
+  var resetTestBtn = document.getElementById("resetTestBtn");
+
+  var welcomeView = document.getElementById("welcomeView");
+  var stage1View = document.getElementById("stage1View");
+  var stage2View = document.getElementById("stage2View");
+  var stage3View = document.getElementById("stage3View");
+  var roundResultView = document.getElementById("roundResultView");
+  var reportView = document.getElementById("reportView");
+
+  var welcomeStartBtn = document.getElementById("welcomeStartBtn");
+  var carouselTrack = document.getElementById("carouselTrack");
+  var carouselIcon = document.getElementById("carouselIcon");
+  var carouselStepText = document.getElementById("carouselStepText");
+  var carouselPrevBtn = document.getElementById("carouselPrevBtn");
+  var carouselNextBtn = document.getElementById("carouselNextBtn");
+  var carouselDots = document.getElementById("carouselDots");
+  var currentSlide = 0;
+  var totalSlides = 4;
+  var slideIcons = ["👁️", "🧠", "🖱️", "🎯"];
+
+  var stage1Timer = document.getElementById("stage1Timer");
+  var skipViewBtn = document.getElementById("skipViewBtn");
+  var displayGrid = document.getElementById("displayGrid");
+
+  var mathExp = document.getElementById("mathExp");
+  var mathInput = document.getElementById("mathInput");
+  var mathSubmitBtn = document.getElementById("mathSubmitBtn");
+  var mathFeedback = document.getElementById("mathFeedback");
+  var mathTimer = document.getElementById("mathTimer");
+
+  var targetBlockCount = document.getElementById("targetBlockCount");
+  var currentSelectedCount = document.getElementById("currentSelectedCount");
+  var recallGrid = document.getElementById("recallGrid");
+  var clearRecallBtn = document.getElementById("clearRecallBtn");
+  var submitRecallBtn = document.getElementById("submitRecallBtn");
+
+  var userResultGrid = document.getElementById("userResultGrid");
+  var answerResultGrid = document.getElementById("answerResultGrid");
+
+  var roundBanner = document.getElementById("roundBanner");
+  var bannerTitle = document.getElementById("bannerTitle");
+  var bannerSub = document.getElementById("bannerSub");
+  var bannerActionBtn = document.getElementById("bannerActionBtn");
+
+  var reportPlayerName = document.getElementById("reportPlayerName");
+  var reportPlayerSchool = document.getElementById("reportPlayerSchool");
+  var reportScoreDisplay = document.getElementById("reportScoreDisplay");
+  var reportMaxLevel = document.getElementById("reportMaxLevel");
+  var reportAccuracy = document.getElementById("reportAccuracy");
+  var reportTime = document.getElementById("reportTime");
+  var reportRoundsCount = document.getElementById("reportRoundsCount");
+  var benchmarkTableBody = document.getElementById("benchmarkTableBody");
+  var cognitiveAnalysisText = document.getElementById("cognitiveAnalysisText");
+  var adviceContent = document.getElementById("adviceContent");
+  var retestBtn = document.getElementById("retestBtn");
+  var viewBoardBtn = document.getElementById("viewBoardBtn");
+  var boardTbody = document.getElementById("boardTbody");
+
+  // ================= 2. 图形生成算法 =================
+  function key(r, c) { return r + "_" + c; }
+  function pad(n) { return n < 10 ? "0" + n : n; }
+  function formatTime(sec) {
+    var m = Math.floor(sec / 60);
+    var s = Math.floor(sec % 60);
+    return pad(m) + ":" + pad(s);
+  }
+
+  function blockedWithNeighbors(cells) {
+    var dirs = [{r:1,c:0},{r:-1,c:0},{r:0,c:1},{r:0,c:-1}];
+    var set = new Set();
+    for(var i = 0; i < cells.length; i++) {
+      var p = cells[i];
+      set.add(key(p.r, p.c));
+      for(var d = 0; d < dirs.length; d++) {
+        var nr = p.r + dirs[d].r, nc = p.c + dirs[d].c;
+        if(nr >= 0 && nr < GRID_SIZE && nc >= 0 && nc < GRID_SIZE) {
+          set.add(key(nr, nc));
+        }
+      }
+    }
+    return set;
+  }
+
+  function countDegree1Cells(shape) {
+    var set = new Set();
+    shape.forEach(function(p){ set.add(key(p.r, p.c)); });
+    var deg1 = 0;
+    var dirs = [{r:1,c:0},{r:-1,c:0},{r:0,c:1},{r:0,c:-1}];
+    shape.forEach(function(p) {
+      var nbrs = 0;
+      dirs.forEach(function(d) {
+        if(set.has(key(p.r + d.r, p.c + d.c))) nbrs++;
+      });
+      if(nbrs === 1) deg1++;
+    });
+    return deg1;
+  }
+
+  function getShapeDensity(shape) {
+    var minR = GRID_SIZE, maxR = 0, minC = GRID_SIZE, maxC = 0;
+    shape.forEach(function(p) {
+      if(p.r < minR) minR = p.r;
+      if(p.r > maxR) maxR = p.r;
+      if(p.c < minC) minC = p.c;
+      if(p.c > maxC) maxC = p.c;
+    });
+    var area = (maxR - minR + 1) * (maxC - minC + 1);
+    return area > 0 ? (shape.length / area) : 1;
+  }
+
+  function generateConnectedShape(minTiles, maxTiles, blocked, requiredDegree1) {
+    var target = Math.floor(Math.random() * (maxTiles - minTiles + 1)) + minTiles;
+    var dirs = [{r:1,c:0},{r:-1,c:0},{r:0,c:1},{r:0,c:-1}];
+    var reqDeg1 = requiredDegree1 || 2;
+    var centerR = 4.5, centerC = 4.5;
+    function distFromCenter(r, c) { return (r - centerR)*(r - centerR) + (c - centerC)*(c - centerC); }
+
+    // 边界约束：不贴边，严格限定在 1 至 8 行与 1 至 8 列（留出四周各 1 格的外框安全区）
+    var minR = 1, maxR = 8, minC = 1, maxC = 8;
+
+    for(var attempt = 0; attempt < 400; attempt++) {
+      var currentReqDeg1 = (attempt > 250) ? Math.max(2, reqDeg1 - 1) : reqDeg1;
+
+      // 优先在中心区域 (3-6) 寻找种子点
+      var seedCandidates = [];
+      for(var r = 3; r <= 6; r++) {
+        for(var c = 3; c <= 6; c++) {
+          if(!blocked.has(key(r, c))) seedCandidates.push({r: r, c: c});
+        }
+      }
+      if(!seedCandidates.length) {
+        for(var r2 = minR; r2 <= maxR; r2++) {
+          for(var c2 = minC; c2 <= maxC; c2++) {
+            if(!blocked.has(key(r2, c2))) seedCandidates.push({r: r2, c: c2});
+          }
+        }
+      }
+      if(!seedCandidates.length) break;
+
+      // 靠近中心者优先
+      seedCandidates.sort(function(a, b) { return distFromCenter(a.r, a.c) - distFromCenter(b.r, b.c); });
+      var seed = seedCandidates[Math.floor(Math.random() * Math.min(6, seedCandidates.length))];
+      var shape = [seed];
+      var inShape = new Set([key(seed.r, seed.c)]);
+
+      while(shape.length < target) {
+        var frontier = [];
+        for(var s = 0; s < shape.length; s++) {
+          var p = shape[s];
+          for(var d = 0; d < dirs.length; d++) {
+            var nr = p.r + dirs[d].r, nc = p.c + dirs[d].c;
+            var k = key(nr, nc);
+            // 严格不贴边限制
+            if(nr >= minR && nr <= maxR && nc >= minC && nc <= maxC && !inShape.has(k) && !blocked.has(k)) {
+              var nbrCount = 0;
+              for(var d2 = 0; d2 < dirs.length; d2++) {
+                if(inShape.has(key(nr + dirs[d2].r, nc + dirs[d2].c))) nbrCount++;
+              }
+              var centerPenalty = distFromCenter(nr, nc) * 0.08;
+              frontier.push({r: nr, c: nc, k: k, score: nbrCount + centerPenalty});
+            }
+          }
+        }
+        if(!frontier.length) break;
+
+        frontier.sort(function(a, b){ return a.score - b.score; });
+        var poolSize = Math.min(4, frontier.length);
+        var chosen = frontier[Math.floor(Math.random() * poolSize)];
+        shape.push({r: chosen.r, c: chosen.c});
+        inShape.add(chosen.k);
+      }
+
+      if(shape.length >= target) {
+        var deg1 = countDegree1Cells(shape);
+        var density = getShapeDensity(shape);
+        // 确保：1. 拥有指定数量的单连接端点小方块；2. 密度约束（<=3格时免除密度限制）；3. 绝不贴边且整体居中
+        if(deg1 >= currentReqDeg1 && (minTiles <= 3 || density <= 0.80)) {
+          return shape;
+        }
+      }
+    }
+
+    return shape && shape.length >= minTiles ? shape : [];
+  }
+
+  // ================= 3. 视图与状态控制 =================
+  function hideAllViews() {
+    welcomeView.style.display = "none";
+    stage1View.style.display = "none";
+    stage2View.style.display = "none";
+    stage3View.style.display = "none";
+    roundResultView.style.display = "none";
+    reportView.style.display = "none";
+  }
+
+  function updateTopStatus() {
+    if(currentLevel === "trial") {
+      currentLevelBadge.textContent = "试答练习 · 单图 3 格";
+      attemptBadge.textContent = "练习模式 (做对开始正式测试)";
+      attemptBadge.className = "badge-tag badge-blue";
+      scoreBadgeText.textContent = "--";
+    } else {
+      var cfg = LEVELS_CONFIG[currentLevel] || LEVELS_CONFIG[5];
+      currentLevelBadge.textContent = "第 " + currentLevel + " 级 · " + cfg.title;
+      attemptBadge.textContent = "正式测试 (无重试)";
+      attemptBadge.className = "badge-tag badge-amber";
+
+      var maxPassed = passedLevels.length > 0 ? Math.max.apply(null, passedLevels) : 0;
+      scoreBadgeText.textContent = maxPassed > 0 ? (maxPassed + " 分") : "5 分起步";
+    }
+  }
+
+  // ================= 4. 测试生命周期 =================
+  function startTrialTest() {
+    currentLevel = "trial";
+    currentLevelFails = 0;
+    passedLevels = [];
+    levelHistory = [];
+    totalTestTime = 0;
+    if(totalTimerInterval) { clearInterval(totalTimerInterval); totalTimerInterval = null; }
+    timerText.textContent = "00:00";
+    resetTestBtn.style.display = "inline-flex";
+
+    startRound("trial");
+  }
+
+  function startFormalTest() {
+    currentLevel = 5;
+    currentLevelFails = 0;
+    passedLevels = [];
+    levelHistory = [];
+    totalTestTime = 0;
+    resetTestBtn.style.display = "inline-flex";
+
+    if(totalTimerInterval) clearInterval(totalTimerInterval);
+    totalTimerInterval = setInterval(function() {
+      totalTestTime++;
+      timerText.textContent = formatTime(totalTestTime);
+    }, 1000);
+
+    startRound(5);
+  }
+
+  function startRound(lvl) {
+    currentLevel = lvl;
+    userSelection.clear();
+    pattern = [];
+    updateTopStatus();
+
+    var cfg = LEVELS_CONFIG[currentLevel] || LEVELS_CONFIG[5];
+    var blocked = new Set();
+    for(var s = 0; s < cfg.shapes; s++) {
+      var shape = generateConnectedShape(cfg.min, cfg.max, blocked, cfg.minDegree1);
+      pattern = pattern.concat(shape);
+      var extra = blockedWithNeighbors(shape);
+      extra.forEach(function(k){ blocked.add(k); });
+    }
+
+    startStage1();
+  }
+
+  // ---- 阶段一：查看图形 20 秒 ----
+  function startStage1() {
+    hideAllViews();
+    stage1View.style.display = "block";
+    renderDisplayGrid();
+
+    stage1StartTime = Date.now();
+    var timeLeft = 20;
+    stage1Timer.textContent = timeLeft + "s";
+
+    if(timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(function() {
+      timeLeft--;
+      stage1Timer.textContent = timeLeft + "s";
+      if(timeLeft <= 0) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        stage1Duration = 20;
+        startStage2();
+      }
+    }, 1000);
+  }
+
+  function renderDisplayGrid() {
+    displayGrid.innerHTML = "";
+    var patternMap = new Set();
+    pattern.forEach(function(p){ patternMap.add(key(p.r, p.c)); });
+
+    for(var r = 0; r < GRID_SIZE; r++) {
+      for(var c = 0; c < GRID_SIZE; c++) {
+        var cell = document.createElement("div");
+        cell.className = "cell";
+        if(patternMap.has(key(r, c))) {
+          cell.classList.add("blue");
+        }
+        displayGrid.appendChild(cell);
+      }
+    }
+  }
+
+  // ---- 阶段二：心算干扰任务 ----
+  function startStage2() {
+    if(timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    hideAllViews();
+    stage2View.style.display = "block";
+
+    generateMathProblem();
+    mathInput.value = "";
+    mathFeedback.textContent = "";
+    mathInput.focus();
+
+    stage2StartTime = Date.now();
+    mathTimerLeft = 20;
+    mathTimer.textContent = mathTimerLeft + "s";
+    timerInterval = setInterval(function() {
+      mathTimerLeft--;
+      mathTimer.textContent = mathTimerLeft + "s";
+      if(mathTimerLeft <= 0) {
+        mathFeedback.innerHTML = "<span style='color:var(--duo-red)'>时间到，自动更换题目！</span>";
+        setTimeout(function(){
+          generateMathProblem();
+          mathTimerLeft = 20;
+        }, 500);
+      }
+    }, 1000);
+  }
+
+  function generateMathProblem() {
+    var a = Math.floor(Math.random() * 8) + 2; // 2 ~ 9
+    var b = Math.floor(Math.random() * 8) + 2; // 2 ~ 9
+    var isPlus = Math.random() > 0.45;
+
+    if(!isPlus) {
+      if(b > a) { var tmp = a; a = b; b = tmp; }
+      if(a === b) {
+        if(a < 9) a = a + 1;
+        else b = b - 1;
+      }
+    }
+
+    if(isPlus) {
+      mathAnswer = a + b;
+      mathExp.textContent = a + " + " + b + " = ?";
+    } else {
+      mathAnswer = a - b;
+      mathExp.textContent = a + " - " + b + " = ?";
+    }
+  }
+
+  function checkMathAnswer() {
+    var val = parseInt(mathInput.value.trim(), 10);
+    if(isNaN(val)) {
+      mathFeedback.innerHTML = "<span style='color:#b45309'>⚠️ 请输入数字答案</span>";
+      return;
+    }
+    if(val === mathAnswer) {
+      if(timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+      stage2Duration = Math.round((Date.now() - stage2StartTime) / 1000);
+      mathFeedback.innerHTML = "<span style='color:var(--duo-green-dark)'>✓ 计算正确！进入复原阶段...</span>";
+      setTimeout(function() {
+        startStage3();
+      }, 400);
+    } else {
+      mathFeedback.innerHTML = "<span style='color:var(--duo-red)'>❌ 答案有误，请重新计算！</span>";
+      mathInput.value = "";
+      mathInput.focus();
+    }
+  }
+
+  // ---- 阶段三：网格点击复原 ----
+  function startStage3() {
+    hideAllViews();
+    stage3View.style.display = "block";
+
+    targetBlockCount.textContent = pattern.length;
+    currentSelectedCount.textContent = userSelection.size;
+
+    renderRecallGrid();
+    stage3StartTime = Date.now();
+  }
+
+  function renderRecallGrid() {
+    recallGrid.innerHTML = "";
+    for(var r = 0; r < GRID_SIZE; r++) {
+      for(var c = 0; c < GRID_SIZE; c++) {
+        (function(row, col) {
+          var k = key(row, col);
+          var cell = document.createElement("div");
+          cell.className = "cell";
+          if(userSelection.has(k)) {
+            cell.classList.add("green");
+          }
+          cell.addEventListener("click", function() {
+            if(userSelection.has(k)) {
+              userSelection.delete(k);
+              cell.classList.remove("green");
+            } else {
+              userSelection.add(k);
+              cell.classList.add("green");
+            }
+            currentSelectedCount.textContent = userSelection.size;
+          });
+          recallGrid.appendChild(cell);
+        })(r, c);
+      }
+    }
+  }
+
+  // ---- 提交检查：对比展示与错1重试/错2终止 ----
+  function submitRecall() {
+    if(userSelection.size === 0) {
+      alert("请至少点击选择几个色块再提交！");
+      return;
+    }
+
+    stage3Duration = Math.round((Date.now() - stage3StartTime) / 1000);
+    var totalRoundSec = stage1Duration + stage2Duration + stage3Duration;
+
+    var correctSet = new Set();
+    pattern.forEach(function(p){ correctSet.add(key(p.r, p.c)); });
+
+    var hits = 0;
+    var misses = 0;
+    var extras = 0;
+
+    correctSet.forEach(function(k) {
+      if(userSelection.has(k)) hits++;
+      else misses++;
+    });
+
+    userSelection.forEach(function(k) {
+      if(!correctSet.has(k)) extras++;
+    });
+
+    var isFullPass = (hits === pattern.length && extras === 0);
+    var accuracy = Math.round((hits / Math.max(pattern.length, userSelection.size)) * 100);
+
+    var attemptNum = currentLevelFails + 1;
+    var cfg = LEVELS_CONFIG[currentLevel] || LEVELS_CONFIG[5];
+    if(currentLevel !== "trial") {
+      levelHistory.push({
+        level: currentLevel,
+        attempt: attemptNum,
+        passed: isFullPass,
+        viewTime: stage1Duration,
+        mathTime: stage2Duration,
+        recallTime: stage3Duration,
+        totalTime: totalRoundSec,
+        benchmarkSec: cfg.benchmarkSec,
+        accuracy: accuracy,
+        hits: hits,
+        misses: misses,
+        extras: extras
+      });
+    }
+
+    showRoundComparison(isFullPass, hits, misses, extras, accuracy);
+  }
+
+  function showRoundComparison(isFullPass, hits, misses, extras, accuracy) {
+    hideAllViews();
+    roundResultView.style.display = "block";
+    renderComparisonGrids();
+
+    if(currentLevel === "trial") {
+      if(isFullPass) {
+        roundBanner.className = "round-banner pass";
+        bannerTitle.textContent = "✓ 试答完成！掌握测试方法";
+        bannerTitle.style.color = "var(--duo-green-dark)";
+        bannerSub.textContent = "输入位置与标准位置完全一致 · 即将进入正式测评 (正式测试无重试)";
+
+        bannerActionBtn.className = "duo-btn btn-green";
+        bannerActionBtn.textContent = "🚀 开始正式测试 (从第 5 级起) ➔";
+        bannerActionBtn.onclick = function() {
+          startFormalTest();
+        };
+      } else {
+        roundBanner.className = "round-banner fail-retry";
+        bannerTitle.textContent = "⚠️ 试答未达标，请再试一次";
+        bannerTitle.style.color = "#9a3412";
+        bannerSub.textContent = "输入位置与标准位置不一致，请对比左右两图，再次尝试熟悉操作";
+
+        bannerActionBtn.className = "duo-btn btn-blue";
+        bannerActionBtn.textContent = "🔄 重新试答 (3格) ➔";
+        bannerActionBtn.onclick = function() {
+          startRound("trial");
+        };
+      }
+      return;
+    }
+
+    if(isFullPass) {
+      // 成功通过本级别
+      if(passedLevels.indexOf(currentLevel) === -1) {
+        passedLevels.push(currentLevel);
+      }
+      updateTopStatus();
+
+      roundBanner.className = "round-banner pass";
+      bannerTitle.textContent = "✓ 第 " + currentLevel + " 级通过！";
+      bannerTitle.style.color = "var(--duo-green-dark)";
+      bannerSub.textContent = "输入位置与标准位置完全一致 · 用时 " + (stage1Duration + stage2Duration + stage3Duration) + " 秒";
+
+      if(currentLevel < 10) {
+        bannerActionBtn.className = "duo-btn btn-green";
+        bannerActionBtn.textContent = "进入第 " + (currentLevel + 1) + " 级 ➔";
+        bannerActionBtn.onclick = function() {
+          startRound(currentLevel + 1);
+        };
+      } else {
+        bannerActionBtn.className = "duo-btn btn-green";
+        bannerActionBtn.textContent = "🏆 满分通关！查看报告 ➔";
+        bannerActionBtn.onclick = showFinalReport;
+      }
+
+    } else {
+      // 正式测试失误 -> 取消可以重试的功能，立即结束并出具报告
+      updateTopStatus();
+
+      roundBanner.className = "round-banner fail-end";
+      bannerTitle.textContent = "❌ 第 " + currentLevel + " 级未通过 · 测试结束";
+      bannerTitle.style.color = "var(--duo-red-dark)";
+      bannerSub.textContent = "输入位置与标准位置存在差异。正式测试无重试机会，请查看最终评测报告。";
+
+      bannerActionBtn.className = "duo-btn btn-danger";
+      bannerActionBtn.textContent = "📊 查看测试报告 ➔";
+      bannerActionBtn.onclick = showFinalReport;
+    }
+  }
+
+  function renderComparisonGrids() {
+    var patternMap = new Set();
+    pattern.forEach(function(p){ patternMap.add(key(p.r, p.c)); });
+
+    userResultGrid.innerHTML = "";
+    answerResultGrid.innerHTML = "";
+
+    for(var r = 0; r < GRID_SIZE; r++) {
+      for(var c = 0; c < GRID_SIZE; c++) {
+        var k = key(r, c);
+
+        var uCell = document.createElement("div");
+        uCell.className = "cell";
+        if(userSelection.has(k)) {
+          uCell.classList.add("green");
+        }
+        userResultGrid.appendChild(uCell);
+
+        var aCell = document.createElement("div");
+        aCell.className = "cell";
+        if(patternMap.has(k)) {
+          aCell.classList.add("blue");
+        }
+        answerResultGrid.appendChild(aCell);
+      }
+    }
+  }
+
+  // ---- 最终综合评测报告 ----
+  function showFinalReport() {
+    if(totalTimerInterval) { clearInterval(totalTimerInterval); totalTimerInterval = null; }
+    hideAllViews();
+    reportView.style.display = "block";
+
+    var name = playerNameInput.value.trim() || "考生";
+    var school = playerSchoolInput.value.trim() || "未填写学校";
+    reportPlayerName.textContent = name;
+    reportPlayerSchool.textContent = school;
+
+    var finalScore = 5;
+    if(passedLevels.length > 0) {
+      finalScore = Math.max.apply(null, passedLevels);
+    } else {
+      finalScore = 5;
+    }
+
+    reportScoreDisplay.textContent = finalScore;
+    reportMaxLevel.textContent = "第 " + finalScore + " 级";
+
+    var avgAcc = 0;
+    if(levelHistory.length > 0) {
+      var sum = 0;
+      levelHistory.forEach(function(h){ sum += h.accuracy; });
+      avgAcc = Math.round(sum / levelHistory.length);
+    }
+    reportAccuracy.textContent = avgAcc + "%";
+    reportTime.textContent = formatTime(totalTestTime);
+    reportRoundsCount.textContent = levelHistory.length + " 轮";
+
+    renderBenchmarkTable();
+    renderCognitiveAnalysis(finalScore);
+    renderTrainingAdvice(finalScore);
+
+    saveScoreToBoard(name, school, finalScore, avgAcc, totalTestTime);
+    renderBillboard();
+  }
+
+  function renderBenchmarkTable() {
+    benchmarkTableBody.innerHTML = "";
+    if(levelHistory.length === 0) return;
+
+    levelHistory.forEach(function(item) {
+      var tr = document.createElement("tr");
+
+      var diff = item.totalTime - item.benchmarkSec;
+      var diffText = "";
+      var badgeClass = "";
+
+      if(diff <= -3) {
+        diffText = "⚡ 敏捷高效 (快 " + Math.abs(diff) + "s)";
+        badgeClass = "badge-green";
+      } else if(diff <= 5) {
+        diffText = "✓ 稳健达标 (" + (diff > 0 ? "+" + diff : diff) + "s)";
+        badgeClass = "badge-blue";
+      } else {
+        diffText = "⏳ 提取偏慢 (慢 " + diff + "s)";
+        badgeClass = "badge-amber";
+      }
+
+      var passBadge = item.passed 
+        ? "<span class='badge-tag badge-green'>通过</span>" 
+        : "<span class='badge-tag badge-red'>未通过</span>";
+
+      tr.innerHTML = "<td><strong>第 " + item.level + " 级</strong></td>" +
+        "<td>看图 " + item.viewTime + "s | 计算 " + item.mathTime + "s | 复原 " + item.recallTime + "s</td>" +
+        "<td><strong>" + item.totalTime + " 秒</strong></td>" +
+        "<td>" + item.benchmarkSec + " 秒</td>" +
+        "<td><span class='badge-tag " + badgeClass + "'>" + diffText + "</span></td>" +
+        "<td>" + passBadge + "</td>";
+
+      benchmarkTableBody.appendChild(tr);
+    });
+  }
+
+  function renderCognitiveAnalysis(score) {
+    var text = "";
+    if(score === 10) {
+      text = "【双空间注意力分配与极高工作记忆（双图各10格）】考生成功通关第 10 级最高挑战（双独立图形，各 10 格共 20 格）。在完成心算干扰任务后，能够以高准确率完成双目标相对坐标定位与形状复原，表明大脑顶下小叶与背外侧前额叶的多焦点信息编码极其稳固。";
+    } else if(score === 9) {
+      text = "【超强单图形广度保持（单图20格）】在第 9 级 20 格大容量单图任务中表现卓越，能够迅速抓住复杂拓扑的枝干走向并保持长时工作记忆。建议多加进行双独立目标的空间分配练习，冲击双图挑战。";
+    } else if(score >= 7) {
+      text = "【中高级空间结构整合稳健（单图15-17格）】单图形视觉保持容量扎实，在 15-17 格的多弯折连通图形中能够有效抓住核心骨架，抗心算干扰提取能力良好。";
+    } else {
+      text = "【初级视觉保持阶段（单图10-12格）】已具备 10-12 格基础图形记忆能力。面对心算干扰任务时，易受逆向抑制效应影响。建议通过组块化几何联想法进一步拓展瞬时工作记忆容量。";
+    }
+    cognitiveAnalysisText.textContent = text;
+  }
+
+  function renderTrainingAdvice(score) {
+    adviceContent.innerHTML = "";
+
+    var items = [];
+    if(score <= 6) {
+      items = [
+        {
+          title: "1. 几何拓扑“组块化”记忆策略（Chunking）",
+          desc: "避免孤立记忆一个个色块的行列坐标。在观察的 20 秒内，尝试将连续色块联想组合为常见几何块（例如：L形、楼梯形、T字十字、回形弯角），以“特征块”替代“单格点”，显著扩大记忆容量。"
+        },
+        {
+          title: "2. 经典 5×5 舒尔特方格（Schulte Grid）定向搜索",
+          desc: "建议每天练习 3-5 组 5×5 舒尔特方格快速点选，目标将 25 个数字点选时间压进 18 秒以内。该训练能有效拓展有效视野边缘，提升快速扫视与信息捕捉的广度。"
+        },
+        {
+          title: "3. 闭目空间心理表象（Mental Imagery）重构",
+          desc: "观察几何图形 10 秒后，闭眼在脑海中重构原画面的轮廓走向，坚持 5 秒后再睁眼核对。此练习可锻炼背侧视觉通路，减少对物理视觉的过度依赖。"
+        }
+      ];
+    } else if(score <= 8) {
+      items = [
+        {
+          title: "1. 双图形“相对锚定”坐标法（Relative Anchoring）",
+          desc: "面对两个独立图形时，先确立靠近角落的主图形作为“主锚点”，迅速以其方位为参照系定位第二个图形的相对距离，在脑海中建立两者的空间几何关联。"
+        },
+        {
+          title: "2. 动态双目标追踪训练（Dual-target Tracking）",
+          desc: "进行动态多目标追踪（MOT）训练，同时跟踪 3-4 个随机移动的目标，锻炼顶叶区域对多个空间焦点同时保持注意力的神经敏捷度。"
+        },
+        {
+          title: "3. 心算过程中的表象“双任务分流”强化",
+          desc: "在计算加减法时，有意识地在脑海一角维持刚才图形的整体色块轮廓，训练大脑前额叶在执行计算言语回路的同时，维持右脑顶叶空间回路的并行运转能力。"
+        }
+      ];
+    } else {
+      items = [
+        {
+          title: "1. 高阶心理旋转与镜像复原（Mental Rotation）",
+          desc: "已具备顶级的空间记忆容量。建议进阶挑战：在记住原图形后，尝试在脑海中将其顺时针旋转 90 度或镜像后再进行复原，极大提升高阶空间逻辑推理速度。"
+        },
+        {
+          title: "2. 极端时间压缩挑战（10 秒极速编码）",
+          desc: "在日常训练中，主动点击“我已记牢”按钮，将观察时间压缩至 8-10 秒。在高度时间压力下激发极速图形编码，突破工作记忆提取时效上限。"
+        }
+      ];
+    }
+
+    items.forEach(function(item) {
+      var div = document.createElement("div");
+      div.className = "advice-item";
+      div.innerHTML = "<div class='advice-item-title'>" + item.title + "</div>" +
+        "<div class='advice-item-desc'>" + item.desc + "</div>";
+      adviceContent.appendChild(div);
+    });
+  }
+
+  // ================= 5. 本地排行榜 =================
+  function loadBoardData() {
+    try {
+      return JSON.parse(localStorage.getItem(BB_STORAGE_KEY) || "[]");
+    } catch(e) { return []; }
+  }
+
+  function saveBoardData(data) {
+    localStorage.setItem(BB_STORAGE_KEY, JSON.stringify(data));
+  }
+
+  function saveScoreToBoard(name, school, score, accuracy, time) {
+    var list = loadBoardData();
+    list.push({
+      name: name,
+      school: school,
+      score: score,
+      accuracy: accuracy,
+      time: time,
+      date: new Date().toLocaleDateString()
+    });
+    saveBoardData(list);
+  }
+
+  function renderBillboard() {
+    var list = loadBoardData();
+    list.sort(function(a, b) {
+      if(b.score !== a.score) return b.score - a.score;
+      if(b.accuracy !== a.accuracy) return b.accuracy - a.accuracy;
+      return a.time - b.time;
+    });
+
+    boardTbody.innerHTML = "";
+    if(list.length === 0) {
+      boardTbody.innerHTML = "<tr><td colspan='7' style='text-align:center; color:var(--duo-text-muted); padding:20px;'>暂无评测记录</td></tr>";
+      return;
+    }
+
+    list.slice(0, 30).forEach(function(item, idx) {
+      var tr = document.createElement("tr");
+      var rankBadge = (idx === 0 ? "🥇 1" : (idx === 1 ? "🥈 2" : (idx === 2 ? "🥉 3" : (idx + 1))));
+      tr.innerHTML = "<td>" + rankBadge + "</td>" +
+        "<td><strong>" + escapeHtml(item.name) + "</strong></td>" +
+        "<td>" + escapeHtml(item.school) + "</td>" +
+        "<td><span style='color:var(--duo-blue-dark); font-weight:900; font-size:1.05rem;'>" + item.score + " 分</span></td>" +
+        "<td><span style='color:var(--duo-green-dark); font-weight:800;'>" + item.accuracy + "%</span></td>" +
+        "<td>" + formatTime(item.time) + "</td>" +
+        "<td>" + (item.date || "-") + "</td>";
+      boardTbody.appendChild(tr);
+    });
+  }
+
+  function escapeHtml(str) {
+    return String(str || "").replace(/[&<>"']/g, function(m) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+    });
+  }
+
+  function seedBoardDemoData() {
+    if(localStorage.getItem(BB_SEEDED_FLAG)) return;
+    var demoNames = [
+      {name: "张天翼", school: "实验中学", score: 10, accuracy: 100, time: 215},
+      {name: "林楚涵", school: "清华附中", score: 9, accuracy: 98, time: 230},
+      {name: "王子轩", school: "省实验小", score: 8, accuracy: 95, time: 245},
+      {name: "陈思睿", school: "北京四中", score: 7, accuracy: 100, time: 260},
+      {name: "刘雨桐", school: "育才外国语", score: 6, accuracy: 94, time: 275},
+      {name: "吴明轩", school: "枫叶国际", score: 5, accuracy: 100, time: 180}
+    ];
+    saveBoardData(demoNames);
+    localStorage.setItem(BB_SEEDED_FLAG, "1");
+  }
+
+  function updateCarousel(index) {
+    if(index < 0) index = 0;
+    if(index >= totalSlides) index = totalSlides - 1;
+    currentSlide = index;
+
+    if(carouselTrack) {
+      carouselTrack.style.transform = "translateX(-" + (currentSlide * 100) + "%)";
+    }
+    if(carouselStepText) {
+      carouselStepText.textContent = (currentSlide + 1) + " / " + totalSlides + " 步";
+    }
+    if(carouselIcon) {
+      carouselIcon.textContent = slideIcons[currentSlide] || "🎯";
+    }
+    if(carouselPrevBtn) {
+      carouselPrevBtn.disabled = (currentSlide === 0);
+    }
+    if(carouselNextBtn) {
+      if(currentSlide === totalSlides - 1) {
+        carouselNextBtn.style.display = "none";
+      } else {
+        carouselNextBtn.style.display = "inline-flex";
+        carouselNextBtn.innerHTML = "下一步 ▶";
+      }
+    }
+
+    if(carouselDots) {
+      var dots = carouselDots.querySelectorAll(".carousel-dot");
+      dots.forEach(function(dot, idx) {
+        if(idx === currentSlide) {
+          dot.classList.add("active");
+        } else {
+          dot.classList.remove("active");
+        }
+      });
+    }
+  }
+
+  function resetToWelcome() {
+    if(timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    if(totalTimerInterval) { clearInterval(totalTimerInterval); totalTimerInterval = null; }
+
+    currentLevel = "trial";
+    currentLevelFails = 0;
+    passedLevels = [];
+    levelHistory = [];
+    totalTestTime = 0;
+    userSelection.clear();
+    pattern = [];
+
+    hideAllViews();
+    welcomeView.style.display = "block";
+    resetTestBtn.style.display = "none";
+    timerText.textContent = "00:00";
+    updateTopStatus();
+    updateCarousel(0);
+  }
+
+  // ================= 6. 事件绑定 =================
+  function initEvents() {
+    welcomeStartBtn.addEventListener("click", startTrialTest);
+
+    if(carouselPrevBtn) {
+      carouselPrevBtn.addEventListener("click", function() {
+        if(currentSlide > 0) updateCarousel(currentSlide - 1);
+      });
+    }
+
+    if(carouselNextBtn) {
+      carouselNextBtn.addEventListener("click", function() {
+        if(currentSlide < totalSlides - 1) {
+          updateCarousel(currentSlide + 1);
+        }
+      });
+    }
+
+    if(carouselDots) {
+      var dots = carouselDots.querySelectorAll(".carousel-dot");
+      dots.forEach(function(dot) {
+        dot.addEventListener("click", function() {
+          var idx = parseInt(this.getAttribute("data-index"), 10);
+          if(!isNaN(idx)) updateCarousel(idx);
+        });
+      });
+    }
+
+    resetTestBtn.addEventListener("click", function() {
+      if(confirm("确定要退出本次专注力评测吗？")) {
+        resetToWelcome();
+      }
+    });
+
+    skipViewBtn.addEventListener("click", function() {
+      if(timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+      stage1Duration = Math.round((Date.now() - stage1StartTime) / 1000);
+      startStage2();
+    });
+
+    mathSubmitBtn.addEventListener("click", checkMathAnswer);
+    mathInput.addEventListener("keydown", function(e) {
+      if(e.key === "Enter") checkMathAnswer();
+    });
+
+    clearRecallBtn.addEventListener("click", function() {
+      userSelection.clear();
+      currentSelectedCount.textContent = "0";
+      var cells = recallGrid.querySelectorAll(".cell");
+      cells.forEach(function(c){ c.classList.remove("green"); });
+    });
+    submitRecallBtn.addEventListener("click", submitRecall);
+
+    retestBtn.addEventListener("click", startTrialTest);
+    viewBoardBtn.addEventListener("click", function() {
+      document.getElementById("leaderboardSection").scrollIntoView({ behavior: "smooth" });
+    });
+  }
+
+  function init() {
+    seedBoardDemoData();
+    initEvents();
+    renderBillboard();
+    resetToWelcome();
+  }
+
+  if(document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,39 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Database & SQLite files
+database/*.sqlite
+database/*.sqlite-journal
+database/*.db
+
+# Scratch & Temporary test scripts
+scratch/
+*.tmp
+*.log
+
+# Large offline ASR benchmark models & binary assets (not needed for Web)
+asr_benchmark/
+assets/models/
+assets/vendor/onnxruntime-web/
+assets/vendor/vosk/
+assets/vendor/fastasr/
+*.tar.bz2
+*.tar.gz
+*.zip
+*.onnx
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment / Secrets
+.env
+.env.local
