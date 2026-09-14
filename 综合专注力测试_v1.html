@@ -5229,6 +5229,37 @@
     });
   }
 
+  function loadReportFromRecord(rec) {
+    var raw = rec.raw_details || {};
+    playerNameInput.value = rec.player_name || "";
+    playerSchoolInput.value = rec.player_school || "";
+    playerPhoneInput.value = rec.player_phone || "";
+    playerAgeInput.value = rec.player_age || "";
+    auditoryPassedLevels = raw.auditoryPassed || [];
+    visualPassedLevels = raw.visualPassed || [];
+    auditoryHistory = raw.auditoryHistory || [];
+    visualHistory = raw.visualHistory || [];
+    auditoryDone = true;
+    visualDone = true;
+    testMode = "dual";
+    showFinalCompositeReport();
+  }
+
+  function initAdminReportView() {
+    var recordId = new URLSearchParams(window.location.search).get("record");
+    if(!recordId) return;
+    homeView.style.display = "none";
+    var url = SUPABASE_URL + "/rest/v1/" + SUPABASE_TABLE +
+      "?select=player_name,player_school,player_phone,player_age,raw_details&record_id=eq." + encodeURIComponent(recordId);
+    fetch(url, { headers: supabaseHeaders() })
+      .then(function(res){ return res.json(); })
+      .then(function(list){
+        var rec = Array.isArray(list) ? list[0] : null;
+        if(rec) loadReportFromRecord(rec);
+      })
+      .catch(function(err){ console.warn("Admin report load note:", err); });
+  }
+
   window.addEventListener("DOMContentLoaded", function() {
     checkWeChatBrowser();
     initMobileKeyboardScroll();
@@ -5239,6 +5270,7 @@
     initTrustDossier();
     initGlowCards();
     DiscreteTTSPlayer.preloadAll();
+    initAdminReportView();
   });
 })();
 </script>

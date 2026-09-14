@@ -114,45 +114,6 @@
   tbody tr:last-child td { border-bottom: none; }
   .score-cell { font-weight: 900; }
   #emptyNote { text-align: center; padding: 40px; color: var(--slate); display: none; }
-
-  /* report detail */
-  #reportOverlay {
-    display: none;
-    position: fixed; inset: 0;
-    background: rgba(16,19,26,0.55);
-    z-index: 100;
-    align-items: flex-start;
-    justify-content: center;
-    overflow-y: auto;
-    padding: 40px 16px;
-  }
-  #reportPanel {
-    background: #fff;
-    border-radius: 18px;
-    max-width: 760px;
-    width: 100%;
-    padding: 30px 30px 34px;
-    position: relative;
-  }
-  #reportClose {
-    position: absolute; top: 16px; right: 16px;
-    background: var(--paper); border: none; border-radius: 50%;
-    width: 32px; height: 32px; font-size: 1rem; cursor: pointer;
-  }
-  .report-head { border-bottom: 2px solid var(--line); padding-bottom: 16px; margin-bottom: 20px; }
-  .report-head h3 { margin: 0 0 6px; font-size: 1.25rem; }
-  .report-meta { font-size: 0.84rem; color: var(--slate); }
-  .report-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
-  .report-stat { background: var(--paper); border-radius: 12px; padding: 14px; text-align: center; }
-  .report-stat .num { font-size: 1.5rem; font-weight: 900; color: var(--brass); font-variant-numeric: tabular-nums; }
-  .report-stat .lbl { font-size: 0.76rem; color: var(--slate); margin-top: 4px; }
-  .report-section-title { font-weight: 900; font-size: 0.95rem; margin: 22px 0 10px; }
-  .history-row { display: flex; justify-content: space-between; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 0.84rem; }
-  .history-row:last-child { border-bottom: none; }
-  .pass-tag { font-weight: 800; }
-  .pass-tag.yes { color: var(--green); }
-  .pass-tag.no { color: var(--red); }
-  .no-data { color: var(--slate); font-size: 0.84rem; padding: 8px 0; }
 </style>
 </head>
 <body>
@@ -198,13 +159,6 @@
   <p id="emptyNote">暂无数据</p>
 </main>
 
-<div id="reportOverlay">
-  <div id="reportPanel">
-    <button id="reportClose">✕</button>
-    <div id="reportContent"></div>
-  </div>
-</div>
-
 <script>
 (function(){
   var SUPABASE_URL = "https://knhpwhdgzwhdpnbsrbty.supabase.co";
@@ -223,9 +177,6 @@
   var recordsBody = document.getElementById("recordsBody");
   var recordCount = document.getElementById("recordCount");
   var emptyNote = document.getElementById("emptyNote");
-  var reportOverlay = document.getElementById("reportOverlay");
-  var reportClose = document.getElementById("reportClose");
-  var reportContent = document.getElementById("reportContent");
 
   var allRecords = [];
 
@@ -269,7 +220,7 @@
 
   function loadRecords() {
     var url = SUPABASE_URL + "/rest/v1/" + SUPABASE_TABLE +
-      "?select=record_id,player_name,player_school,player_phone,player_age,auditory_score,visual_score,total_score,test_date,raw_details" +
+      "?select=record_id,player_name,player_school,player_phone,player_age,auditory_score,visual_score,total_score,test_date" +
       "&order=created_at.desc&limit=500";
     recordCount.textContent = "加载中...";
     fetch(url, { headers: supabaseHeaders() })
@@ -303,7 +254,9 @@
         "<td class='score-cell' style='color:var(--green);'>" + rec.visual_score + "</td>" +
         "<td class='score-cell' style='color:var(--brass);'>" + rec.total_score + "</td>" +
         "<td style='color:var(--slate); font-size:0.8rem;'>" + (rec.test_date || "") + "</td>";
-      tr.addEventListener("click", function(){ openReport(rec); });
+      tr.addEventListener("click", function(){
+        window.open("综合专注力测试_v1.html?record=" + encodeURIComponent(rec.record_id), "_blank");
+      });
       recordsBody.appendChild(tr);
     });
   }
@@ -319,44 +272,6 @@
   });
 
   refreshBtn.addEventListener("click", loadRecords);
-
-  function historyRowsHtml(list, kind) {
-    if(!list || list.length === 0) return '<p class="no-data">无详细记录</p>';
-    return list.map(function(h){
-      if(kind === "auditory") {
-        var pass = h.isPass;
-        return '<div class="history-row"><span>第 ' + h.level + ' 级 · 第 ' + h.attemptNumber + ' 次尝试</span>' +
-          '<span>准确率 ' + (h.accuracy != null ? Math.round(h.accuracy * 100) + '%' : '-') + ' · <span class="pass-tag ' + (pass ? 'yes' : 'no') + '">' + (pass ? '通过' : '未通过') + '</span></span></div>';
-      } else {
-        var pass2 = h.passed;
-        return '<div class="history-row"><span>第 ' + h.level + ' 级</span>' +
-          '<span>准确率 ' + (h.accuracy != null ? Math.round(h.accuracy * 100) + '%' : '-') + ' · 命中 ' + (h.hits != null ? h.hits : '-') + ' / 误报 ' + (h.misses != null ? h.misses : '-') + ' · <span class="pass-tag ' + (pass2 ? 'yes' : 'no') + '">' + (pass2 ? '通过' : '未通过') + '</span></span></div>';
-      }
-    }).join("");
-  }
-
-  function openReport(rec) {
-    var raw = rec.raw_details || {};
-    var auditoryPassed = raw.auditoryPassed || [];
-    var visualPassed = raw.visualPassed || [];
-    reportContent.innerHTML =
-      '<div class="report-head">' +
-        '<h3>📊 ' + escapeHtml(rec.player_name) + ' 的专注力测评报告</h3>' +
-        '<div class="report-meta">' + escapeHtml(rec.player_school) + ' · ' + escapeHtml(rec.player_phone) + ' · ' + (rec.player_age || '-') + ' 岁 · ' + (rec.test_date || '') + '</div>' +
-      '</div>' +
-      '<div class="report-stats">' +
-        '<div class="report-stat"><div class="num" style="color:var(--blue);">' + rec.auditory_score + '</div><div class="lbl">听觉专注力等级</div></div>' +
-        '<div class="report-stat"><div class="num" style="color:var(--green);">' + rec.visual_score + '</div><div class="lbl">视觉专注力等级</div></div>' +
-        '<div class="report-stat"><div class="num">' + rec.total_score + '</div><div class="lbl">综合总分</div></div>' +
-      '</div>' +
-      '<div class="report-section-title">🎧 听觉序列记忆 · 逐级记录（已通过：' + (auditoryPassed.length ? auditoryPassed.join('、') + ' 级' : '无') + '）</div>' +
-      historyRowsHtml(raw.auditoryHistory, "auditory") +
-      '<div class="report-section-title">👁️ 视觉空间记忆 · 逐级记录（已通过：' + (visualPassed.length ? visualPassed.join('、') + ' 级' : '无') + '）</div>' +
-      historyRowsHtml(raw.visualHistory, "visual");
-    reportOverlay.style.display = "flex";
-  }
-  reportClose.addEventListener("click", function(){ reportOverlay.style.display = "none"; });
-  reportOverlay.addEventListener("click", function(e){ if(e.target === reportOverlay) reportOverlay.style.display = "none"; });
 
   if(sessionStorage.getItem("qlsw_admin_auth") === "1") {
     showMain();
