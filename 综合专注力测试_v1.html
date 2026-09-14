@@ -77,6 +77,10 @@
   .wechat-notice-step { color: var(--duo-blue-dark) !important; }
   .wechat-notice-step strong { color: var(--duo-red); }
   html { scroll-snap-type: y proximity; }
+  @media (max-width: 860px) {
+    html { scroll-snap-type: y mandatory; }
+    .trust-section, .home-fullpage-inner { scroll-snap-stop: always; }
+  }
   body {
     min-height: 100vh;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
@@ -183,6 +187,42 @@
     white-space: nowrap;
   }
   .header-nav-btn:hover { background: rgba(255,255,255,0.12); transform: translateY(-1px); }
+
+  .mobile-menu-toggle {
+    display: none;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.14);
+    color: #f2efe8;
+    font-size: 1.3rem;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+  }
+  @media (max-width: 860px) {
+    .mobile-menu-toggle { display: flex; }
+    .header-nav {
+      display: none !important;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      margin-top: 8px;
+      flex-direction: column;
+      gap: 6px;
+      background: rgba(16,19,26,0.97);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(217,185,128,0.25);
+      border-radius: 12px;
+      padding: 10px;
+      z-index: 65;
+    }
+    .header-nav.mobile-open { display: flex !important; }
+    .header-nav-btn, .nav-dropdown { width: 100%; }
+    .nav-dropdown-menu { position: static; margin-top: 6px; box-shadow: none; }
+  }
 
   .nav-dropdown { position: relative; }
   .nav-dropdown-caret { font-size: 0.7rem; opacity: 0.7; }
@@ -1499,6 +1539,8 @@
       <button class="header-nav-btn" id="navFranchiseBtn"><span>🤝</span> 加盟合作</button>
     </nav>
 
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="菜单" aria-expanded="false">☰</button>
+
     <div class="meta-bar">
       <div class="meta-field" style="display:none;">
         <span>👤 姓名:</span>
@@ -1518,9 +1560,6 @@
       </div>
       <button class="duo-btn btn-danger" id="resetTestBtn" style="display:none;" title="退出当前测评">
         <span>✕ 退出</span>
-      </button>
-      <button class="duo-btn btn-blue" id="adminLoginBtn" style="padding:8px 16px; font-size:0.85rem;" title="管理员登录">
-        <span>🔑 管理员</span>
       </button>
     </div>
   </header>
@@ -3280,6 +3319,7 @@
   var comingSoonTitle = document.getElementById("comingSoonTitle");
   var comingSoonDesc = document.getElementById("comingSoonDesc");
   var navPageDropdown = document.getElementById("navPageDropdown");
+  var mobileMenuToggle = document.getElementById("mobileMenuToggle");
   var navPageDropdownBtn = document.getElementById("navPageDropdownBtn");
   var navFranchiseBtn = document.getElementById("navFranchiseBtn");
   var franchiseModal = document.getElementById("franchiseModal");
@@ -3287,7 +3327,6 @@
   var franchiseModalClose = document.getElementById("franchiseModalClose");
 
   var brandHomeLink = document.getElementById("brandHomeLink");
-  var adminLoginBtn = document.getElementById("adminLoginBtn");
   var adminModal = document.getElementById("adminModal");
   var adminModalBackdrop = document.getElementById("adminModalBackdrop");
   var adminModalClose = document.getElementById("adminModalClose");
@@ -4891,6 +4930,23 @@
       if(!navPageDropdown.contains(e.target)) navPageDropdown.classList.remove("open");
     });
 
+    mobileMenuToggle.addEventListener("click", function(e) {
+      e.stopPropagation();
+      var isOpen = headerNav.classList.toggle("mobile-open");
+      mobileMenuToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    });
+    document.addEventListener("click", function(e) {
+      if(!headerNav.contains(e.target) && e.target !== mobileMenuToggle) {
+        headerNav.classList.remove("mobile-open");
+        mobileMenuToggle.setAttribute("aria-expanded", "false");
+      }
+    });
+    headerNav.addEventListener("click", function(e) {
+      if(e.target.closest(".header-nav-btn, .nav-dropdown-item") && !e.target.closest("#navPageDropdownBtn")) {
+        headerNav.classList.remove("mobile-open");
+      }
+    });
+
     function scrollToTrustSection(sectionId) {
       function doScroll() {
         var target = document.getElementById(sectionId);
@@ -4934,7 +4990,6 @@
       }
     }
     brandHomeLink.addEventListener("click", goHome);
-    adminLoginBtn.addEventListener("click", openAdminLoginModal);
     adminLoginSubmitBtn.addEventListener("click", trySubmitAdminLogin);
     adminPasswordInput.addEventListener("keydown", function(e) {
       if(e.key === "Enter") trySubmitAdminLogin();
