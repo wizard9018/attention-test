@@ -80,6 +80,7 @@
   @media (max-width: 860px) {
     html { scroll-snap-type: y mandatory; }
     .trust-section, .home-fullpage-inner { scroll-snap-stop: always; }
+    html.kb-editing { scroll-snap-type: none; }
   }
   body {
     min-height: 100vh;
@@ -5203,8 +5204,31 @@
     }
   }
 
+  function initMobileKeyboardScroll() {
+    document.addEventListener("focusin", function(e) {
+      var el = e.target;
+      if (window.innerWidth > 860) return;
+      if (!el || !/^(INPUT|TEXTAREA)$/.test(el.tagName)) return;
+      document.documentElement.classList.add("kb-editing");
+      setTimeout(function() {
+        var rect = el.getBoundingClientRect();
+        var vh = (window.visualViewport ? window.visualViewport.height : window.innerHeight);
+        var targetY = vh * 0.25;
+        window.scrollBy({ top: rect.top - targetY, behavior: "smooth" });
+      }, 300);
+    });
+    document.addEventListener("focusout", function(e) {
+      var el = e.target;
+      if (!el || !/^(INPUT|TEXTAREA)$/.test(el.tagName)) return;
+      setTimeout(function() {
+        document.documentElement.classList.remove("kb-editing");
+      }, 300);
+    });
+  }
+
   window.addEventListener("DOMContentLoaded", function() {
     checkWeChatBrowser();
+    initMobileKeyboardScroll();
     initEvents();
     checkHardwareGate();
     resetRecordingUI();
