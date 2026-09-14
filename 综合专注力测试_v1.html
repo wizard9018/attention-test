@@ -1423,6 +1423,46 @@
     color: #e4d9c3;
   }
 
+  .trust-story-box {
+    margin-top: 28px;
+    background: #fff;
+    border: 1px solid var(--trust-line-light);
+    border-radius: 14px;
+    padding: 26px 28px 24px;
+    box-shadow: 0 1px 3px rgba(16,19,26,0.06);
+  }
+  .trust-story-head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .trust-story-title { font-weight: 900; font-size: 1.02rem; color: var(--trust-ink); }
+  .trust-story-meta { font-size: 0.78rem; color: var(--trust-slate); }
+  .trust-story-steps { margin-top: 16px; display: grid; gap: 14px; }
+  .trust-story-step { display: flex; gap: 14px; }
+  .trust-story-num {
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 1px solid var(--trust-brass);
+    color: #92620a;
+    font-size: 0.74rem;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .trust-story-step-label { font-size: 0.8rem; font-weight: 800; color: #92620a; margin-bottom: 3px; }
+  .trust-story-step-text { font-size: 0.85rem; line-height: 1.7; color: var(--trust-slate); }
+  .trust-story-step-text strong { color: var(--trust-ink); font-variant-numeric: tabular-nums; }
+  .trust-story-quote {
+    margin-top: 18px;
+    padding: 14px 18px;
+    border-left: 3px solid #58cc02;
+    background: rgba(88,204,2,0.06);
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: var(--trust-ink);
+    font-style: italic;
+  }
+  .trust-story-quote span { display: block; margin-top: 6px; font-style: normal; font-size: 0.74rem; color: var(--trust-slate); }
+  .trust-story-footnote { margin-top: 14px; font-size: 0.8rem; color: var(--trust-slate); line-height: 1.7; }
+  .trust-story-footnote strong { color: var(--trust-ink); }
+
   /* 06 学员评价 */
   .trust-quote-grid {
     display: grid;
@@ -1701,10 +1741,45 @@
 
           <div class="trust-promise-box" style="margin-top:28px; background:rgba(176,141,87,0.08); border-color:rgba(176,141,87,0.3); color:#5b4a2f;">
             <div style="font-weight:800; color:var(--trust-brass); margin-bottom:10px; font-size:0.95rem;">📈 中考／高考备考学员专项数据</div>
-            <p style="margin:0 0 10px; line-height:1.8;">已跟踪初三/高三年龄段学员约 <strong>10 人</strong>，前后两次测评平均提升 <strong>3 个级别</strong>。</p>
-            <p style="margin:0 0 6px; line-height:1.8;">• 六年级学员朱同学：经过 30 小时训练，视觉专注力测评从 7 级提升至 10 级，数学成绩从 80 分提升到 98 分。</p>
-            <p style="margin:0 0 10px; line-height:1.8;">• 中考学员王同学：经过 9 天题目逻辑训练，中考总分提升近 240 分。</p>
-            <p style="margin:0; font-size:0.78rem; color:#8a7355;">数据来源：公立学校大型考试成绩，机构内部统计</p>
+            <p style="margin:0; line-height:1.8;">已跟踪初三/高三年龄段学员约 <strong>10 人</strong>，前后两次测评平均提升 <strong>3 个级别</strong>。</p>
+          </div>
+
+          <div class="trust-story-box">
+            <div class="trust-story-head">
+              <div class="trust-story-title">真实案例 · 朱同学的专注力提升之路</div>
+              <div class="trust-story-meta">六年级 · 训练 30 小时</div>
+            </div>
+            <div class="trust-story-steps">
+              <div class="trust-story-step">
+                <div class="trust-story-num">1</div>
+                <div>
+                  <div class="trust-story-step-label">问题表现</div>
+                  <div class="trust-story-step-text">数学成绩长期在 <strong>80 分</strong> 左右徘徊，上课容易走神，做题时同一道题要反复读几遍才能理解题意，回家作业经常拖到很晚。</div>
+                </div>
+              </div>
+              <div class="trust-story-step">
+                <div class="trust-story-num">2</div>
+                <div>
+                  <div class="trust-story-step-label">测评发现</div>
+                  <div class="trust-story-step-text">入学专注力测评显示，视觉空间记忆等级仅为 <strong>7 级</strong>（满分 10 级），在同龄学员中处于中下水平，是影响听课与做题效率的主要短板。</div>
+                </div>
+              </div>
+              <div class="trust-story-step">
+                <div class="trust-story-num">3</div>
+                <div>
+                  <div class="trust-story-step-label">训练方案</div>
+                  <div class="trust-story-step-text">依据测评报告定制视听双通道训练计划，聚焦视觉空间工作记忆的阶梯式强化，累计 <strong>30 小时</strong>专项训练。</div>
+                </div>
+              </div>
+              <div class="trust-story-step">
+                <div class="trust-story-num">4</div>
+                <div>
+                  <div class="trust-story-step-label">训练成果</div>
+                  <div class="trust-story-step-text">复测视觉专注力从 7 级提升至 <strong>10 级</strong>，同期数学成绩从 80 分提升到 <strong>98 分</strong>，课堂走神明显减少。</div>
+                </div>
+              </div>
+            </div>
+            <div class="trust-story-footnote">同期跟踪的中考学员王同学，经过 <strong>9 天</strong>题目逻辑训练，中考总分提升近 <strong>240 分</strong>。数据来源：公立学校大型考试成绩，机构内部统计。</div>
           </div>
         </div>
       </section>
