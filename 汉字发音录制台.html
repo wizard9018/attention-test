@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>汉字发音录制台</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=IBM+Plex+Mono:wght@500;700&display=swap">
+<style>
+  :root {
+    --paper: #f4f3ef;
+    --surface: #ffffff;
+    --surface-2: #eeece5;
+    --ink: #20211d;
+    --ink-soft: #63645c;
+    --ink-faint: #93948a;
+    --line: #e0ddd3;
+    --line-strong: #cbc7b9;
+    --accent: #b45309;
+    --accent-ink: #7c3a09;
+    --accent-soft: #fdf1e2;
+    --rec: #b91c1c;
+    --rec-soft: #fdecec;
+    --ok: #15803d;
+    --ok-soft: #e9f7ee;
+    --shadow: 0 1px 2px rgba(32,33,29,0.06), 0 1px 1px rgba(32,33,29,0.04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #1b1a17; --surface: #242320; --surface-2: #2c2b26;
+      --ink: #f1efe6; --ink-soft: #b8b6ab; --ink-faint: #7d7b70;
+      --line: #3a382f; --line-strong: #4c4a3e;
+      --accent: #f0a355; --accent-ink: #ffd9ac; --accent-soft: #3a2c18;
+      --rec: #f87171; --rec-soft: #3a2020;
+      --ok: #4ade80; --ok-soft: #17301f;
+      --shadow: 0 1px 2px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1b1a17; --surface: #242320; --surface-2: #2c2b26;
+    --ink: #f1efe6; --ink-soft: #b8b6ab; --ink-faint: #7d7b70;
+    --line: #3a382f; --line-strong: #4c4a3e;
+    --accent: #f0a355; --accent-ink: #ffd9ac; --accent-soft: #3a2c18;
+    --rec: #f87171; --rec-soft: #3a2020;
+    --ok: #4ade80; --ok-soft: #17301f;
+    --shadow: 0 1px 2px rgba(0,0,0,0.35);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Manrope", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent-ink); background: var(--accent-soft);
+    display: inline-block; padding: 3px 9px; border-radius: 5px; margin-bottom: 10px;
+  }
+  h1 { font-size: 1.6rem; font-weight: 800; margin: 0 0 6px; text-wrap: balance; letter-spacing: -0.01em; }
+  .sub { color: var(--ink-soft); font-size: 0.92rem; max-width: 62ch; line-height: 1.55; margin: 0 0 20px; }
+
+  .progressbar-track {
+    height: 8px; background: var(--surface-2); border-radius: 999px; overflow: hidden;
+    border: 1px solid var(--line);
+  }
+  .progressbar-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width 0.25s ease; }
+  .progress-label {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.78rem; color: var(--ink-faint);
+    margin: 6px 0 22px;
+  }
+  .progress-label b { color: var(--ink); font-size: 0.86rem; }
+
+  .stage {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+    box-shadow: var(--shadow); padding: 28px; text-align: center; margin-bottom: 22px;
+  }
+  .stage .tone-tag {
+    display: inline-block; font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.72rem; font-weight: 700; color: var(--ink-faint);
+    background: var(--surface-2); padding: 3px 10px; border-radius: 999px; margin-bottom: 14px;
+  }
+  .stage .char { font-size: 5rem; font-weight: 700; line-height: 1; margin-bottom: 6px; }
+  .stage .py { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 1.15rem; color: var(--ink-soft); margin-bottom: 22px; }
+
+  .rec-status { font-size: 0.86rem; font-weight: 700; min-height: 22px; margin-bottom: 14px; }
+  .rec-status.idle { color: var(--ink-faint); }
+  .rec-status.recording { color: var(--rec); }
+  .rec-status.done { color: var(--ok); }
+  .rec-dot {
+    display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--rec);
+    margin-right: 6px; vertical-align: middle; animation: pulse 1.1s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+  button {
+    font-family: inherit; font-size: 0.9rem; font-weight: 700;
+    border-radius: 10px; border: 1px solid var(--line-strong);
+    background: var(--surface-2); color: var(--ink);
+    padding: 10px 18px; cursor: pointer; transition: filter 0.12s ease, transform 0.05s ease;
+  }
+  button:hover { filter: brightness(0.96); }
+  :root:not([data-theme="light"]) button:hover { filter: brightness(1.12); }
+  button:active { transform: translateY(1px); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .btn-record {
+    background: var(--rec); border-color: var(--rec); color: #fff5f5;
+    font-size: 1rem; padding: 13px 30px; border-radius: 999px;
+  }
+  .btn-record.active { background: var(--ink); border-color: var(--ink); }
+  :root:not([data-theme="light"]) .btn-record.active { background: var(--surface-2); color: var(--ink); }
+  .btn-accent { background: var(--accent); border-color: var(--accent); color: #fff9f0; }
+
+  .stage-controls { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+  .nav-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; gap: 10px; flex-wrap: wrap; }
+  .nav-controls .spacer { flex: 1; }
+
+  .toolbar {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 14px 16px; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 26px;
+  }
+  .toolbar .note { font-size: 0.8rem; color: var(--ink-faint); margin-left: auto; }
+
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 6px;
+  }
+  .cell {
+    aspect-ratio: 1; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--surface); display: flex; align-items: center; justify-content: center;
+    font-size: 1.05rem; font-weight: 700; cursor: pointer; position: relative;
+    transition: border-color 0.12s ease, background 0.12s ease;
+  }
+  .cell:hover { border-color: var(--accent); }
+  .cell.done { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); }
+  .cell.current { border-color: var(--accent); border-width: 2px; box-shadow: 0 0 0 3px var(--accent-soft); }
+
+  .section-label { font-size: 0.84rem; font-weight: 800; color: var(--ink-soft); margin: 26px 0 10px; }
+
+  audio { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="eyebrow">真人录音 · 逐字采集</span>
+  <h1>汉字发音录制台</h1>
+  <p class="sub">对着麦克风把 92 个字逐一读出来、录下来。全部录完后一键导出成可直接替换项目里 <code>assets/audio_pack_v1.js</code> 的文件。录音会自动保存在本机浏览器里，刷新页面不会丢。</p>
+
+  <div class="progressbar-track"><div class="progressbar-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="progress-label"><span>录制进度</span><b id="progressText">0 / 92</b></div>
+
+  <div class="stage">
+    <div class="tone-tag" id="toneTag">一声</div>
+    <div class="char" id="stageChar">天</div>
+    <div class="py" id="stagePy">tiān</div>
+
+    <div class="rec-status idle" id="recStatus">点击下方按钮开始录音</div>
+
+    <div class="stage-controls">
+      <button class="btn-record" id="recordBtn">🎤 开始录音</button>
+      <button id="playBtn" disabled>▶ 回放</button>
+      <button id="retakeBtn" disabled>🔄 重新录制</button>
+    </div>
+
+    <div class="nav-controls">
+      <button id="prevBtn">← 上一个</button>
+      <button class="btn-accent" id="nextUnrecordedBtn">跳到下一个未录 →</button>
+      <button id="nextBtn">下一个 →</button>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button class="btn-accent" id="exportBtn">⬇ 导出音频包 (audio_pack_v1.js)</button>
+    <button id="clearAllBtn">🗑 清空全部录音</button>
+    <span class="note" id="micNote"></span>
+  </div>
+
+  <div class="section-label">全部 92 字（绿色 = 已录，点击可跳转）</div>
+  <div class="grid" id="charGrid"></div>
+
+  <audio id="playbackEl"></audio>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var CHARS = [
+    ["天","tian",1],["风","feng",1],["山","shan",1],["春","chun",1],
+    ["东","dong",1],["车","che",1],["开","kai",1],["金","jin",1],
+    ["心","xin",1],["空","kong",1],["光","guang",1],["高","gao",1],
+    ["安","an",1],["星","xing",1],["声","sheng",1],["身","shen",1],
+    ["江","jiang",1],["歌","ge",1],["花","hua",1],["家","jia",1],
+    ["音","yin",1],["森","sen",1],["西","xi",1],["飞","fei",1],
+    ["包","bao",1],["刀","dao",1],["分","fen",1],["关","guan",1],
+
+    ["阳","yang",2],["平","ping",2],["明","ming",2],["云","yun",2],
+    ["红","hong",2],["南","nan",2],["石","shi",2],["文","wen",2],
+    ["白","bai",2],["年","nian",2],["同","tong",2],["学","xue",2],
+    ["林","lin",2],["行","xing",2],["前","qian",2],["长","chang",2],
+    ["房","fang",2],["门","men",2],["黄","huang",2],["球","qiu",2],
+    ["鱼","yu",2],["茶","cha",2],["禾","he",2],["牛","niu",2],
+
+    ["海","hai",3],["水","shui",3],["草","cao",3],["雨","yu",3],
+    ["北","bei",3],["眼","yan",3],["手","shou",3],["口","kou",3],
+    ["鸟","niao",3],["马","ma",3],["果","guo",3],["火","huo",3],
+    ["米","mi",3],["土","tu",3],["点","dian",3],["里","li",3],
+    ["走","zou",3],["有","you",3],["雪","xue",3],["子","zi",3],
+
+    ["木","mu",4],["地","di",4],["日","ri",4],["月","yue",4],
+    ["电","dian",4],["气","qi",4],["面","mian",4],["画","hua",4],
+    ["菜","cai",4],["肉","rou",4],["树","shu",4],["叶","ye",4],
+    ["物","wu",4],["事","shi",4],["道","dao",4],["路","lu",4],
+    ["夜","ye",4],["亮","liang",4],["大","da",4],["正","zheng",4]
+  ];
+
+  var TONE_MARKS = {
+    a: ["a","ā","á","ǎ","à"], e: ["e","ē","é","ě","è"],
+    i: ["i","ī","í","ǐ","ì"], o: ["o","ō","ó","ǒ","ò"], u: ["u","ū","ú","ǔ","ù"]
+  };
+  function markPinyin(py, tone) {
+    var idx = -1, vowel = null;
+    if (py.indexOf("a") >= 0) { vowel = "a"; idx = py.indexOf("a"); }
+    else if (py.indexOf("e") >= 0) { vowel = "e"; idx = py.indexOf("e"); }
+    else if (py.indexOf("ou") >= 0) { vowel = "o"; idx = py.indexOf("ou"); }
+    else {
+      for (var i = py.length - 1; i >= 0; i--) {
+        if (TONE_MARKS[py[i]]) { vowel = py[i]; idx = i; break; }
+      }
+    }
+    if (idx < 0) return py;
+    return py.slice(0, idx) + TONE_MARKS[vowel][tone] + py.slice(idx + 1);
+  }
+  var TONE_LABEL = { 1: "一声", 2: "二声", 3: "三声", 4: "四声" };
+
+  var STORAGE_KEY = "hanzi_recordings_v1";
+  var recordings = {}; // char -> { dataUrl, mimeType }
+  try {
+    var saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) recordings = JSON.parse(saved);
+  } catch (e) {}
+
+  function persist() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(recordings)); } catch (e) {}
+  }
+
+  var currentIndex = 0;
+  var mediaRecorder = null;
+  var recordedChunks = [];
+  var isRecording = false;
+  var stream = null;
+
+  var stageChar = document.getElementById("stageChar");
+  var stagePy = document.getElementById("stagePy");
+  var toneTag = document.getElementById("toneTag");
+  var recStatus = document.getElementById("recStatus");
+  var recordBtn = document.getElementById("recordBtn");
+  var playBtn = document.getElementById("playBtn");
+  var retakeBtn = document.getElementById("retakeBtn");
+  var prevBtn = document.getElementById("prevBtn");
+  var nextBtn = document.getElementById("nextBtn");
+  var nextUnrecordedBtn = document.getElementById("nextUnrecordedBtn");
+  var exportBtn = document.getElementById("exportBtn");
+  var clearAllBtn = document.getElementById("clearAllBtn");
+  var micNote = document.getElementById("micNote");
+  var progressFill = document.getElementById("progressFill");
+  var progressText = document.getElementById("progressText");
+  var charGrid = document.getElementById("charGrid");
+  var playbackEl = document.getElementById("playbackEl");
+
+  var cellEls = [];
+
+  function buildGrid() {
+    charGrid.innerHTML = "";
+    cellEls = [];
+    CHARS.forEach(function (item, i) {
+      var cell = document.createElement("div");
+      cell.className = "cell";
+      cell.textContent = item[0];
+      cell.title = item[0] + " " + markPinyin(item[1], item[2]);
+      cell.addEventListener("click", function () { goTo(i); });
+      charGrid.appendChild(cell);
+      cellEls.push(cell);
+    });
+  }
+
+  function updateProgress() {
+    var doneCount = Object.keys(recordings).length;
+    progressFill.style.width = Math.round((doneCount / CHARS.length) * 100) + "%";
+    progressText.textContent = doneCount + " / " + CHARS.length;
+    cellEls.forEach(function (cell, i) {
+      var ch = CHARS[i][0];
+      cell.classList.toggle("done", !!recordings[ch]);
+      cell.classList.toggle("current", i === currentIndex);
+    });
+  }
+
+  function renderStage() {
+    var item = CHARS[currentIndex];
+    var ch = item[0];
+    stageChar.textContent = ch;
+    stagePy.textContent = markPinyin(item[1], item[2]);
+    toneTag.textContent = TONE_LABEL[item[2]] + " · 第 " + (currentIndex + 1) + " / " + CHARS.length + " 字";
+
+    var rec = recordings[ch];
+    if (rec) {
+      recStatus.className = "rec-status done";
+      recStatus.textContent = "✓ 已录制";
+      playBtn.disabled = false;
+      retakeBtn.disabled = false;
+    } else {
+      recStatus.className = "rec-status idle";
+      recStatus.textContent = "点击下方按钮开始录音";
+      playBtn.disabled = true;
+      retakeBtn.disabled = true;
+    }
+    recordBtn.innerHTML = "🎤 开始录音";
+    recordBtn.classList.remove("active");
+    updateProgress();
+  }
+
+  function goTo(i) {
+    if (isRecording) stopRecording();
+    currentIndex = ((i % CHARS.length) + CHARS.length) % CHARS.length;
+    renderStage();
+  }
+
+  function findNextUnrecorded() {
+    for (var offset = 1; offset <= CHARS.length; offset++) {
+      var i = (currentIndex + offset) % CHARS.length;
+      if (!recordings[CHARS[i][0]]) return i;
+    }
+    return -1;
+  }
+
+  function blobToDataUrl(blob) {
+    return new Promise(function (resolve) {
+      var reader = new FileReader();
+      reader.onloadend = function () { resolve(reader.result); };
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  function startRecording() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
+      micNote.textContent = "当前浏览器不支持录音，请换 Chrome / Edge 最新版";
+      return;
+    }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (s) {
+      stream = s;
+      recordedChunks = [];
+      var mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? "audio/webm;codecs=opus" : "";
+      mediaRecorder = mimeType ? new MediaRecorder(stream, { mimeType: mimeType }) : new MediaRecorder(stream);
+      mediaRecorder.ondataavailable = function (e) {
+        if (e.data && e.data.size > 0) recordedChunks.push(e.data);
+      };
+      mediaRecorder.onstop = function () {
+        var blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || "audio/webm" });
+        blobToDataUrl(blob).then(function (dataUrl) {
+          var ch = CHARS[currentIndex][0];
+          recordings[ch] = { dataUrl: dataUrl, mimeType: blob.type };
+          persist();
+          renderStage();
+        });
+        stream.getTracks().forEach(function (t) { t.stop(); });
+      };
+      mediaRecorder.start();
+      isRecording = true;
+      recordBtn.innerHTML = "⏹ 停止录音";
+      recordBtn.classList.add("active");
+      recStatus.className = "rec-status recording";
+      recStatus.innerHTML = '<span class="rec-dot"></span>正在录音…';
+      micNote.textContent = "";
+    }).catch(function () {
+      micNote.textContent = "⚠️ 无法访问麦克风，请检查浏览器权限设置";
+    });
+  }
+
+  function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state !== "inactive") mediaRecorder.stop();
+    isRecording = false;
+  }
+
+  recordBtn.addEventListener("click", function () {
+    if (isRecording) stopRecording();
+    else startRecording();
+  });
+
+  playBtn.addEventListener("click", function () {
+    var ch = CHARS[currentIndex][0];
+    var rec = recordings[ch];
+    if (!rec) return;
+    playbackEl.src = rec.dataUrl;
+    playbackEl.play().catch(function () {});
+  });
+
+  retakeBtn.addEventListener("click", function () {
+    var ch = CHARS[currentIndex][0];
+    delete recordings[ch];
+    persist();
+    renderStage();
+    startRecording();
+  });
+
+  prevBtn.addEventListener("click", function () { goTo(currentIndex - 1); });
+  nextBtn.addEventListener("click", function () { goTo(currentIndex + 1); });
+  nextUnrecordedBtn.addEventListener("click", function () {
+    var i = findNextUnrecorded();
+    if (i === -1) {
+      micNote.textContent = "🎉 全部 92 字都已录制完成！";
+    } else {
+      goTo(i);
+    }
+  });
+
+  clearAllBtn.addEventListener("click", function () {
+    if (!confirm("确定要清空全部已录制的 " + Object.keys(recordings).length + " 条录音吗？此操作不可撤销。")) return;
+    recordings = {};
+    persist();
+    renderStage();
+  });
+
+  exportBtn.addEventListener("click", function () {
+    var doneCount = Object.keys(recordings).length;
+    if (doneCount === 0) {
+      micNote.textContent = "还没有任何录音，无法导出";
+      return;
+    }
+    var pack = {};
+    CHARS.forEach(function (item) {
+      var ch = item[0];
+      if (recordings[ch]) pack[ch] = recordings[ch].dataUrl;
+    });
+    var missing = CHARS.length - doneCount;
+    var header = "// " + doneCount + "/" + CHARS.length + " 字真人录音音频包" +
+      (missing > 0 ? "（缺 " + missing + " 字，尚未录制）" : "（已全部录制）") +
+      "，由 汉字发音录制台.html 导出于 " + new Date().toLocaleString("zh-CN") + "\n";
+    var content = header + "window.CHAR_AUDIO_PACK = " + JSON.stringify(pack) + ";\n";
+    var blob = new Blob([content], { type: "text/javascript" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "audio_pack_v1.js";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+    micNote.textContent = "✓ 已导出 " + doneCount + "/" + CHARS.length + " 字，替换 assets/audio_pack_v1.js 即可";
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
+    if (e.code === "Space") { e.preventDefault(); recordBtn.click(); }
+    else if (e.code === "ArrowRight") { goTo(currentIndex + 1); }
+    else if (e.code === "ArrowLeft") { goTo(currentIndex - 1); }
+  });
+
+  buildGrid();
+  renderStage();
+})();
+</script>
+</body>
+</html>
