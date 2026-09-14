@@ -202,7 +202,13 @@
     justify-content: center;
   }
   @media (max-width: 860px) {
-    .mobile-menu-toggle { display: flex; }
+    .duo-header { padding-top: 10px; padding-bottom: 10px; flex-wrap: nowrap; }
+    .header-titles, .brand-slogan, .brand-pill { display: none; }
+    .header-left { gap: 8px; }
+    .brand-logo-wrap { width: 34px; height: 34px; }
+    .brand-logo-svg { width: 34px; height: 34px; }
+    .brand-name { font-size: 1rem; }
+    .mobile-menu-toggle { display: flex; width: 36px; height: 36px; font-size: 1.1rem; flex-shrink: 0; }
     .header-nav {
       display: none !important;
       position: absolute;
