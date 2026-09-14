@@ -255,7 +255,7 @@
         "<td class='score-cell' style='color:var(--brass);'>" + rec.total_score + "</td>" +
         "<td style='color:var(--slate); font-size:0.8rem;'>" + (rec.test_date || "") + "</td>";
       tr.addEventListener("click", function(){
-        window.open("综合专注力测试_v1.html?record=" + encodeURIComponent(rec.record_id), "_blank");
+        window.open("concentration_v1.html?record=" + encodeURIComponent(rec.record_id), "_blank");
       });
       recordsBody.appendChild(tr);
     });
