@@ -229,6 +229,7 @@
     .header-nav.mobile-open { display: flex !important; }
     .header-nav-btn, .nav-dropdown { width: 100%; }
     .nav-dropdown-menu { position: static; margin-top: 6px; box-shadow: none; }
+    body.in-test-flow .duo-header { position: static; }
   }
 
   .nav-dropdown { position: relative; }
@@ -3550,6 +3551,7 @@
     transitionView.style.display = "none";
     visualView.style.display = "none";
     reportView.style.display = "none";
+    document.body.classList.add("in-test-flow");
   }
 
   function resetToWelcome() {
@@ -3583,6 +3585,7 @@
     if(visualTimerInterval) { clearInterval(visualTimerInterval); visualTimerInterval = null; }
 
     hideAllViews();
+    document.body.classList.remove("in-test-flow");
     homeView.style.display = "block";
     levelStatusBar.style.display = "none";
     resetTestBtn.style.display = "none";
