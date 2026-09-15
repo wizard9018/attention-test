@@ -84,6 +84,11 @@
     cursor: pointer;
   }
   #loginError { color: var(--red); font-size: 0.82rem; margin-top: 10px; display: none; text-align: center; }
+  .login-switch { text-align: center; font-size: 0.82rem; color: var(--slate); margin-top: 16px; }
+  .login-switch a { color: var(--blue); text-decoration: none; cursor: pointer; }
+  #registerError, #registerSuccess { font-size: 0.82rem; margin-top: 10px; display: none; text-align: center; }
+  #registerError { color: var(--red); }
+  #registerSuccess { color: var(--green); }
 
   /* records */
   .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
@@ -114,28 +119,82 @@
   tbody tr:last-child td { border-bottom: none; }
   .score-cell { font-weight: 900; }
   #emptyNote { text-align: center; padding: 40px; color: var(--slate); display: none; }
+
+  .campus-banner { font-size: 0.9rem; color: var(--slate); margin-bottom: 14px; display: none; }
+  .campus-banner strong { color: var(--ink); }
+
+  .modal-backdrop {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(16,19,26,0.5);
+    align-items: center; justify-content: center;
+    z-index: 50;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px 26px;
+    width: 100%;
+    max-width: 340px;
+  }
+  .modal-card h3 { margin: 0 0 18px; font-size: 1.05rem; }
+  .modal-card label { display: block; font-size: 0.82rem; font-weight: 800; color: var(--slate); margin: 12px 0 6px; }
+  .modal-card input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid var(--line);
+    border-radius: 10px;
+    font-size: 0.9rem;
+  }
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .modal-actions button { flex: 1; padding: 10px; border-radius: 10px; border: none; font-weight: 800; cursor: pointer; }
+  #pwSaveBtn { background: var(--green); color: #fff; }
+  #pwCancelBtn { background: #f1f0eb; color: var(--ink); }
+  #pwError { color: var(--red); font-size: 0.8rem; margin-top: 10px; display: none; }
+  #pwSuccess { color: var(--green); font-size: 0.8rem; margin-top: 10px; display: none; }
 </style>
 </head>
 <body>
 
 <header>
   <div class="brand">清良思维 <span>管理后台</span></div>
-  <button id="logoutBtn" style="display:none;">退出登录</button>
+  <div style="display:flex; align-items:center; gap:10px;">
+    <button id="changePwHeaderBtn" style="display:none;">修改密码</button>
+    <button id="logoutBtn" style="display:none;">退出登录</button>
+  </div>
 </header>
 
 <div id="loginScreen">
-  <div class="login-card">
+  <div class="login-card" id="loginCard">
     <h2>🔒 管理员登录</h2>
-    <label>用户名</label>
+    <label>用户名 / 工号</label>
     <input type="text" id="loginUser" autocomplete="off">
     <label>密码</label>
     <input type="password" id="loginPass" autocomplete="off">
     <button id="loginBtn">登录</button>
     <p id="loginError">用户名或密码错误</p>
+    <p class="login-switch">还没有工号账号？<a id="showRegisterLink">申请一个 →</a></p>
+  </div>
+  <div class="login-card" id="registerCard" style="display:none;">
+    <h2>📝 申请校区工号</h2>
+    <label>姓名 / 校区名称</label>
+    <input type="text" id="regName" autocomplete="off">
+    <label>手机号后5位（作为工号）</label>
+    <input type="text" id="regTeacherId" maxlength="5" inputmode="numeric" autocomplete="off">
+    <label>设置密码</label>
+    <input type="password" id="regPass" autocomplete="off">
+    <label>确认密码</label>
+    <input type="password" id="regPass2" autocomplete="off">
+    <button id="registerBtn">申请并登录</button>
+    <p id="registerError"></p>
+    <p id="registerSuccess">申请成功，正在登录…</p>
+    <p class="login-switch">已有账号？<a id="showLoginLink">去登录 →</a></p>
   </div>
 </div>
 
 <main id="mainScreen" style="display:none;">
+  <div class="campus-banner" id="campusBanner">校区：<strong id="campusNameText"></strong> · 工号：<strong id="teacherIdText"></strong></div>
   <div class="toolbar">
     <input type="text" id="searchInput" placeholder="按手机号/微信号或学校搜索...">
     <button id="refreshBtn">🔄 刷新</button>
@@ -159,15 +218,35 @@
   <p id="emptyNote">暂无数据</p>
 </main>
 
+<div class="modal-backdrop" id="pwModalBackdrop">
+  <div class="modal-card">
+    <h3>修改密码</h3>
+    <label>当前密码</label>
+    <input type="password" id="pwOld" autocomplete="off">
+    <label>新密码</label>
+    <input type="password" id="pwNew" autocomplete="off">
+    <label>确认新密码</label>
+    <input type="password" id="pwNew2" autocomplete="off">
+    <p id="pwError"></p>
+    <p id="pwSuccess">密码已更新</p>
+    <div class="modal-actions">
+      <button id="pwCancelBtn">取消</button>
+      <button id="pwSaveBtn">保存</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
   var SUPABASE_URL = "https://knhpwhdgzwhdpnbsrbty.supabase.co";
   var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtuaHB3aGRnendoZHBuYnNyYnR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkxNzM5MzIsImV4cCI6MjEwNDc0OTkzMn0.Nsd_fxNquX-_hTLyKwteHuezgp2HI4-rNWiMC-XTohI";
   var SUPABASE_TABLE = "attention_test_records";
+  var ADMINS_TABLE = "campus_admins";
 
   var loginScreen = document.getElementById("loginScreen");
   var mainScreen = document.getElementById("mainScreen");
   var logoutBtn = document.getElementById("logoutBtn");
+  var changePwHeaderBtn = document.getElementById("changePwHeaderBtn");
   var loginUser = document.getElementById("loginUser");
   var loginPass = document.getElementById("loginPass");
   var loginBtn = document.getElementById("loginBtn");
@@ -177,51 +256,219 @@
   var recordsBody = document.getElementById("recordsBody");
   var recordCount = document.getElementById("recordCount");
   var emptyNote = document.getElementById("emptyNote");
+  var campusBanner = document.getElementById("campusBanner");
+  var campusNameText = document.getElementById("campusNameText");
+  var teacherIdText = document.getElementById("teacherIdText");
+
+  var pwModalBackdrop = document.getElementById("pwModalBackdrop");
+  var pwOld = document.getElementById("pwOld");
+  var pwNew = document.getElementById("pwNew");
+  var pwNew2 = document.getElementById("pwNew2");
+  var pwError = document.getElementById("pwError");
+  var pwSuccess = document.getElementById("pwSuccess");
+  var pwSaveBtn = document.getElementById("pwSaveBtn");
+  var pwCancelBtn = document.getElementById("pwCancelBtn");
 
   var allRecords = [];
+  var session = null; // { role: "owner" } or { role: "campus", teacher_id, campus_name }
 
   function escapeHtml(str) {
     if(!str) return "";
     return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
-  function supabaseHeaders() {
-    return { "apikey": SUPABASE_ANON_KEY, "Authorization": "Bearer " + SUPABASE_ANON_KEY };
+  function supabaseHeaders(extra) {
+    var h = { "apikey": SUPABASE_ANON_KEY, "Authorization": "Bearer " + SUPABASE_ANON_KEY };
+    if(extra) { for(var k in extra) h[k] = extra[k]; }
+    return h;
   }
 
   function showMain() {
     loginScreen.style.display = "none";
     mainScreen.style.display = "block";
     logoutBtn.style.display = "inline-block";
+    if(session.role === "campus") {
+      campusBanner.style.display = "block";
+      campusNameText.textContent = session.campus_name;
+      teacherIdText.textContent = session.teacher_id;
+      changePwHeaderBtn.style.display = "inline-block";
+    } else {
+      campusBanner.style.display = "none";
+      changePwHeaderBtn.style.display = "none";
+    }
     loadRecords();
   }
 
   function doLogin() {
-    if(loginUser.value === "admin" && loginPass.value === "admin") {
-      sessionStorage.setItem("qlsw_admin_auth", "1");
+    var user = loginUser.value.trim();
+    var pass = loginPass.value;
+    if(user === "admin" && pass === "admin") {
+      session = { role: "owner" };
+      sessionStorage.setItem("qlsw_admin_auth", JSON.stringify(session));
       loginError.style.display = "none";
       showMain();
-    } else {
-      loginError.style.display = "block";
+      return;
     }
+    if(!user || !pass) { loginError.style.display = "block"; return; }
+    var url = SUPABASE_URL + "/rest/v1/" + ADMINS_TABLE +
+      "?teacher_id=eq." + encodeURIComponent(user) +
+      "&password=eq." + encodeURIComponent(pass) +
+      "&select=teacher_id,campus_name";
+    fetch(url, { headers: supabaseHeaders() })
+      .then(function(res){ return res.json(); })
+      .then(function(list){
+        if(Array.isArray(list) && list.length > 0) {
+          session = { role: "campus", teacher_id: list[0].teacher_id, campus_name: list[0].campus_name };
+          sessionStorage.setItem("qlsw_admin_auth", JSON.stringify(session));
+          loginError.style.display = "none";
+          showMain();
+        } else {
+          loginError.style.display = "block";
+        }
+      })
+      .catch(function(err){
+        loginError.style.display = "block";
+        console.warn(err);
+      });
   }
   loginBtn.addEventListener("click", doLogin);
   loginPass.addEventListener("keydown", function(e){ if(e.key === "Enter") doLogin(); });
   loginUser.addEventListener("keydown", function(e){ if(e.key === "Enter") doLogin(); });
 
+  var loginCard = document.getElementById("loginCard");
+  var registerCard = document.getElementById("registerCard");
+  var showRegisterLink = document.getElementById("showRegisterLink");
+  var showLoginLink = document.getElementById("showLoginLink");
+  var regName = document.getElementById("regName");
+  var regTeacherId = document.getElementById("regTeacherId");
+  var regPass = document.getElementById("regPass");
+  var regPass2 = document.getElementById("regPass2");
+  var registerBtn = document.getElementById("registerBtn");
+  var registerError = document.getElementById("registerError");
+  var registerSuccess = document.getElementById("registerSuccess");
+
+  showRegisterLink.addEventListener("click", function(){
+    loginCard.style.display = "none";
+    registerCard.style.display = "block";
+  });
+  showLoginLink.addEventListener("click", function(){
+    registerCard.style.display = "none";
+    loginCard.style.display = "block";
+  });
+
+  registerBtn.addEventListener("click", function(){
+    registerError.style.display = "none";
+    registerSuccess.style.display = "none";
+    var name = regName.value.trim();
+    var teacherId = regTeacherId.value.trim();
+    var pass = regPass.value;
+    var pass2 = regPass2.value;
+    if(!name || !teacherId || !pass) {
+      registerError.textContent = "请填写完整";
+      registerError.style.display = "block";
+      return;
+    }
+    if(!/^\d{5}$/.test(teacherId)) {
+      registerError.textContent = "工号需为5位数字";
+      registerError.style.display = "block";
+      return;
+    }
+    if(pass !== pass2) {
+      registerError.textContent = "两次输入的密码不一致";
+      registerError.style.display = "block";
+      return;
+    }
+    fetch(SUPABASE_URL + "/rest/v1/" + ADMINS_TABLE, {
+      method: "POST",
+      headers: supabaseHeaders({ "Content-Type": "application/json", "Prefer": "return=representation" }),
+      body: JSON.stringify({ teacher_id: teacherId, password: pass, campus_name: name })
+    })
+      .then(function(res){
+        if(res.status === 409 || res.status === 400) { throw { duplicate: true }; }
+        return res.json();
+      })
+      .then(function(data){
+        var rec = Array.isArray(data) ? data[0] : data;
+        if(rec && rec.teacher_id) {
+          registerSuccess.style.display = "block";
+          session = { role: "campus", teacher_id: rec.teacher_id, campus_name: rec.campus_name };
+          sessionStorage.setItem("qlsw_admin_auth", JSON.stringify(session));
+          setTimeout(showMain, 600);
+        } else {
+          throw { duplicate: true };
+        }
+      })
+      .catch(function(err){
+        registerError.textContent = err && err.duplicate ? "该工号已被注册，请直接登录" : "申请失败，请检查网络后重试";
+        registerError.style.display = "block";
+        console.warn(err);
+      });
+  });
+
   logoutBtn.addEventListener("click", function(){
     sessionStorage.removeItem("qlsw_admin_auth");
+    session = null;
     loginScreen.style.display = "flex";
     mainScreen.style.display = "none";
     logoutBtn.style.display = "none";
+    changePwHeaderBtn.style.display = "none";
     loginUser.value = "";
     loginPass.value = "";
+    registerCard.style.display = "none";
+    loginCard.style.display = "block";
+  });
+
+  function openPwModal() {
+    pwOld.value = ""; pwNew.value = ""; pwNew2.value = "";
+    pwError.style.display = "none";
+    pwSuccess.style.display = "none";
+    pwModalBackdrop.classList.add("open");
+  }
+  function closePwModal() { pwModalBackdrop.classList.remove("open"); }
+  changePwHeaderBtn.addEventListener("click", openPwModal);
+  pwCancelBtn.addEventListener("click", closePwModal);
+  pwModalBackdrop.addEventListener("click", function(e){ if(e.target === pwModalBackdrop) closePwModal(); });
+
+  pwSaveBtn.addEventListener("click", function(){
+    pwError.style.display = "none";
+    pwSuccess.style.display = "none";
+    var oldPw = pwOld.value;
+    var newPw = pwNew.value;
+    var newPw2 = pwNew2.value;
+    if(!oldPw || !newPw) { pwError.textContent = "请填写完整"; pwError.style.display = "block"; return; }
+    if(newPw !== newPw2) { pwError.textContent = "两次输入的新密码不一致"; pwError.style.display = "block"; return; }
+    var url = SUPABASE_URL + "/rest/v1/" + ADMINS_TABLE +
+      "?teacher_id=eq." + encodeURIComponent(session.teacher_id) +
+      "&password=eq." + encodeURIComponent(oldPw);
+    fetch(url, {
+      method: "PATCH",
+      headers: supabaseHeaders({ "Content-Type": "application/json", "Prefer": "return=representation" }),
+      body: JSON.stringify({ password: newPw })
+    })
+      .then(function(res){ return res.json(); })
+      .then(function(data){
+        if(Array.isArray(data) && data.length > 0) {
+          pwSuccess.style.display = "block";
+          setTimeout(closePwModal, 900);
+        } else {
+          pwError.textContent = "当前密码不正确";
+          pwError.style.display = "block";
+        }
+      })
+      .catch(function(err){
+        pwError.textContent = "保存失败，请检查网络";
+        pwError.style.display = "block";
+        console.warn(err);
+      });
   });
 
   function loadRecords() {
     var url = SUPABASE_URL + "/rest/v1/" + SUPABASE_TABLE +
-      "?select=record_id,player_name,player_school,player_phone,player_age,auditory_score,visual_score,total_score,test_date" +
+      "?select=record_id,player_name,player_school,player_phone,player_age,auditory_score,visual_score,total_score,test_date,referrer_teacher_id" +
       "&order=created_at.desc&limit=500";
+    if(session.role === "campus") {
+      url += "&referrer_teacher_id=eq." + encodeURIComponent(session.teacher_id);
+    }
     recordCount.textContent = "加载中...";
     fetch(url, { headers: supabaseHeaders() })
       .then(function(res){ return res.json(); })
@@ -273,8 +520,12 @@
 
   refreshBtn.addEventListener("click", loadRecords);
 
-  if(sessionStorage.getItem("qlsw_admin_auth") === "1") {
-    showMain();
+  var savedSession = sessionStorage.getItem("qlsw_admin_auth");
+  if(savedSession) {
+    try {
+      session = JSON.parse(savedSession);
+      showMain();
+    } catch(e) {}
   }
 })();
 </script>
