@@ -249,9 +249,15 @@
   var changePwHeaderBtn = document.getElementById("changePwHeaderBtn");
   var loginUser = document.getElementById("loginUser");
   var loginPass = document.getElementById("loginPass");
-  loginUser.value = "";
-  loginPass.value = "";
-  setTimeout(function(){ loginUser.value = ""; loginPass.value = ""; }, 300);
+  (function(){
+    var userTyped = false;
+    function markTyped(){ userTyped = true; }
+    loginUser.addEventListener("input", markTyped, { once: true });
+    loginPass.addEventListener("input", markTyped, { once: true });
+    setTimeout(function(){
+      if(!userTyped) { loginUser.value = ""; loginPass.value = ""; }
+    }, 300);
+  })();
   var loginBtn = document.getElementById("loginBtn");
   var loginError = document.getElementById("loginError");
   var searchInput = document.getElementById("searchInput");
@@ -286,6 +292,14 @@
     return h;
   }
 
+  function rpcCall(name, body) {
+    return fetch(SUPABASE_URL + "/rest/v1/rpc/" + name, {
+      method: "POST",
+      headers: supabaseHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify(body)
+    }).then(function(res){ return res.json(); });
+  }
+
   function showMain() {
     loginScreen.style.display = "none";
     mainScreen.style.display = "block";
@@ -313,13 +327,7 @@
       return;
     }
     if(!user || !pass) { loginError.style.display = "block"; return; }
-    var url = SUPABASE_URL + "/rest/v1/rpc/verify_campus_login";
-    fetch(url, {
-      method: "POST",
-      headers: supabaseHeaders({ "Content-Type": "application/json" }),
-      body: JSON.stringify({ p_teacher_id: user, p_password: pass })
-    })
-      .then(function(res){ return res.json(); })
+    rpcCall("verify_campus_login", { p_teacher_id: user, p_password: pass })
       .then(function(list){
         if(Array.isArray(list) && list.length > 0) {
           session = { role: "campus", teacher_id: list[0].teacher_id, campus_name: list[0].campus_name, password: pass };
@@ -384,23 +392,16 @@
     }
     fetch(SUPABASE_URL + "/rest/v1/" + ADMINS_TABLE, {
       method: "POST",
-      headers: supabaseHeaders({ "Content-Type": "application/json", "Prefer": "return=representation" }),
+      headers: supabaseHeaders({ "Content-Type": "application/json", "Prefer": "return=minimal" }),
       body: JSON.stringify({ teacher_id: teacherId, password: pass, campus_name: name })
     })
       .then(function(res){
         if(res.status === 409 || res.status === 400) { throw { duplicate: true }; }
-        return res.json();
-      })
-      .then(function(data){
-        var rec = Array.isArray(data) ? data[0] : data;
-        if(rec && rec.teacher_id) {
-          registerSuccess.style.display = "block";
-          session = { role: "campus", teacher_id: rec.teacher_id, campus_name: rec.campus_name, password: pass };
-          sessionStorage.setItem("qlsw_admin_auth", JSON.stringify(session));
-          setTimeout(showMain, 600);
-        } else {
-          throw { duplicate: true };
-        }
+        if(!res.ok) { throw { failed: true }; }
+        registerSuccess.style.display = "block";
+        session = { role: "campus", teacher_id: teacherId, campus_name: name, password: pass };
+        sessionStorage.setItem("qlsw_admin_auth", JSON.stringify(session));
+        setTimeout(showMain, 600);
       })
       .catch(function(err){
         registerError.textContent = err && err.duplicate ? "该工号已被注册，请直接登录" : "申请失败，请检查网络后重试";
@@ -441,13 +442,7 @@
     var newPw2 = pwNew2.value;
     if(!oldPw || !newPw) { pwError.textContent = "请填写完整"; pwError.style.display = "block"; return; }
     if(newPw !== newPw2) { pwError.textContent = "两次输入的新密码不一致"; pwError.style.display = "block"; return; }
-    var url = SUPABASE_URL + "/rest/v1/rpc/change_campus_password";
-    fetch(url, {
-      method: "POST",
-      headers: supabaseHeaders({ "Content-Type": "application/json" }),
-      body: JSON.stringify({ p_teacher_id: session.teacher_id, p_old_password: oldPw, p_new_password: newPw })
-    })
-      .then(function(res){ return res.json(); })
+    rpcCall("change_campus_password", { p_teacher_id: session.teacher_id, p_old_password: oldPw, p_new_password: newPw })
       .then(function(ok){
         if(ok === true) {
           session.password = newPw;
@@ -467,21 +462,12 @@
   });
 
   function loadRecords() {
-    var url, body;
-    if(session.role === "campus") {
-      url = SUPABASE_URL + "/rest/v1/rpc/get_campus_records";
-      body = { p_teacher_id: session.teacher_id, p_password: session.password };
-    } else {
-      url = SUPABASE_URL + "/rest/v1/rpc/get_all_records";
-      body = { p_admin_user: "admin", p_admin_pass: "admin" };
-    }
+    var rpcName = session.role === "campus" ? "get_campus_records" : "get_all_records";
+    var body = session.role === "campus"
+      ? { p_teacher_id: session.teacher_id, p_password: session.password }
+      : { p_admin_user: "admin", p_admin_pass: "admin" };
     recordCount.textContent = "加载中...";
-    fetch(url, {
-      method: "POST",
-      headers: supabaseHeaders({ "Content-Type": "application/json" }),
-      body: JSON.stringify(body)
-    })
-      .then(function(res){ return res.json(); })
+    rpcCall(rpcName, body)
       .then(function(list){
         allRecords = Array.isArray(list) ? list : [];
         renderRecords(allRecords);

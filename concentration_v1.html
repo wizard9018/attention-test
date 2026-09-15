@@ -1275,43 +1275,12 @@
   .trust-section.in-view .trust-body { opacity: 1; transform: translateY(0); }
 
   /* 01 师资力量 */
-  .trust-team-row { display: flex; gap: 36px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 18px; }
   .trust-team-label { font-size: 0.85rem; color: #c7ccd6; margin: 0 0 12px; }
-  .trust-faculty-block { flex: 1 1 380px; min-width: 0; }
-  .trust-faculty-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-  }
-  .trust-faculty-card { text-align: left; }
-  .trust-faculty-avatar {
-    width: 100%;
-    aspect-ratio: 1;
-    border-radius: 14px;
-    background: linear-gradient(160deg, #232a37, #161a22);
-    border: 1px dashed rgba(255,255,255,0.18);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.2rem;
-    margin-bottom: 10px;
-    color: rgba(255,255,255,0.35);
-    overflow: hidden;
-  }
-  .trust-faculty-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
   .trust-founder-card { display: flex; gap: 20px; align-items: center; flex: 0 0 300px; margin-bottom: 0; }
   .trust-founder-card img { width: 96px; height: 96px; object-fit: cover; border-radius: 50%; flex-shrink: 0; }
   .trust-founder-name { font-weight: 800; font-size: 1.1rem; color: #f2efe8; margin-bottom: 6px; }
   .trust-founder-badge { font-size: 0.7rem; font-weight: 700; color: var(--trust-brass-bright); border: 1px solid var(--trust-brass); border-radius: 10px; padding: 2px 8px; margin-left: 6px; }
   .trust-founder-bio { font-size: 0.85rem; line-height: 1.7; color: #c7ccd6; }
-  .trust-partner-note { font-size: 0.82rem; line-height: 1.7; color: #c7ccd6; margin-top: 20px; }
-  .trust-faculty-name { font-weight: 800; font-size: 1rem; color: #f2efe8; }
-  .trust-faculty-role { font-size: 0.8rem; color: var(--trust-brass-bright); font-weight: 700; margin: 2px 0 8px; }
-  .trust-faculty-note { font-size: 0.82rem; color: #9aa1ad; line-height: 1.6; }
 
   /* Page1 品牌理念 + 团队 双栏 */
   .page1-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
@@ -1349,78 +1318,6 @@
   .trust-stat-label { font-size: 0.82rem; color: var(--trust-slate); font-weight: 700; margin-top: 4px; }
   .trust-stat-footnote { font-size: 0.76rem; color: #9a9385; margin-top: 28px; font-style: italic; }
 
-  /* 03 教研标准 */
-  .trust-standard-list { display: grid; gap: 18px; }
-  .trust-standard-item {
-    display: flex;
-    gap: 16px;
-    padding-bottom: 18px;
-    border-bottom: 1px solid var(--trust-line-dark);
-    flex-wrap: wrap;
-  }
-  .trust-standard-item:last-child { border-bottom: none; padding-bottom: 0; }
-  .trust-standard-icon { font-size: 1.3rem; flex-shrink: 0; width: 32px; }
-  .trust-standard-text { font-size: 0.92rem; line-height: 1.7; color: #d7dbe2; flex: 1 1 260px; min-width: 0; }
-  .trust-standard-text strong { color: #fff; }
-  .trust-standard-diagram { flex: 0 0 220px; max-width: 220px; margin-left: auto; }
-  .trust-standard-diagram svg { width: 100%; height: auto; display: block; }
-  .trust-standard-diagram-caption { font-size: 0.68rem; color: #8a8f9c; text-align: center; margin-top: 4px; }
-
-  /* 04 资质合规 */
-  .trust-cert-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    max-width: 480px;
-    gap: 16px;
-  }
-  .trust-cert-slot {
-    aspect-ratio: 3/4;
-    border: 1.5px dashed #cfc9b8;
-    border-radius: 12px;
-    background: #fdfcf9;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    text-align: center;
-    padding: 10px;
-  }
-  .trust-cert-slot .icon { font-size: 1.6rem; opacity: 0.55; }
-  .trust-cert-slot .label { font-size: 0.78rem; font-weight: 800; color: var(--trust-slate); }
-  .trust-cert-slot .sub { font-size: 0.68rem; color: #a39d8d; }
-  .trust-cert-slot.has-img { border-style: solid; padding: 8px; }
-  .trust-cert-slot.has-img img { width: 100%; flex: 1; min-height: 0; object-fit: contain; border-radius: 6px; }
-
-  /* 05 教学场景 */
-  .trust-gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-    margin-bottom: 20px;
-    scroll-snap-align: start;
-    scroll-margin-top: 90px;
-  }
-  .trust-gallery-grid > div:first-child { grid-column: span 2; aspect-ratio: 8 / 3; }
-  .trust-photo-slot {
-    border-radius: 14px;
-    border: 1px dashed rgba(255,255,255,0.2);
-    background: repeating-linear-gradient(135deg, #1c212b, #1c212b 10px, #191d26 10px, #191d26 20px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    color: rgba(255,255,255,0.4);
-    font-size: 0.78rem;
-    aspect-ratio: 4 / 3;
-    text-align: center;
-    padding: 8px;
-    overflow: hidden;
-  }
-  .trust-photo-slot .icon { font-size: 1.6rem; }
-  .trust-photo-slot.has-img { padding: 0; border-style: solid; background: #0d0f14; }
-  .trust-photo-slot.has-img img { width: 100%; height: 100%; object-fit: contain; border-radius: 14px; }
   .campus-section { display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap; scroll-snap-align: start; scroll-margin-top: 90px; }
   .campus-map-wrap { flex: 0 0 360px; max-width: 360px; text-align: center; }
   .campus-map-svg { width: 100%; height: auto; }
@@ -1531,10 +1428,8 @@
     .trust-section { padding: 44px 20px; }
     .trust-title { font-size: 1.55rem; }
     .trust-num { font-size: 6rem; }
-    .trust-faculty-grid, .trust-stat-grid, .trust-cert-grid, .trust-quote-grid { grid-template-columns: repeat(2, 1fr); }
+    .trust-stat-grid, .trust-quote-grid { grid-template-columns: repeat(2, 1fr); }
     .campus-list { grid-template-columns: repeat(2, 1fr); }
-    .trust-gallery-grid { grid-template-columns: repeat(2, 1fr); }
-    .trust-gallery-grid > div:first-child { grid-column: span 2; grid-row: span 1; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1607,7 +1502,6 @@
           <button class="nav-dropdown-item" data-section-id="trustSectionCase"><span>📈</span> 案例分享</button>
           <button class="nav-dropdown-item" data-section-id="assessmentEntrySection"><span>🚀</span> 测评入口</button>
           <button class="nav-dropdown-item" data-section-id="trustSection06"><span>📍</span> 校区分布</button>
-          <button class="nav-dropdown-item" data-section-id="trustSection02"><span>📊</span> 教学成果</button>
           <button class="nav-dropdown-item" data-section-id="trustSection07"><span>💬</span> 学员评价</button>
         </div>
       </div>
@@ -1828,40 +1722,6 @@
         </div>
       </div>
 
-      <!-- 04 教学成果与数据指标 -->
-      <section class="trust-section paper" data-trust-section id="trustSection02" style="order:5;">
-        <span class="trust-num">04</span>
-        <div class="trust-inner">
-          <div class="trust-rule"></div>
-          <span class="trust-eyebrow">教学成果</span>
-          <h2 class="trust-title">用数字说话</h2>
-          <p class="trust-lede">真实积累的服务规模与教学效果，是选择一家机构最直接的参考。</p>
-          <div class="trust-body trust-stat-grid">
-            <div>
-              <div><span class="trust-stat-num">2400</span><span class="trust-stat-unit">人</span></div>
-              <div class="trust-stat-label">累计服务学员</div>
-            </div>
-            <div>
-              <div><span class="trust-stat-num">98</span><span class="trust-stat-unit">%</span></div>
-              <div class="trust-stat-label">专注力提升优秀率</div>
-            </div>
-            <div>
-              <div><span class="trust-stat-num">99</span><span class="trust-stat-unit">%</span></div>
-              <div class="trust-stat-label">家长满意度</div>
-            </div>
-            <div>
-              <div><span class="trust-stat-num">100</span><span class="trust-stat-unit">%</span></div>
-              <div class="trust-stat-label">学员续费率</div>
-            </div>
-          </div>
-
-          <div class="trust-promise-box" style="margin-top:28px; background:rgba(176,141,87,0.08); border-color:rgba(176,141,87,0.3); color:#5b4a2f;">
-            <div style="font-weight:800; color:var(--trust-brass); margin-bottom:10px; font-size:0.95rem;">📈 中考／高考备考学员专项数据</div>
-            <p style="margin:0; line-height:1.8;">已跟踪初三/高三年龄段学员约 <strong>10 人</strong>，前后两次测评平均提升 <strong>3 个级别</strong>。</p>
-          </div>
-        </div>
-      </section>
-
       <!-- 03 全国校区分布 -->
       <section class="trust-section paper" data-trust-section id="trustSection06" style="order:4;">
         <span class="trust-num">03</span>
@@ -1942,9 +1802,9 @@
         </div>
       </section>
 
-      <!-- 05 学员评价 -->
+      <!-- 04 学员评价 -->
       <section class="trust-section ink" data-trust-section id="trustSection07" style="order:6;">
-        <span class="trust-num">05</span>
+        <span class="trust-num">04</span>
         <div class="trust-inner">
           <div class="trust-rule"></div>
           <span class="trust-eyebrow">学员评价</span>
@@ -3346,8 +3206,11 @@
   var homeAgeInput = document.getElementById("homeAgeInput");
   var homeReferrerInput = document.getElementById("homeReferrerInput");
   var currentReferrerTeacherId = "";
-  homeReferrerInput.value = "";
-  setTimeout(function(){ homeReferrerInput.value = ""; }, 300);
+  (function(){
+    var userTyped = false;
+    homeReferrerInput.addEventListener("input", function(){ userTyped = true; }, { once: true });
+    setTimeout(function(){ if(!userTyped) homeReferrerInput.value = ""; }, 300);
+  })();
   var homeStartBtn = document.getElementById("homeStartBtn");
   var homeFormError = document.getElementById("homeFormError");
   var homeHeroForm = document.getElementById("homeHeroForm");
@@ -4529,6 +4392,14 @@
     return h;
   }
 
+  function rpcCall(name, body) {
+    return fetch(SUPABASE_URL + "/rest/v1/rpc/" + name, {
+      method: "POST",
+      headers: supabaseHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify(body)
+    }).then(function(res){ return res.json(); });
+  }
+
   function syncRecordToSupabase(name, school, phone, age, auditoryScore, visualScore, totalScore) {
     var payload = {
       record_id: "rec_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 8),
@@ -4573,13 +4444,7 @@
   }
 
   function loadCloudLeaderboard(age) {
-    var url = SUPABASE_URL + "/rest/v1/rpc/get_public_leaderboard";
-    fetch(url, {
-      method: "POST",
-      headers: supabaseHeaders({ "Content-Type": "application/json" }),
-      body: JSON.stringify({ p_age: age || null, p_limit: 10 })
-    })
-    .then(function(res){ return res.json(); })
+    rpcCall("get_public_leaderboard", { p_age: age || null, p_limit: 10 })
     .then(function(list){
       if(Array.isArray(list)) renderCloudLeaderboardTable(list, age);
     })
@@ -4617,13 +4482,7 @@
   }
 
   function loadAdminRecords() {
-    var url = SUPABASE_URL + "/rest/v1/rpc/get_all_records";
-    fetch(url, {
-      method: "POST",
-      headers: supabaseHeaders({ "Content-Type": "application/json" }),
-      body: JSON.stringify({ p_admin_user: "admin", p_admin_pass: "admin" })
-    })
-    .then(function(res){ return res.json(); })
+    rpcCall("get_all_records", { p_admin_user: "admin", p_admin_pass: "admin" })
     .then(function(list){
       if(Array.isArray(list)) renderAdminRecordsTable(list);
     })
@@ -4920,7 +4779,8 @@
       playerSchoolInput.value = s;
       playerPhoneInput.value = p;
       playerAgeInput.value = a;
-      currentReferrerTeacherId = homeReferrerInput.value.trim();
+      var referrerRaw = homeReferrerInput.value.trim();
+      currentReferrerTeacherId = /^\d{5}$/.test(referrerRaw) ? referrerRaw : "";
       isLoggedIn = true;
       enterAssessmentArea();
     }
@@ -5212,13 +5072,7 @@
     var recordId = new URLSearchParams(window.location.search).get("record");
     if(!recordId) return;
     homeView.style.display = "none";
-    var url = SUPABASE_URL + "/rest/v1/rpc/get_record_by_id";
-    fetch(url, {
-      method: "POST",
-      headers: supabaseHeaders({ "Content-Type": "application/json" }),
-      body: JSON.stringify({ p_record_id: recordId })
-    })
-      .then(function(res){ return res.json(); })
+    rpcCall("get_record_by_id", { p_record_id: recordId })
       .then(function(list){
         var rec = Array.isArray(list) ? list[0] : null;
         if(rec) loadReportFromRecord(rec);
