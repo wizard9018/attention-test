@@ -4786,7 +4786,9 @@
       playerSchoolInput.value = s;
       playerPhoneInput.value = p;
       playerAgeInput.value = a;
-      var referrerRaw = homeReferrerInput.value.trim();
+      var referrerRaw = homeReferrerInput.value
+        .replace(/[０-９]/g, function(ch){ return String.fromCharCode(ch.charCodeAt(0) - 0xFEE0); })
+        .replace(/\s+/g, "");
       currentReferrerTeacherId = /^\d{5}$/.test(referrerRaw) ? referrerRaw : "";
       isLoggedIn = true;
       enterAssessmentArea();
