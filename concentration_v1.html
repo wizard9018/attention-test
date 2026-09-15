@@ -1816,7 +1816,7 @@
               </div>
               <div class="home-form-field">
                 <label>推荐老师工号（选填）</label>
-                <input type="text" id="homeReferrerInput" placeholder="如有推荐老师，请输入其5位工号" maxlength="5" inputmode="numeric" pattern="[0-9]*" autocomplete="off" />
+                <input type="text" id="homeReferrerInput" name="qlsw_referrer_teacher_id" placeholder="如有推荐老师，请输入其5位工号" maxlength="5" inputmode="numeric" pattern="[0-9]*" autocomplete="new-password" />
               </div>
               <button class="duo-btn btn-green home-start-btn cta-glow" id="homeStartBtn">
                 <span>开始测试 →</span>
@@ -3346,6 +3346,8 @@
   var homeAgeInput = document.getElementById("homeAgeInput");
   var homeReferrerInput = document.getElementById("homeReferrerInput");
   var currentReferrerTeacherId = "";
+  homeReferrerInput.value = "";
+  setTimeout(function(){ homeReferrerInput.value = ""; }, 300);
   var homeStartBtn = document.getElementById("homeStartBtn");
   var homeFormError = document.getElementById("homeFormError");
   var homeHeroForm = document.getElementById("homeHeroForm");
