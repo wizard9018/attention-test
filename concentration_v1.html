@@ -1047,6 +1047,9 @@
   .home-theory-title { font-size: 0.9rem; font-weight: 800; color: var(--duo-blue-dark); margin-bottom: 6px; }
   .home-theory-text { font-size: 0.82rem; line-height: 1.7; color: var(--duo-text-body); margin: 0; }
 
+  @keyframes onAutoFillStart { from {} to {} }
+  #homeReferrerInput:-webkit-autofill { animation-name: onAutoFillStart; }
+
   .home-form-card {
     background: var(--duo-bg-gray);
     border: 2px solid var(--duo-border);
@@ -1411,11 +1414,13 @@
   .trust-quote-rel { font-size: 0.74rem; color: #a39d8d; }
 
   .trust-cta-band {
-    padding: 52px 40px 60px;
+    padding: 44px 0 8px;
     text-align: center;
   }
   .trust-cta-title { font-family: "Noto Serif SC", serif; font-weight: 800; font-size: 1.4rem; margin-bottom: 8px; color: var(--trust-ink); }
   .trust-cta-sub { font-size: 0.86rem; color: var(--trust-slate); margin-bottom: 20px; }
+  .trust-section.ink .trust-cta-title { color: #f2efe8; }
+  .trust-section.ink .trust-cta-sub { color: #c7ccd6; }
 
   /* RESPONSIVE */
   @media (max-width: 640px) {
@@ -1829,17 +1834,16 @@
               <div class="trust-quote-rel">学员家长</div>
             </div>
           </div>
+
+          <div class="trust-cta-band">
+            <div class="trust-cta-title">了解这些之后，欢迎先体验一次免费测评</div>
+            <div class="trust-cta-sub">10~15 分钟，即刻获得孩子的专注力发展报告</div>
+            <button class="duo-btn btn-green cta-glow" id="trustBackToFormBtn" style="padding:12px 32px;">
+              <span>🚀 立即开始测评</span>
+            </button>
+          </div>
         </div>
       </section>
-
-      <!-- 收尾 CTA -->
-      <div class="trust-section paper trust-cta-band" style="padding-top:44px; order:10;">
-        <div class="trust-cta-title">了解这些之后，欢迎先体验一次免费测评</div>
-        <div class="trust-cta-sub">10~15 分钟，即刻获得孩子的专注力发展报告</div>
-        <button class="duo-btn btn-green cta-glow" id="trustBackToFormBtn" style="padding:12px 32px;">
-          <span>🚀 立即开始测评</span>
-        </button>
-      </div>
     </div>
   </div>
 
@@ -3209,6 +3213,9 @@
   (function(){
     var userTyped = false;
     homeReferrerInput.addEventListener("input", function(){ userTyped = true; }, { once: true });
+    homeReferrerInput.addEventListener("animationstart", function(e){
+      if(e.animationName === "onAutoFillStart" && !userTyped) homeReferrerInput.value = "";
+    });
     setTimeout(function(){ if(!userTyped) homeReferrerInput.value = ""; }, 300);
   })();
   var homeStartBtn = document.getElementById("homeStartBtn");

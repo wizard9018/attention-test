@@ -87,6 +87,9 @@
   .login-switch { text-align: center; font-size: 0.82rem; color: var(--slate); margin-top: 16px; }
   .login-switch a { color: var(--blue); text-decoration: none; cursor: pointer; }
   #registerError, #registerSuccess { font-size: 0.82rem; margin-top: 10px; display: none; text-align: center; }
+
+  @keyframes onAutoFillStart { from {} to {} }
+  #loginUser:-webkit-autofill, #loginPass:-webkit-autofill { animation-name: onAutoFillStart; }
   #registerError { color: var(--red); }
   #registerSuccess { color: var(--green); }
 
@@ -252,8 +255,13 @@
   (function(){
     var userTyped = false;
     function markTyped(){ userTyped = true; }
+    function clearOnAutofill(e){
+      if(e.animationName === "onAutoFillStart" && !userTyped) { loginUser.value = ""; loginPass.value = ""; }
+    }
     loginUser.addEventListener("input", markTyped, { once: true });
     loginPass.addEventListener("input", markTyped, { once: true });
+    loginUser.addEventListener("animationstart", clearOnAutofill);
+    loginPass.addEventListener("animationstart", clearOnAutofill);
     setTimeout(function(){
       if(!userTyped) { loginUser.value = ""; loginPass.value = ""; }
     }, 300);
