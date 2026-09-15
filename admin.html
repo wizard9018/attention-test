@@ -313,11 +313,12 @@
       return;
     }
     if(!user || !pass) { loginError.style.display = "block"; return; }
-    var url = SUPABASE_URL + "/rest/v1/" + ADMINS_TABLE +
-      "?teacher_id=eq." + encodeURIComponent(user) +
-      "&password=eq." + encodeURIComponent(pass) +
-      "&select=teacher_id,campus_name";
-    fetch(url, { headers: supabaseHeaders() })
+    var url = SUPABASE_URL + "/rest/v1/rpc/verify_campus_login";
+    fetch(url, {
+      method: "POST",
+      headers: supabaseHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ p_teacher_id: user, p_password: pass })
+    })
       .then(function(res){ return res.json(); })
       .then(function(list){
         if(Array.isArray(list) && list.length > 0) {
@@ -440,17 +441,15 @@
     var newPw2 = pwNew2.value;
     if(!oldPw || !newPw) { pwError.textContent = "请填写完整"; pwError.style.display = "block"; return; }
     if(newPw !== newPw2) { pwError.textContent = "两次输入的新密码不一致"; pwError.style.display = "block"; return; }
-    var url = SUPABASE_URL + "/rest/v1/" + ADMINS_TABLE +
-      "?teacher_id=eq." + encodeURIComponent(session.teacher_id) +
-      "&password=eq." + encodeURIComponent(oldPw);
+    var url = SUPABASE_URL + "/rest/v1/rpc/change_campus_password";
     fetch(url, {
-      method: "PATCH",
-      headers: supabaseHeaders({ "Content-Type": "application/json", "Prefer": "return=representation" }),
-      body: JSON.stringify({ password: newPw })
+      method: "POST",
+      headers: supabaseHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ p_teacher_id: session.teacher_id, p_old_password: oldPw, p_new_password: newPw })
     })
       .then(function(res){ return res.json(); })
-      .then(function(data){
-        if(Array.isArray(data) && data.length > 0) {
+      .then(function(ok){
+        if(ok === true) {
           pwSuccess.style.display = "block";
           setTimeout(closePwModal, 900);
         } else {
