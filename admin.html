@@ -322,7 +322,7 @@
       .then(function(res){ return res.json(); })
       .then(function(list){
         if(Array.isArray(list) && list.length > 0) {
-          session = { role: "campus", teacher_id: list[0].teacher_id, campus_name: list[0].campus_name };
+          session = { role: "campus", teacher_id: list[0].teacher_id, campus_name: list[0].campus_name, password: pass };
           sessionStorage.setItem("qlsw_admin_auth", JSON.stringify(session));
           loginError.style.display = "none";
           showMain();
@@ -395,7 +395,7 @@
         var rec = Array.isArray(data) ? data[0] : data;
         if(rec && rec.teacher_id) {
           registerSuccess.style.display = "block";
-          session = { role: "campus", teacher_id: rec.teacher_id, campus_name: rec.campus_name };
+          session = { role: "campus", teacher_id: rec.teacher_id, campus_name: rec.campus_name, password: pass };
           sessionStorage.setItem("qlsw_admin_auth", JSON.stringify(session));
           setTimeout(showMain, 600);
         } else {
@@ -450,6 +450,8 @@
       .then(function(res){ return res.json(); })
       .then(function(ok){
         if(ok === true) {
+          session.password = newPw;
+          sessionStorage.setItem("qlsw_admin_auth", JSON.stringify(session));
           pwSuccess.style.display = "block";
           setTimeout(closePwModal, 900);
         } else {
@@ -465,14 +467,20 @@
   });
 
   function loadRecords() {
-    var url = SUPABASE_URL + "/rest/v1/" + SUPABASE_TABLE +
-      "?select=record_id,player_name,player_school,player_phone,player_age,auditory_score,visual_score,total_score,test_date,referrer_teacher_id" +
-      "&order=created_at.desc&limit=500";
+    var url, body;
     if(session.role === "campus") {
-      url += "&referrer_teacher_id=eq." + encodeURIComponent(session.teacher_id);
+      url = SUPABASE_URL + "/rest/v1/rpc/get_campus_records";
+      body = { p_teacher_id: session.teacher_id, p_password: session.password };
+    } else {
+      url = SUPABASE_URL + "/rest/v1/rpc/get_all_records";
+      body = { p_admin_user: "admin", p_admin_pass: "admin" };
     }
     recordCount.textContent = "加载中...";
-    fetch(url, { headers: supabaseHeaders() })
+    fetch(url, {
+      method: "POST",
+      headers: supabaseHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify(body)
+    })
       .then(function(res){ return res.json(); })
       .then(function(list){
         allRecords = Array.isArray(list) ? list : [];

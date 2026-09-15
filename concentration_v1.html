@@ -4573,12 +4573,12 @@
   }
 
   function loadCloudLeaderboard(age) {
-    var url = SUPABASE_URL + "/rest/v1/" + SUPABASE_TABLE +
-      "?select=record_id,player_name,player_school,player_age,auditory_score,visual_score,total_score,test_date" +
-      "&order=total_score.desc&limit=10";
-    if(age) url += "&player_age=eq." + encodeURIComponent(age);
-
-    fetch(url, { headers: supabaseHeaders() })
+    var url = SUPABASE_URL + "/rest/v1/rpc/get_public_leaderboard";
+    fetch(url, {
+      method: "POST",
+      headers: supabaseHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ p_age: age || null, p_limit: 10 })
+    })
     .then(function(res){ return res.json(); })
     .then(function(list){
       if(Array.isArray(list)) renderCloudLeaderboardTable(list, age);
@@ -4617,11 +4617,12 @@
   }
 
   function loadAdminRecords() {
-    var url = SUPABASE_URL + "/rest/v1/" + SUPABASE_TABLE +
-      "?select=player_name,player_school,player_phone,player_age,auditory_score,visual_score,total_score,test_date" +
-      "&order=created_at.desc&limit=500";
-
-    fetch(url, { headers: supabaseHeaders() })
+    var url = SUPABASE_URL + "/rest/v1/rpc/get_all_records";
+    fetch(url, {
+      method: "POST",
+      headers: supabaseHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ p_admin_user: "admin", p_admin_pass: "admin" })
+    })
     .then(function(res){ return res.json(); })
     .then(function(list){
       if(Array.isArray(list)) renderAdminRecordsTable(list);
@@ -5211,9 +5212,12 @@
     var recordId = new URLSearchParams(window.location.search).get("record");
     if(!recordId) return;
     homeView.style.display = "none";
-    var url = SUPABASE_URL + "/rest/v1/" + SUPABASE_TABLE +
-      "?select=player_name,player_school,player_phone,player_age,raw_details&record_id=eq." + encodeURIComponent(recordId);
-    fetch(url, { headers: supabaseHeaders() })
+    var url = SUPABASE_URL + "/rest/v1/rpc/get_record_by_id";
+    fetch(url, {
+      method: "POST",
+      headers: supabaseHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ p_record_id: recordId })
+    })
       .then(function(res){ return res.json(); })
       .then(function(list){
         var rec = Array.isArray(list) ? list[0] : null;
