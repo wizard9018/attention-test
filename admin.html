@@ -249,6 +249,9 @@
   var changePwHeaderBtn = document.getElementById("changePwHeaderBtn");
   var loginUser = document.getElementById("loginUser");
   var loginPass = document.getElementById("loginPass");
+  loginUser.value = "";
+  loginPass.value = "";
+  setTimeout(function(){ loginUser.value = ""; loginPass.value = ""; }, 300);
   var loginBtn = document.getElementById("loginBtn");
   var loginError = document.getElementById("loginError");
   var searchInput = document.getElementById("searchInput");
