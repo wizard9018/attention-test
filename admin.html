@@ -203,17 +203,6 @@
     <label>校区名称</label>
     <select id="regCampusSelect">
       <option value="">请选择校区</option>
-      <option value="小步智学逆袭基地">小步智学逆袭基地</option>
-      <option value="海山托管中心">海山托管中心</option>
-      <option value="学霸智造塘沽店">学霸智造塘沽店</option>
-      <option value="泰达一中一小校区">泰达一中一小校区</option>
-      <option value="生态城小外校区">生态城小外校区</option>
-      <option value="泰达新天地校区">泰达新天地校区</option>
-      <option value="邯郸校区">邯郸校区</option>
-      <option value="红岩校区">红岩校区</option>
-      <option value="中新生态城小外校区">中新生态城小外校区</option>
-      <option value="泰兴市哈喽阅读馆">泰兴市哈喽阅读馆</option>
-      <option value="聊城智点通教育">聊城智点通教育</option>
     </select>
     <label>手机号后5位（作为工号）</label>
     <input type="text" id="regTeacherId" maxlength="5" inputmode="numeric" autocomplete="off">
@@ -233,6 +222,7 @@
   <div class="tab-row" id="ownerTabRow" style="display:none;">
     <button class="tab-btn active" id="tabUsersBtn">👤 用户管理</button>
     <button class="tab-btn" id="tabAdminsBtn">🗝️ 管理员账号管理</button>
+    <button class="tab-btn" id="tabCampusesBtn">🏫 校区信息</button>
   </div>
 
   <div id="usersSection">
@@ -281,7 +271,45 @@
     </table>
     <p id="adminsEmptyNote" style="text-align:center; padding:40px; color:var(--slate); display:none;">暂无管理员账号</p>
   </div>
+
+  <div id="campusesSection" style="display:none;">
+    <div class="toolbar">
+      <button id="addCampusBtn" style="background:var(--green); color:#fff;">➕ 添加校区</button>
+      <button id="refreshCampusesBtn">🔄 刷新校区列表</button>
+    </div>
+    <div id="campusesCount"></div>
+    <table>
+      <thead>
+        <tr>
+          <th>校区名称</th>
+          <th>地址</th>
+          <th>电话</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="campusesBody"></tbody>
+    </table>
+    <p id="campusesEmptyNote" style="text-align:center; padding:40px; color:var(--slate); display:none;">暂无校区信息</p>
+  </div>
 </main>
+
+<div class="modal-backdrop" id="addCampusModalBackdrop">
+  <div class="modal-card">
+    <h3 id="addCampusModalTitle">➕ 添加校区</h3>
+    <label>校区名称</label>
+    <input type="text" id="addCampusName" autocomplete="off">
+    <label>地址</label>
+    <input type="text" id="addCampusAddr" autocomplete="off">
+    <label>电话</label>
+    <input type="text" id="addCampusPhone" autocomplete="off">
+    <p id="addCampusError" style="color:var(--red); font-size:0.8rem; margin-top:10px; display:none;"></p>
+    <p id="addCampusSuccess" style="color:var(--green); font-size:0.8rem; margin-top:10px; display:none;">已添加，主页校区列表和工号申请下拉菜单会同步出现</p>
+    <div class="modal-actions">
+      <button id="addCampusCancelBtn" style="background:#f1f0eb; color:var(--ink);">取消</button>
+      <button id="addCampusSaveBtn" style="background:var(--green); color:#fff;">保存</button>
+    </div>
+  </div>
+</div>
 
 <div class="modal-backdrop" id="resetPwModalBackdrop">
   <div class="modal-card">
@@ -376,6 +404,24 @@
   var adminCount = document.getElementById("adminCount");
   var adminsEmptyNote = document.getElementById("adminsEmptyNote");
   var refreshAdminsBtn = document.getElementById("refreshAdminsBtn");
+  var addCampusBtn = document.getElementById("addCampusBtn");
+  var addCampusModalBackdrop = document.getElementById("addCampusModalBackdrop");
+  var addCampusModalTitle = document.getElementById("addCampusModalTitle");
+  var addCampusName = document.getElementById("addCampusName");
+  var addCampusAddr = document.getElementById("addCampusAddr");
+  var addCampusPhone = document.getElementById("addCampusPhone");
+  var addCampusError = document.getElementById("addCampusError");
+  var addCampusSuccess = document.getElementById("addCampusSuccess");
+  var addCampusSaveBtn = document.getElementById("addCampusSaveBtn");
+  var addCampusCancelBtn = document.getElementById("addCampusCancelBtn");
+  var isEditingCampus = false;
+
+  var tabCampusesBtn = document.getElementById("tabCampusesBtn");
+  var campusesSection = document.getElementById("campusesSection");
+  var campusesBody = document.getElementById("campusesBody");
+  var campusesCount = document.getElementById("campusesCount");
+  var campusesEmptyNote = document.getElementById("campusesEmptyNote");
+  var refreshCampusesBtn = document.getElementById("refreshCampusesBtn");
 
   var resetPwModalBackdrop = document.getElementById("resetPwModalBackdrop");
   var resetPwTarget = document.getElementById("resetPwTarget");
@@ -453,18 +499,32 @@
   function showUsersTab() {
     tabUsersBtn.classList.add("active");
     tabAdminsBtn.classList.remove("active");
+    tabCampusesBtn.classList.remove("active");
     usersSection.style.display = "block";
     adminsSection.style.display = "none";
+    campusesSection.style.display = "none";
   }
   function showAdminsTab() {
     tabAdminsBtn.classList.add("active");
     tabUsersBtn.classList.remove("active");
+    tabCampusesBtn.classList.remove("active");
     adminsSection.style.display = "block";
     usersSection.style.display = "none";
+    campusesSection.style.display = "none";
     loadAdmins();
+  }
+  function showCampusesTab() {
+    tabCampusesBtn.classList.add("active");
+    tabUsersBtn.classList.remove("active");
+    tabAdminsBtn.classList.remove("active");
+    campusesSection.style.display = "block";
+    usersSection.style.display = "none";
+    adminsSection.style.display = "none";
+    loadCampusesList();
   }
   tabUsersBtn.addEventListener("click", showUsersTab);
   tabAdminsBtn.addEventListener("click", showAdminsTab);
+  tabCampusesBtn.addEventListener("click", showCampusesTab);
 
   function loadAdmins() {
     adminCount.textContent = "加载中...";
@@ -496,6 +556,96 @@
       });
   }
   refreshAdminsBtn.addEventListener("click", loadAdmins);
+
+  function openAddCampusModal() {
+    isEditingCampus = false;
+    addCampusModalTitle.textContent = "➕ 添加校区";
+    addCampusName.value = ""; addCampusAddr.value = ""; addCampusPhone.value = "";
+    addCampusName.disabled = false;
+    addCampusError.style.display = "none";
+    addCampusSuccess.style.display = "none";
+    addCampusModalBackdrop.classList.add("open");
+  }
+  function openEditCampusModal(campus) {
+    isEditingCampus = true;
+    addCampusModalTitle.textContent = "✏️ 编辑校区 · " + campus.campus_name;
+    addCampusName.value = campus.campus_name;
+    addCampusAddr.value = campus.address;
+    addCampusPhone.value = campus.phone;
+    addCampusName.disabled = true;
+    addCampusError.style.display = "none";
+    addCampusSuccess.style.display = "none";
+    addCampusModalBackdrop.classList.add("open");
+  }
+  function closeAddCampusModal() { addCampusModalBackdrop.classList.remove("open"); addCampusName.disabled = false; }
+  addCampusBtn.addEventListener("click", openAddCampusModal);
+  addCampusCancelBtn.addEventListener("click", closeAddCampusModal);
+  addCampusModalBackdrop.addEventListener("click", function(e){ if(e.target === addCampusModalBackdrop) closeAddCampusModal(); });
+
+  addCampusSaveBtn.addEventListener("click", function(){
+    addCampusError.style.display = "none";
+    addCampusSuccess.style.display = "none";
+    var name = addCampusName.value.trim();
+    var addr = addCampusAddr.value.trim();
+    var phone = addCampusPhone.value.trim();
+    if(!name || !addr || !phone) {
+      addCampusError.textContent = "请填写完整";
+      addCampusError.style.display = "block";
+      return;
+    }
+    rpcCall("add_campus", { p_admin_user: "admin", p_admin_pass: "admin", p_campus_name: name, p_address: addr, p_phone: phone })
+      .then(function(ok){
+        if(ok === true) {
+          addCampusSuccess.style.display = "block";
+          addCampusSuccess.textContent = isEditingCampus ? "已保存修改" : "已添加，主页校区列表和工号申请下拉菜单会同步出现";
+          loadCampusOptions();
+          if(campusesSection.style.display !== "none") loadCampusesList();
+          setTimeout(closeAddCampusModal, 1200);
+        } else {
+          addCampusError.textContent = "保存失败，请重试";
+          addCampusError.style.display = "block";
+        }
+      })
+      .catch(function(err){
+        addCampusError.textContent = "保存失败，请检查网络";
+        addCampusError.style.display = "block";
+        console.warn(err);
+      });
+  });
+
+  function loadCampusesList() {
+    campusesCount.textContent = "加载中...";
+    fetch(SUPABASE_URL + "/rest/v1/campuses?select=campus_name,address,phone&order=campus_name.asc", {
+      headers: supabaseHeaders()
+    })
+      .then(function(res){ return res.json(); })
+      .then(function(list){
+        list = Array.isArray(list) ? list : [];
+        campusesCount.textContent = "共 " + list.length + " 个校区";
+        campusesBody.innerHTML = "";
+        campusesEmptyNote.style.display = list.length === 0 ? "block" : "none";
+        list.forEach(function(campus){
+          var tr = document.createElement("tr");
+          tr.innerHTML =
+            "<td style='font-weight:800;'>" + escapeHtml(campus.campus_name) + "</td>" +
+            "<td>" + escapeHtml(campus.address) + "</td>" +
+            "<td>" + escapeHtml(campus.phone) + "</td>" +
+            "<td></td>";
+          var actionTd = tr.lastElementChild;
+          var editBtn = document.createElement("button");
+          editBtn.textContent = "编辑";
+          editBtn.style.cssText = "background:var(--blue); color:#fff; border:none; border-radius:8px; padding:6px 12px; font-size:0.8rem; font-weight:800; cursor:pointer;";
+          editBtn.addEventListener("click", function(){ openEditCampusModal(campus); });
+          actionTd.appendChild(editBtn);
+          campusesBody.appendChild(tr);
+        });
+      })
+      .catch(function(err){
+        campusesCount.textContent = "加载失败，请检查网络后点击刷新";
+        console.warn(err);
+      });
+  }
+  refreshCampusesBtn.addEventListener("click", loadCampusesList);
 
   function openResetPwModal(teacherId, campusName) {
     resetPwTeacherId = teacherId;
@@ -744,6 +894,25 @@
   campusFilterSelect.addEventListener("change", applyFilters);
 
   refreshBtn.addEventListener("click", loadRecords);
+
+  function loadCampusOptions() {
+    fetch(SUPABASE_URL + "/rest/v1/campuses?select=campus_name&order=campus_name.asc", {
+      headers: supabaseHeaders()
+    })
+      .then(function(res){ return res.json(); })
+      .then(function(list){
+        list = Array.isArray(list) ? list : [];
+        regCampusSelect.innerHTML = '<option value="">请选择校区</option>';
+        list.forEach(function(c){
+          var opt = document.createElement("option");
+          opt.value = c.campus_name;
+          opt.textContent = c.campus_name;
+          regCampusSelect.appendChild(opt);
+        });
+      })
+      .catch(function(err){ console.warn(err); });
+  }
+  loadCampusOptions();
 
   var savedSession = sessionStorage.getItem("qlsw_admin_auth");
   if(savedSession) {

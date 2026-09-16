@@ -1835,63 +1835,7 @@
                 </svg>
               <p class="campus-map-note">* 地图为示意图，标注为各校区大致地理位置</p>
             </div>
-            <div class="campus-list">
-              <div class="campus-card glow-card">
-                <div class="campus-name">🏫 小步智学逆袭基地</div>
-                <div class="campus-addr">珠海市香洲区兴业路52号银桦新村1栋二层</div>
-                <div class="campus-phone">📞 18926910111</div>
-              </div>
-              <div class="campus-card glow-card">
-                <div class="campus-name">🏫 海山托管中心</div>
-                <div class="campus-addr">威海市经济技术开发区普惠大厦三楼（齐鲁大道127号宏福大厦西侧）</div>
-                <div class="campus-phone">📞 18263135599</div>
-              </div>
-              <div class="campus-card glow-card">
-                <div class="campus-name">🏫 学霸智造塘沽店</div>
-                <div class="campus-addr">天津滨海新区塘沽河北路首创国际城2-101</div>
-                <div class="campus-phone">📞 18630850100</div>
-              </div>
-              <div class="campus-card glow-card">
-                <div class="campus-name">🏫 泰达一中一小校区</div>
-                <div class="campus-addr">天津市滨海新区开发区三大街</div>
-                <div class="campus-phone">📞 18722655168</div>
-              </div>
-              <div class="campus-card glow-card">
-                <div class="campus-name">🏫 生态城小外校区</div>
-                <div class="campus-addr">天津市滨海新区生态城</div>
-                <div class="campus-phone">📞 18722655168</div>
-              </div>
-              <div class="campus-card glow-card">
-                <div class="campus-name">🏫 泰达新天地校区</div>
-                <div class="campus-addr">天津市滨海新区开发区南海路与二大街交口，泰达新天地A1栋</div>
-                <div class="campus-phone">📞 18920076180</div>
-              </div>
-              <div class="campus-card glow-card">
-                <div class="campus-name">🏫 邯郸校区</div>
-                <div class="campus-addr">河北省邯郸市丛台区安居东城商务楼A座</div>
-                <div class="campus-phone">📞 15833800316（张老师）</div>
-              </div>
-              <div class="campus-card glow-card">
-                <div class="campus-name">🏫 红岩校区</div>
-                <div class="campus-addr">黑龙江省哈尔滨市南岗区七政街25-1号</div>
-                <div class="campus-phone">📞 13895760240（刘老师）</div>
-              </div>
-              <div class="campus-card glow-card">
-                <div class="campus-name">🏫 中新生态城小外校区</div>
-                <div class="campus-addr">天津市滨海新区中新生态城天和园23号</div>
-                <div class="campus-phone">📞 13682171708</div>
-              </div>
-              <div class="campus-card glow-card">
-                <div class="campus-name">🏫 泰兴市哈喽阅读馆</div>
-                <div class="campus-addr">江苏省泰州市泰兴市黄桥镇东街小学西边100米哈喽阅读馆</div>
-                <div class="campus-phone">📞 15195272261</div>
-              </div>
-              <div class="campus-card glow-card">
-                <div class="campus-name">🏫 聊城智点通教育</div>
-                <div class="campus-addr">山东省聊城市东昌府区东昌路第六中学西50米路南二楼</div>
-                <div class="campus-phone">📞 15275875257（李老师）</div>
-              </div>
-            </div>
+            <div class="campus-list" id="campusListContainer"></div>
             </div>
           </div>
         </div>
@@ -3318,6 +3262,7 @@
     });
     setTimeout(function(){ if(!userTyped) homeReferrerInput.value = ""; }, 300);
   })();
+  var campusListContainer = document.getElementById("campusListContainer");
   var homeStartBtn = document.getElementById("homeStartBtn");
   var homeFormError = document.getElementById("homeFormError");
   var homeHeroForm = document.getElementById("homeHeroForm");
@@ -5263,6 +5208,41 @@
     document.getElementById("homeView").appendChild(poster);
   }
 
+  var CAMPUS_LIST_FALLBACK = [
+    { campus_name: "小步智学逆袭基地", address: "珠海市香洲区兴业路52号银桦新村1栋二层", phone: "18926910111" },
+    { campus_name: "海山托管中心", address: "威海市经济技术开发区普惠大厦三楼（齐鲁大道127号宏福大厦西侧）", phone: "18263135599" },
+    { campus_name: "学霸智造塘沽店", address: "天津滨海新区塘沽河北路首创国际城2-101", phone: "18630850100" },
+    { campus_name: "泰达一中一小校区", address: "天津市滨海新区开发区三大街", phone: "18722655168" },
+    { campus_name: "生态城小外校区", address: "天津市滨海新区生态城", phone: "18722655168" },
+    { campus_name: "泰达新天地校区", address: "天津市滨海新区开发区南海路与二大街交口，泰达新天地A1栋", phone: "18920076180" },
+    { campus_name: "邯郸校区", address: "河北省邯郸市丛台区安居东城商务楼A座", phone: "15833800316（张老师）" },
+    { campus_name: "红岩校区", address: "黑龙江省哈尔滨市南岗区七政街25-1号", phone: "13895760240（刘老师）" },
+    { campus_name: "中新生态城小外校区", address: "天津市滨海新区中新生态城天和园23号", phone: "13682171708" },
+    { campus_name: "泰兴市哈喽阅读馆", address: "江苏省泰州市泰兴市黄桥镇东街小学西边100米哈喽阅读馆", phone: "15195272261" },
+    { campus_name: "聊城智点通教育", address: "山东省聊城市东昌府区东昌路第六中学西50米路南二楼", phone: "15275875257（李老师）" }
+  ];
+
+  function renderCampusList(list) {
+    campusListContainer.innerHTML = list.map(function(c){
+      return '<div class="campus-card glow-card">' +
+        '<div class="campus-name">🏫 ' + escapeHtml(c.campus_name) + '</div>' +
+        '<div class="campus-addr">' + escapeHtml(c.address) + '</div>' +
+        '<div class="campus-phone">📞 ' + escapeHtml(c.phone) + '</div>' +
+      '</div>';
+    }).join("");
+  }
+
+  function initCampusList() {
+    fetch(SUPABASE_URL + "/rest/v1/campuses?select=campus_name,address,phone&order=campus_name.asc", {
+      headers: supabaseHeaders()
+    })
+      .then(function(res){ return res.json(); })
+      .then(function(list){
+        renderCampusList(Array.isArray(list) && list.length > 0 ? list : CAMPUS_LIST_FALLBACK);
+      })
+      .catch(function(){ renderCampusList(CAMPUS_LIST_FALLBACK); });
+  }
+
   function initAdminReportView() {
     var recordId = new URLSearchParams(window.location.search).get("record");
     if(!recordId) return;
@@ -5287,6 +5267,7 @@
     DiscreteTTSPlayer.preloadAll();
     initAdminReportView();
     initPosterMode();
+    initCampusList();
   });
 })();
 </script>
