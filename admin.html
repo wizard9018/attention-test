@@ -449,7 +449,7 @@
   function closePwModal() { pwModalBackdrop.classList.remove("open"); }
   changePwHeaderBtn.addEventListener("click", openPwModal);
   posterBtn.addEventListener("click", function(){
-    window.open("concentration_v1.html?poster=1&ref=" + encodeURIComponent(session.teacher_id), "_blank");
+    window.open("concentration_v1.html?poster=1&ref=" + encodeURIComponent(session.teacher_id) + "&campus=" + encodeURIComponent(session.campus_name), "_blank");
   });
   pwCancelBtn.addEventListener("click", closePwModal);
   pwModalBackdrop.addEventListener("click", function(e){ if(e.target === pwModalBackdrop) closePwModal(); });

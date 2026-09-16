@@ -1048,23 +1048,70 @@
   .home-theory-text { font-size: 0.82rem; line-height: 1.7; color: var(--duo-text-body); margin: 0; }
 
   body.poster-mode header.duo-header,
-  body.poster-mode #trustSection06,
-  body.poster-mode #trustSection07 {
+  body.poster-mode .trust-dossier {
     display: none !important;
   }
-  .poster-qr-block {
+  #posterPrintBtn {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 500;
+    background: var(--duo-green);
+    color: #fff;
+    border: none;
+    border-bottom: 4px solid var(--duo-green-dark);
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+  #posterPage {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 32px auto;
+    background: #fff;
+    box-shadow: 0 10px 50px rgba(0,0,0,0.18);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    padding: 28px;
-    background: var(--duo-bg-gray);
-    border: 2px solid var(--duo-border);
-    border-bottom: 5px solid var(--duo-border-dark);
-    border-radius: 20px;
+    overflow: hidden;
   }
-  .poster-qr-block img { width: 220px; height: 220px; border-radius: 12px; }
-  .poster-qr-block .poster-qr-text { font-size: 1.15rem; font-weight: 800; color: var(--duo-text-dark); margin: 0; }
+  .poster-header { background: linear-gradient(135deg, #1e293b, #0f172a); color: #fff; text-align: center; padding: 14mm 16mm 10mm; }
+  .poster-brand { font-size: 21pt; font-weight: 900; letter-spacing: 1px; }
+  .poster-tagline { font-size: 10pt; font-weight: 600; color: #cbd5e1; margin-top: 3mm; }
+
+  .poster-hero { text-align: center; padding: 12mm 18mm 4mm; }
+  .poster-hero h1 { font-size: 18pt; font-weight: 900; color: var(--duo-text-dark); line-height: 1.5; }
+  .poster-hero h1 span { color: var(--duo-blue); }
+  .poster-hero p { font-size: 10pt; color: var(--duo-text-body); margin-top: 4mm; line-height: 1.7; }
+
+  .poster-badges { display: flex; justify-content: center; gap: 6mm; margin-top: 6mm; flex-wrap: wrap; }
+  .poster-badge { background: var(--duo-blue-light); color: var(--duo-blue-dark); font-weight: 800; font-size: 8.5pt; padding: 2mm 5mm; border-radius: 99px; }
+
+  .poster-proof { margin: 8mm 18mm 0; background: var(--duo-bg-gray); border: 1px solid var(--duo-border); border-radius: 6mm; padding: 7mm 8mm; }
+  .poster-proof-title { font-size: 10pt; font-weight: 900; color: var(--duo-text-dark); margin-bottom: 5mm; text-align: center; }
+  .poster-proof-grid { display: flex; justify-content: space-around; text-align: center; }
+  .poster-proof-stat b { display: block; font-size: 15pt; font-weight: 900; color: var(--duo-green-dark); }
+  .poster-proof-stat span { font-size: 7.5pt; color: var(--duo-text-muted); font-weight: 700; }
+
+  .poster-team { margin: 8mm 18mm 0; display: flex; justify-content: center; gap: 10mm; }
+  .poster-team-item { text-align: center; max-width: 58mm; }
+  .poster-team-item .poster-team-name { font-weight: 900; font-size: 9.5pt; color: var(--duo-text-dark); }
+  .poster-team-item .poster-team-bio { font-size: 7.5pt; color: var(--duo-text-body); margin-top: 2mm; line-height: 1.6; }
+
+  .poster-cta { margin-top: auto; background: linear-gradient(135deg, var(--duo-green), var(--duo-green-dark)); padding: 10mm 16mm 12mm; text-align: center; color: #fff; }
+  .poster-cta img { width: 40mm; height: 40mm; border-radius: 4mm; background: #fff; padding: 3mm; }
+  .poster-cta .poster-cta-text { font-size: 13pt; font-weight: 900; margin-top: 5mm; }
+  .poster-cta .poster-cta-sub { font-size: 8.5pt; margin-top: 2mm; opacity: 0.92; }
+
+  .poster-footer { background: #0f172a; color: #94a3b8; font-size: 7.5pt; text-align: center; padding: 4mm; }
+
+  @media print {
+    #posterPrintBtn, header.duo-header { display: none !important; }
+    body.poster-mode { background: #fff !important; }
+    #posterPage { margin: 0; box-shadow: none; width: auto; min-height: auto; }
+    @page { size: A4; margin: 0; }
+  }
 
   .home-form-card {
     background: var(--duo-bg-gray);
@@ -5089,15 +5136,58 @@
     var params = new URLSearchParams(window.location.search);
     if(params.get("poster") !== "1") return;
     var teacherId = params.get("ref") || "";
+    var campusName = params.get("campus") || "";
     document.body.classList.add("poster-mode");
-    if(homeHeroForm) {
-      var qrUrl = "https://wizard9018.github.io/attention-test/concentration_v1.html" + (teacherId ? ("?ref=" + encodeURIComponent(teacherId)) : "");
-      homeHeroForm.innerHTML =
-        '<div class="poster-qr-block">' +
-          '<img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(qrUrl) + '" alt="扫码参与测试二维码">' +
-          '<p class="poster-qr-text">📱 请扫码参与测试</p>' +
-        '</div>';
-    }
+
+    var qrUrl = "https://wizard9018.github.io/attention-test/concentration_v1.html" + (teacherId ? ("?ref=" + encodeURIComponent(teacherId)) : "");
+    var qrImg = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(qrUrl);
+
+    var printBtn = document.createElement("button");
+    printBtn.id = "posterPrintBtn";
+    printBtn.innerHTML = "🖨️ 打印 / 保存为 PDF";
+    printBtn.addEventListener("click", function(){ window.print(); });
+    document.body.appendChild(printBtn);
+
+    var poster = document.createElement("div");
+    poster.id = "posterPage";
+    poster.innerHTML =
+      '<div class="poster-header">' +
+        '<div class="poster-brand">清良思维</div>' +
+        '<div class="poster-tagline">视听双通道专注力训练系统 · K12 认知与专注力发展测评</div>' +
+      '</div>' +
+      '<div class="poster-hero">' +
+        '<h1>读懂孩子的<span>专注力</span>，从一次科学测评开始</h1>' +
+        '<p>10~15 分钟量化孩子的听觉序列记忆广度与视觉空间工作记忆容量，测后即时生成六大认知维度可视化发展报告。</p>' +
+        '<div class="poster-badges">' +
+          '<span class="poster-badge">🎓 清华、北大毕业生团队研发</span>' +
+          '<span class="poster-badge">🔬 中国科学院相关团队测试验证</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="poster-proof">' +
+        '<div class="poster-proof-title">真实案例 · 朱同学（六年级）专注力提升之路</div>' +
+        '<div class="poster-proof-grid">' +
+          '<div class="poster-proof-stat"><b>80→98分</b><span>数学成绩</span></div>' +
+          '<div class="poster-proof-stat"><b>7→10级</b><span>视觉专注力</span></div>' +
+          '<div class="poster-proof-stat"><b>30小时</b><span>专项训练</span></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="poster-team">' +
+        '<div class="poster-team-item">' +
+          '<div class="poster-team-name">丁大良 · 创始人</div>' +
+          '<div class="poster-team-bio">中国石油大学毕业，前世界500强工程师，"电子信息克隆分析"技术发明专利人，已帮助上千位学生提高成绩</div>' +
+        '</div>' +
+        '<div class="poster-team-item">' +
+          '<div class="poster-team-name">朱杉 · 创始人</div>' +
+          '<div class="poster-team-bio">清华大学工程学士 / 英属哥伦比亚大学MBA，10余年升学咨询经验，曾辅导学生考入哈佛、耶鲁等名校</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="poster-cta">' +
+        '<img src="' + qrImg + '" alt="扫码参与测试二维码">' +
+        '<div class="poster-cta-text">📱 请扫码参与测试</div>' +
+        (campusName ? ('<div class="poster-cta-sub">推荐校区：' + campusName + '</div>') : '') +
+      '</div>' +
+      '<div class="poster-footer">清良思维 · 认知与思维发展实验室 出品 · 孪生智能科技（天津）有限公司</div>';
+    document.getElementById("homeView").appendChild(poster);
   }
 
   function initAdminReportView() {
