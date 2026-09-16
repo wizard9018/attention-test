@@ -126,6 +126,10 @@
   .campus-banner { font-size: 0.9rem; color: var(--slate); margin-bottom: 14px; display: none; }
   .campus-banner strong { color: var(--ink); }
 
+  .tab-row { display: flex; gap: 8px; margin-bottom: 18px; border-bottom: 1px solid var(--line); }
+  .tab-btn { background: none; border: none; padding: 10px 4px; margin-right: 18px; font-size: 0.9rem; font-weight: 800; color: var(--slate); cursor: pointer; border-bottom: 2px solid transparent; }
+  .tab-btn.active { color: var(--ink); border-bottom-color: var(--brass); }
+
   .modal-backdrop {
     display: none;
     position: fixed; inset: 0;
@@ -199,29 +203,70 @@
 
 <main id="mainScreen" style="display:none;">
   <div class="campus-banner" id="campusBanner">校区：<strong id="campusNameText"></strong> · 工号：<strong id="teacherIdText"></strong></div>
-  <div class="toolbar">
-    <input type="text" id="searchInput" placeholder="按手机号/微信号或学校搜索...">
-    <button id="refreshBtn">🔄 刷新</button>
+  <div class="tab-row" id="ownerTabRow" style="display:none;">
+    <button class="tab-btn active" id="tabUsersBtn">👤 用户管理</button>
+    <button class="tab-btn" id="tabAdminsBtn">🗝️ 管理员账号管理</button>
   </div>
-  <div id="recordCount"></div>
-  <table>
-    <thead>
-      <tr>
-        <th>学生姓名</th>
-        <th>学校</th>
-        <th>手机号/微信号</th>
-        <th>年龄</th>
-        <th>听觉得分</th>
-        <th>视觉得分</th>
-        <th>综合总分</th>
-        <th id="referrerHeaderCell">推荐工号</th>
-        <th>测评日期</th>
-      </tr>
-    </thead>
-    <tbody id="recordsBody"></tbody>
-  </table>
-  <p id="emptyNote">暂无数据</p>
+
+  <div id="usersSection">
+    <div class="toolbar">
+      <input type="text" id="searchInput" placeholder="按手机号/微信号、学校或推荐工号搜索...">
+      <button id="refreshBtn">🔄 刷新</button>
+    </div>
+    <div id="recordCount"></div>
+    <table>
+      <thead>
+        <tr>
+          <th>学生姓名</th>
+          <th>学校</th>
+          <th>手机号/微信号</th>
+          <th>年龄</th>
+          <th>听觉得分</th>
+          <th>视觉得分</th>
+          <th>综合总分</th>
+          <th id="referrerHeaderCell">推荐工号</th>
+          <th>测评日期</th>
+        </tr>
+      </thead>
+      <tbody id="recordsBody"></tbody>
+    </table>
+    <p id="emptyNote">暂无数据</p>
+  </div>
+
+  <div id="adminsSection" style="display:none;">
+    <div class="toolbar">
+      <button id="refreshAdminsBtn">🔄 刷新管理员列表</button>
+    </div>
+    <div id="adminCount"></div>
+    <table>
+      <thead>
+        <tr>
+          <th>校区名称</th>
+          <th>工号</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="adminsBody"></tbody>
+    </table>
+    <p id="adminsEmptyNote" style="text-align:center; padding:40px; color:var(--slate); display:none;">暂无管理员账号</p>
+  </div>
 </main>
+
+<div class="modal-backdrop" id="resetPwModalBackdrop">
+  <div class="modal-card">
+    <h3>重置密码 · <span id="resetPwTarget"></span></h3>
+    <label>新密码</label>
+    <input type="password" id="resetPwNew" autocomplete="off">
+    <label>确认新密码</label>
+    <input type="password" id="resetPwNew2" autocomplete="off">
+    <p id="resetPwError" style="color:var(--red); font-size:0.8rem; margin-top:10px; display:none;"></p>
+    <p id="resetPwSuccess" style="color:var(--green); font-size:0.8rem; margin-top:10px; display:none;">密码已重置</p>
+    <div class="modal-actions">
+      <button id="resetPwCancelBtn" style="background:#f1f0eb; color:var(--ink);">取消</button>
+      <button id="resetPwSaveBtn" style="background:var(--green); color:#fff;">保存</button>
+    </div>
+  </div>
+</div>
 
 <div class="modal-backdrop" id="pwModalBackdrop">
   <div class="modal-card">
@@ -290,6 +335,26 @@
   var pwSaveBtn = document.getElementById("pwSaveBtn");
   var pwCancelBtn = document.getElementById("pwCancelBtn");
 
+  var ownerTabRow = document.getElementById("ownerTabRow");
+  var tabUsersBtn = document.getElementById("tabUsersBtn");
+  var tabAdminsBtn = document.getElementById("tabAdminsBtn");
+  var usersSection = document.getElementById("usersSection");
+  var adminsSection = document.getElementById("adminsSection");
+  var adminsBody = document.getElementById("adminsBody");
+  var adminCount = document.getElementById("adminCount");
+  var adminsEmptyNote = document.getElementById("adminsEmptyNote");
+  var refreshAdminsBtn = document.getElementById("refreshAdminsBtn");
+
+  var resetPwModalBackdrop = document.getElementById("resetPwModalBackdrop");
+  var resetPwTarget = document.getElementById("resetPwTarget");
+  var resetPwNew = document.getElementById("resetPwNew");
+  var resetPwNew2 = document.getElementById("resetPwNew2");
+  var resetPwError = document.getElementById("resetPwError");
+  var resetPwSuccess = document.getElementById("resetPwSuccess");
+  var resetPwSaveBtn = document.getElementById("resetPwSaveBtn");
+  var resetPwCancelBtn = document.getElementById("resetPwCancelBtn");
+  var resetPwTeacherId = null;
+
   var allRecords = [];
   var session = null; // { role: "owner" } or { role: "campus", teacher_id, campus_name }
 
@@ -323,14 +388,99 @@
       changePwHeaderBtn.style.display = "inline-block";
       posterBtn.style.display = "inline-block";
       referrerHeaderCell.style.display = "none";
+      ownerTabRow.style.display = "none";
     } else {
       campusBanner.style.display = "none";
       changePwHeaderBtn.style.display = "none";
       posterBtn.style.display = "none";
       referrerHeaderCell.style.display = "table-cell";
+      ownerTabRow.style.display = "flex";
+      showUsersTab();
     }
     loadRecords();
   }
+
+  function showUsersTab() {
+    tabUsersBtn.classList.add("active");
+    tabAdminsBtn.classList.remove("active");
+    usersSection.style.display = "block";
+    adminsSection.style.display = "none";
+  }
+  function showAdminsTab() {
+    tabAdminsBtn.classList.add("active");
+    tabUsersBtn.classList.remove("active");
+    adminsSection.style.display = "block";
+    usersSection.style.display = "none";
+    loadAdmins();
+  }
+  tabUsersBtn.addEventListener("click", showUsersTab);
+  tabAdminsBtn.addEventListener("click", showAdminsTab);
+
+  function loadAdmins() {
+    adminCount.textContent = "加载中...";
+    rpcCall("get_all_campus_admins", { p_admin_user: "admin", p_admin_pass: "admin" })
+      .then(function(list){
+        list = Array.isArray(list) ? list : [];
+        adminCount.textContent = "共 " + list.length + " 个管理员账号";
+        adminsBody.innerHTML = "";
+        adminsEmptyNote.style.display = list.length === 0 ? "block" : "none";
+        list.forEach(function(admin){
+          var tr = document.createElement("tr");
+          tr.innerHTML =
+            "<td style='font-weight:800;'>" + escapeHtml(admin.campus_name) + "</td>" +
+            "<td>" + escapeHtml(admin.teacher_id) + "</td>" +
+            "<td></td>";
+          var actionTd = tr.lastElementChild;
+          var resetBtn = document.createElement("button");
+          resetBtn.textContent = "重置密码";
+          resetBtn.style.cssText = "background:var(--blue); color:#fff; border:none; border-radius:8px; padding:6px 12px; font-size:0.8rem; font-weight:800; cursor:pointer;";
+          resetBtn.addEventListener("click", function(){ openResetPwModal(admin.teacher_id, admin.campus_name); });
+          actionTd.appendChild(resetBtn);
+          adminsBody.appendChild(tr);
+        });
+      })
+      .catch(function(err){
+        adminCount.textContent = "加载失败，请检查网络后点击刷新";
+        console.warn(err);
+      });
+  }
+  refreshAdminsBtn.addEventListener("click", loadAdmins);
+
+  function openResetPwModal(teacherId, campusName) {
+    resetPwTeacherId = teacherId;
+    resetPwTarget.textContent = campusName + "（" + teacherId + "）";
+    resetPwNew.value = ""; resetPwNew2.value = "";
+    resetPwError.style.display = "none";
+    resetPwSuccess.style.display = "none";
+    resetPwModalBackdrop.classList.add("open");
+  }
+  function closeResetPwModal() { resetPwModalBackdrop.classList.remove("open"); }
+  resetPwCancelBtn.addEventListener("click", closeResetPwModal);
+  resetPwModalBackdrop.addEventListener("click", function(e){ if(e.target === resetPwModalBackdrop) closeResetPwModal(); });
+
+  resetPwSaveBtn.addEventListener("click", function(){
+    resetPwError.style.display = "none";
+    resetPwSuccess.style.display = "none";
+    var newPw = resetPwNew.value;
+    var newPw2 = resetPwNew2.value;
+    if(!newPw) { resetPwError.textContent = "请填写新密码"; resetPwError.style.display = "block"; return; }
+    if(newPw !== newPw2) { resetPwError.textContent = "两次输入的新密码不一致"; resetPwError.style.display = "block"; return; }
+    rpcCall("admin_reset_campus_password", { p_admin_user: "admin", p_admin_pass: "admin", p_teacher_id: resetPwTeacherId, p_new_password: newPw })
+      .then(function(ok){
+        if(ok === true) {
+          resetPwSuccess.style.display = "block";
+          setTimeout(closeResetPwModal, 900);
+        } else {
+          resetPwError.textContent = "重置失败，请重试";
+          resetPwError.style.display = "block";
+        }
+      })
+      .catch(function(err){
+        resetPwError.textContent = "保存失败，请检查网络";
+        resetPwError.style.display = "block";
+        console.warn(err);
+      });
+  });
 
   function doLogin() {
     var user = loginUser.value.trim();
@@ -530,7 +680,8 @@
     if(!q) { renderRecords(allRecords); return; }
     var filtered = allRecords.filter(function(rec){
       return (rec.player_phone && rec.player_phone.toLowerCase().indexOf(q) !== -1) ||
-             (rec.player_school && rec.player_school.toLowerCase().indexOf(q) !== -1);
+             (rec.player_school && rec.player_school.toLowerCase().indexOf(q) !== -1) ||
+             (rec.referrer_teacher_id && rec.referrer_teacher_id.toLowerCase().indexOf(q) !== -1);
     });
     renderRecords(filtered);
   });
