@@ -78,6 +78,20 @@
       </view>
     </block>
 
+    <view class="expert-cta">
+      <text class="expert-cta-title">🎓 请联系专注力专家老师，获取免费测评分析</text>
+      <text class="expert-cta-sub">专业老师将结合本次测评报告，为孩子解读发展短板并给出针对性提升方案</text>
+    </view>
+
+    <view wx:if="{{campusRows.length}}" class="section-block">
+      <text class="section-label">全国校区分布，就近联系测评老师</text>
+      <view wx:for="{{campusRows}}" wx:key="index" class="campus-row">
+        <text class="campus-name">🏫 {{item.campus_name}}</text>
+        <text class="campus-addr">{{item.address}}</text>
+        <text class="campus-phone">📞 {{item.phone}}</text>
+      </view>
+    </view>
+
     <button class="btn btn-green" bindtap="goHome">返回首页</button>
   </view>
 </view>

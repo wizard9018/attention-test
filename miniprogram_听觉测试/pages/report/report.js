@@ -129,6 +129,7 @@ Page({
     diagnosisText: "",
     trainingRows: [],
     dimensionRows: [],
+    campusRows: [],
     synced: false
   },
 
@@ -143,6 +144,7 @@ Page({
 
     var dateStr = new Date().toLocaleDateString("zh-CN");
     this.setData({ playerName: info.name || "考生", playerSchool: info.school || "未填写学校", reportDate: dateStr });
+    this.loadCampuses();
 
     if (isComposite) {
       this.renderComposite(aud, vis, age);
@@ -241,6 +243,22 @@ Page({
       totalScore: totalScore,
       referrerTeacherId: info.referrerTeacherId || "",
       rawDetails: rawDetails
+    });
+  },
+
+  loadCampuses: function () {
+    var app = getApp();
+    var self = this;
+    wx.request({
+      url: app.SUPABASE_URL + "/rest/v1/campuses?select=campus_name,address,phone&order=campus_name.asc",
+      header: {
+        "apikey": app.SUPABASE_ANON_KEY,
+        "Authorization": "Bearer " + app.SUPABASE_ANON_KEY
+      },
+      success: function (res) {
+        if (Array.isArray(res.data)) self.setData({ campusRows: res.data });
+      },
+      fail: function (err) { console.warn("Campus list load note:", err); }
     });
   },
 
