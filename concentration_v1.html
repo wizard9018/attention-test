@@ -1047,8 +1047,24 @@
   .home-theory-title { font-size: 0.9rem; font-weight: 800; color: var(--duo-blue-dark); margin-bottom: 6px; }
   .home-theory-text { font-size: 0.82rem; line-height: 1.7; color: var(--duo-text-body); margin: 0; }
 
-  @keyframes onAutoFillStart { from {} to {} }
-  #homeReferrerInput:-webkit-autofill { animation-name: onAutoFillStart; }
+  body.poster-mode header.duo-header,
+  body.poster-mode #trustSection06,
+  body.poster-mode #trustSection07 {
+    display: none !important;
+  }
+  .poster-qr-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 28px;
+    background: var(--duo-bg-gray);
+    border: 2px solid var(--duo-border);
+    border-bottom: 5px solid var(--duo-border-dark);
+    border-radius: 20px;
+  }
+  .poster-qr-block img { width: 220px; height: 220px; border-radius: 12px; }
+  .poster-qr-block .poster-qr-text { font-size: 1.15rem; font-weight: 800; color: var(--duo-text-dark); margin: 0; }
 
   .home-form-card {
     background: var(--duo-bg-gray);
@@ -1712,10 +1728,6 @@
               <div class="home-form-field">
                 <label>年龄</label>
                 <input type="number" id="homeAgeInput" placeholder="请输入年龄" min="5" max="18" autocomplete="off" />
-              </div>
-              <div class="home-form-field">
-                <label>推荐老师工号（选填）</label>
-                <input type="text" id="homeReferrerInput" name="qlsw_referrer_teacher_id" placeholder="如有推荐老师，请输入其5位工号" maxlength="5" inputmode="numeric" pattern="[0-9]*" autocomplete="new-password" />
               </div>
               <button class="duo-btn btn-green home-start-btn cta-glow" id="homeStartBtn">
                 <span>开始测试 →</span>
@@ -3208,15 +3220,9 @@
   var homeSchoolInput = document.getElementById("homeSchoolInput");
   var homePhoneInput = document.getElementById("homePhoneInput");
   var homeAgeInput = document.getElementById("homeAgeInput");
-  var homeReferrerInput = document.getElementById("homeReferrerInput");
-  var currentReferrerTeacherId = "";
-  (function(){
-    var userTyped = false;
-    homeReferrerInput.addEventListener("input", function(){ userTyped = true; }, { once: true });
-    homeReferrerInput.addEventListener("animationstart", function(e){
-      if(e.animationName === "onAutoFillStart" && !userTyped) homeReferrerInput.value = "";
-    });
-    setTimeout(function(){ if(!userTyped) homeReferrerInput.value = ""; }, 300);
+  var currentReferrerTeacherId = (function(){
+    var ref = new URLSearchParams(window.location.search).get("ref") || "";
+    return /^\d{5}$/.test(ref) ? ref : "";
   })();
   var homeStartBtn = document.getElementById("homeStartBtn");
   var homeFormError = document.getElementById("homeFormError");
@@ -4791,10 +4797,6 @@
       playerSchoolInput.value = s;
       playerPhoneInput.value = p;
       playerAgeInput.value = a;
-      var referrerRaw = homeReferrerInput.value
-        .replace(/[０-９]/g, function(ch){ return String.fromCharCode(ch.charCodeAt(0) - 0xFEE0); })
-        .replace(/\s+/g, "");
-      currentReferrerTeacherId = /^\d{5}$/.test(referrerRaw) ? referrerRaw : "";
       isLoggedIn = true;
       enterAssessmentArea();
     }
@@ -5082,6 +5084,21 @@
     showFinalCompositeReport();
   }
 
+  function initPosterMode() {
+    var params = new URLSearchParams(window.location.search);
+    if(params.get("poster") !== "1") return;
+    var teacherId = params.get("ref") || "";
+    document.body.classList.add("poster-mode");
+    if(homeHeroForm) {
+      var qrUrl = window.location.origin + window.location.pathname.replace(/[^/]*$/, "") + "concentration_v1.html" + (teacherId ? ("?ref=" + encodeURIComponent(teacherId)) : "");
+      homeHeroForm.innerHTML =
+        '<div class="poster-qr-block">' +
+          '<img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(qrUrl) + '" alt="扫码参与测试二维码">' +
+          '<p class="poster-qr-text">📱 请扫码参与测试</p>' +
+        '</div>';
+    }
+  }
+
   function initAdminReportView() {
     var recordId = new URLSearchParams(window.location.search).get("record");
     if(!recordId) return;
@@ -5105,6 +5122,7 @@
     initGlowCards();
     DiscreteTTSPlayer.preloadAll();
     initAdminReportView();
+    initPosterMode();
   });
 })();
 </script>

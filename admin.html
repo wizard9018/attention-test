@@ -163,6 +163,7 @@
 <header>
   <div class="brand">清良思维 <span>管理后台</span></div>
   <div style="display:flex; align-items:center; gap:10px;">
+    <button id="posterBtn" style="display:none;">📢 我的宣传海报</button>
     <button id="changePwHeaderBtn" style="display:none;">修改密码</button>
     <button id="logoutBtn" style="display:none;">退出登录</button>
   </div>
@@ -251,6 +252,7 @@
   var mainScreen = document.getElementById("mainScreen");
   var logoutBtn = document.getElementById("logoutBtn");
   var changePwHeaderBtn = document.getElementById("changePwHeaderBtn");
+  var posterBtn = document.getElementById("posterBtn");
   var loginUser = document.getElementById("loginUser");
   var loginPass = document.getElementById("loginPass");
   (function(){
@@ -319,10 +321,12 @@
       campusNameText.textContent = session.campus_name;
       teacherIdText.textContent = session.teacher_id;
       changePwHeaderBtn.style.display = "inline-block";
+      posterBtn.style.display = "inline-block";
       referrerHeaderCell.style.display = "none";
     } else {
       campusBanner.style.display = "none";
       changePwHeaderBtn.style.display = "none";
+      posterBtn.style.display = "none";
       referrerHeaderCell.style.display = "table-cell";
     }
     loadRecords();
@@ -429,6 +433,7 @@
     mainScreen.style.display = "none";
     logoutBtn.style.display = "none";
     changePwHeaderBtn.style.display = "none";
+    posterBtn.style.display = "none";
     loginUser.value = "";
     loginPass.value = "";
     registerCard.style.display = "none";
@@ -443,6 +448,9 @@
   }
   function closePwModal() { pwModalBackdrop.classList.remove("open"); }
   changePwHeaderBtn.addEventListener("click", openPwModal);
+  posterBtn.addEventListener("click", function(){
+    window.open("concentration_v1.html?poster=1&ref=" + encodeURIComponent(session.teacher_id), "_blank");
+  });
   pwCancelBtn.addEventListener("click", closePwModal);
   pwModalBackdrop.addEventListener("click", function(e){ if(e.target === pwModalBackdrop) closePwModal(); });
 
