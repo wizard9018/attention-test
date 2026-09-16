@@ -63,14 +63,16 @@
   }
   .login-card h2 { margin: 0 0 22px; font-size: 1.2rem; text-align: center; }
   .login-card label { display: block; font-size: 0.82rem; font-weight: 800; color: var(--slate); margin: 14px 0 6px; }
-  .login-card input {
+  .login-card input, .login-card select {
     width: 100%;
     padding: 11px 14px;
     border: 2px solid var(--line);
     border-radius: 10px;
     font-size: 0.95rem;
+    font-family: inherit;
+    background: #fff;
   }
-  .login-card input:focus { outline: none; border-color: var(--brass); }
+  .login-card input:focus, .login-card select:focus { outline: none; border-color: var(--brass); }
   #loginBtn {
     width: 100%;
     margin-top: 22px;
@@ -186,8 +188,23 @@
   </div>
   <div class="login-card" id="registerCard" style="display:none;">
     <h2>📝 申请校区工号</h2>
-    <label>姓名 / 校区名称</label>
-    <input type="text" id="regName" autocomplete="off">
+    <label>姓名</label>
+    <input type="text" id="regContactName" autocomplete="off">
+    <label>校区名称</label>
+    <select id="regCampusSelect">
+      <option value="">请选择校区</option>
+      <option value="小步智学逆袭基地">小步智学逆袭基地</option>
+      <option value="海山托管中心">海山托管中心</option>
+      <option value="学霸智造塘沽店">学霸智造塘沽店</option>
+      <option value="泰达一中一小校区">泰达一中一小校区</option>
+      <option value="生态城小外校区">生态城小外校区</option>
+      <option value="泰达新天地校区">泰达新天地校区</option>
+      <option value="邯郸校区">邯郸校区</option>
+      <option value="红岩校区">红岩校区</option>
+      <option value="中新生态城小外校区">中新生态城小外校区</option>
+      <option value="泰兴市哈喽阅读馆">泰兴市哈喽阅读馆</option>
+      <option value="聊城智点通教育">聊城智点通教育</option>
+    </select>
     <label>手机号后5位（作为工号）</label>
     <input type="text" id="regTeacherId" maxlength="5" inputmode="numeric" autocomplete="off">
     <label>设置密码</label>
@@ -243,6 +260,7 @@
         <tr>
           <th>校区名称</th>
           <th>工号</th>
+          <th>联系人</th>
           <th>操作</th>
         </tr>
       </thead>
@@ -429,6 +447,7 @@
           tr.innerHTML =
             "<td style='font-weight:800;'>" + escapeHtml(admin.campus_name) + "</td>" +
             "<td>" + escapeHtml(admin.teacher_id) + "</td>" +
+            "<td>" + escapeHtml(admin.contact_name || "—") + "</td>" +
             "<td></td>";
           var actionTd = tr.lastElementChild;
           var resetBtn = document.createElement("button");
@@ -517,7 +536,8 @@
   var registerCard = document.getElementById("registerCard");
   var showRegisterLink = document.getElementById("showRegisterLink");
   var showLoginLink = document.getElementById("showLoginLink");
-  var regName = document.getElementById("regName");
+  var regContactName = document.getElementById("regContactName");
+  var regCampusSelect = document.getElementById("regCampusSelect");
   var regTeacherId = document.getElementById("regTeacherId");
   var regPass = document.getElementById("regPass");
   var regPass2 = document.getElementById("regPass2");
@@ -537,11 +557,12 @@
   registerBtn.addEventListener("click", function(){
     registerError.style.display = "none";
     registerSuccess.style.display = "none";
-    var name = regName.value.trim();
+    var contactName = regContactName.value.trim();
+    var campusName = regCampusSelect.value;
     var teacherId = regTeacherId.value.trim();
     var pass = regPass.value;
     var pass2 = regPass2.value;
-    if(!name || !teacherId || !pass) {
+    if(!contactName || !campusName || !teacherId || !pass) {
       registerError.textContent = "请填写完整";
       registerError.style.display = "block";
       return;
@@ -559,13 +580,13 @@
     fetch(SUPABASE_URL + "/rest/v1/" + ADMINS_TABLE, {
       method: "POST",
       headers: supabaseHeaders({ "Content-Type": "application/json", "Prefer": "return=minimal" }),
-      body: JSON.stringify({ teacher_id: teacherId, password: pass, campus_name: name })
+      body: JSON.stringify({ teacher_id: teacherId, password: pass, campus_name: campusName, contact_name: contactName })
     })
       .then(function(res){
         if(res.status === 409 || res.status === 400) { throw { duplicate: true }; }
         if(!res.ok) { throw { failed: true }; }
         registerSuccess.style.display = "block";
-        session = { role: "campus", teacher_id: teacherId, campus_name: name, password: pass };
+        session = { role: "campus", teacher_id: teacherId, campus_name: campusName, password: pass };
         sessionStorage.setItem("qlsw_admin_auth", JSON.stringify(session));
         setTimeout(showMain, 600);
       })
