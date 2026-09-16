@@ -105,6 +105,16 @@
     font-size: 0.9rem;
   }
   #searchInput:focus { outline: none; border-color: var(--brass); }
+  #campusFilterSelect {
+    padding: 10px 14px;
+    border: 2px solid var(--line);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    background: #fff;
+    flex: 0 1 220px;
+  }
+  #campusFilterSelect:focus { outline: none; border-color: var(--brass); }
   .toolbar button {
     padding: 10px 16px;
     border-radius: 10px;
@@ -228,6 +238,9 @@
   <div id="usersSection">
     <div class="toolbar">
       <input type="text" id="searchInput" placeholder="按手机号/微信号、学校或推荐工号搜索...">
+      <select id="campusFilterSelect" style="display:none;">
+        <option value="">全部校区</option>
+      </select>
       <button id="refreshBtn">🔄 刷新</button>
     </div>
     <div id="recordCount"></div>
@@ -335,6 +348,7 @@
   var loginBtn = document.getElementById("loginBtn");
   var loginError = document.getElementById("loginError");
   var searchInput = document.getElementById("searchInput");
+  var campusFilterSelect = document.getElementById("campusFilterSelect");
   var refreshBtn = document.getElementById("refreshBtn");
   var recordsBody = document.getElementById("recordsBody");
   var recordCount = document.getElementById("recordCount");
@@ -407,15 +421,33 @@
       posterBtn.style.display = "inline-block";
       referrerHeaderCell.style.display = "none";
       ownerTabRow.style.display = "none";
+      campusFilterSelect.style.display = "none";
     } else {
       campusBanner.style.display = "none";
       changePwHeaderBtn.style.display = "none";
       posterBtn.style.display = "none";
       referrerHeaderCell.style.display = "table-cell";
       ownerTabRow.style.display = "flex";
+      campusFilterSelect.style.display = "inline-block";
       showUsersTab();
+      loadCampusFilterOptions();
     }
     loadRecords();
+  }
+
+  function loadCampusFilterOptions() {
+    rpcCall("get_all_campus_admins", { p_admin_user: "admin", p_admin_pass: "admin" })
+      .then(function(list){
+        list = Array.isArray(list) ? list : [];
+        campusFilterSelect.innerHTML = '<option value="">全部校区</option>';
+        list.forEach(function(admin){
+          var opt = document.createElement("option");
+          opt.value = admin.teacher_id;
+          opt.textContent = admin.campus_name + "（" + admin.teacher_id + "）";
+          campusFilterSelect.appendChild(opt);
+        });
+      })
+      .catch(function(err){ console.warn(err); });
   }
 
   function showUsersTab() {
@@ -696,16 +728,20 @@
     });
   }
 
-  searchInput.addEventListener("input", function(){
+  function applyFilters() {
     var q = searchInput.value.trim().toLowerCase();
-    if(!q) { renderRecords(allRecords); return; }
+    var campusTeacherId = campusFilterSelect.value;
     var filtered = allRecords.filter(function(rec){
+      if(campusTeacherId && rec.referrer_teacher_id !== campusTeacherId) return false;
+      if(!q) return true;
       return (rec.player_phone && rec.player_phone.toLowerCase().indexOf(q) !== -1) ||
              (rec.player_school && rec.player_school.toLowerCase().indexOf(q) !== -1) ||
              (rec.referrer_teacher_id && rec.referrer_teacher_id.toLowerCase().indexOf(q) !== -1);
     });
     renderRecords(filtered);
-  });
+  }
+  searchInput.addEventListener("input", applyFilters);
+  campusFilterSelect.addEventListener("change", applyFilters);
 
   refreshBtn.addEventListener("click", loadRecords);
 
