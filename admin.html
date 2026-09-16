@@ -213,6 +213,7 @@
         <th>听觉得分</th>
         <th>视觉得分</th>
         <th>综合总分</th>
+        <th id="referrerHeaderCell">推荐工号</th>
         <th>测评日期</th>
       </tr>
     </thead>
@@ -274,6 +275,7 @@
   var recordCount = document.getElementById("recordCount");
   var emptyNote = document.getElementById("emptyNote");
   var campusBanner = document.getElementById("campusBanner");
+  var referrerHeaderCell = document.getElementById("referrerHeaderCell");
   var campusNameText = document.getElementById("campusNameText");
   var teacherIdText = document.getElementById("teacherIdText");
 
@@ -317,9 +319,11 @@
       campusNameText.textContent = session.campus_name;
       teacherIdText.textContent = session.teacher_id;
       changePwHeaderBtn.style.display = "inline-block";
+      referrerHeaderCell.style.display = "none";
     } else {
       campusBanner.style.display = "none";
       changePwHeaderBtn.style.display = "none";
+      referrerHeaderCell.style.display = "table-cell";
     }
     loadRecords();
   }
@@ -504,6 +508,7 @@
         "<td class='score-cell' style='color:var(--blue);'>" + (rec.auditory_score || "—") + "</td>" +
         "<td class='score-cell' style='color:var(--green);'>" + (rec.visual_score || "—") + "</td>" +
         "<td class='score-cell' style='color:var(--brass);'>" + (rec.total_score || "—") + "</td>" +
+        (session.role === "campus" ? "" : "<td>" + escapeHtml(rec.referrer_teacher_id || "—") + "</td>") +
         "<td style='color:var(--slate); font-size:0.8rem;'>" + (rec.test_date || "") + "</td>";
       tr.addEventListener("click", function(){
         window.open("concentration_v1.html?record=" + encodeURIComponent(rec.record_id), "_blank");
