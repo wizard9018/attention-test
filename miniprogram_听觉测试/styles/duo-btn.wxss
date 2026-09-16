@@ -1,0 +1,22 @@
+/* Duolingo 风格 3D 按钮：深色 border-bottom 模拟厚度，按下时下沉+边框变薄。
+   通过 hover-class="btn-pressed" 挂在 <button> 上触发按下态。
+   首页 (pages/home) 不引入这个文件，保留自己原本的样式。 */
+.btn {
+  width: 100%;
+  border: none;
+  border-radius: 16rpx;
+  font-weight: 900;
+  font-size: 28rpx;
+  margin-bottom: 20rpx;
+  padding: 0;
+  height: 88rpx;
+  line-height: 88rpx;
+  transition: transform 0.05s, border-bottom-width 0.05s;
+}
+.btn-pressed { transform: translateY(6rpx); filter: brightness(0.97); }
+
+.btn-green { background: #58cc02; color: #fff; border-bottom: 8rpx solid #46a302; }
+.btn-green.btn-pressed { border-bottom-width: 3rpx; }
+
+.btn-ghost { background: #f1f0eb; color: #5b6472; border-bottom: 8rpx solid #d8d5cc; }
+.btn-ghost.btn-pressed { border-bottom-width: 3rpx; }

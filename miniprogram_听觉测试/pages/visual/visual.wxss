@@ -1,3 +1,5 @@
+@import "../../styles/duo-btn.wxss";
+
 .page {
   min-height: 100vh;
   background: #f7f5ef;
@@ -78,16 +80,6 @@
   min-height: 32rpx;
 }
 
-.btn {
-  width: 100%;
-  border-radius: 16rpx;
-  font-weight: 800;
-  font-size: 28rpx;
-  margin-bottom: 16rpx;
-}
-.btn-green { background: #58cc02; color: #fff; }
-.btn-ghost { background: #f1f0eb; color: #5b6472; }
-
 .banner { border-radius: 16rpx; padding: 24rpx; margin-bottom: 24rpx; }
 .banner.pass { background: rgba(88,204,2,0.1); }
 .banner.fail { background: rgba(255,75,75,0.1); }
@@ -97,7 +89,7 @@
 .result-grids {
   display: flex;
   gap: 20rpx;
-  margin-bottom: 24rpx;
+  margin-bottom: 32rpx;
 }
 .result-grid-col { flex: 1; }
 .chip-row-label {

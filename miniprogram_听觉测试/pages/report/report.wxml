@@ -2,7 +2,7 @@
   <brand-header></brand-header>
   <view wx:if="{{!hasData}}" class="card">
     <text class="empty-text">暂无{{typeLabel}}测评数据，请先完成对应测试。</text>
-    <button class="btn btn-green" bindtap="goHome">返回</button>
+    <button class="btn btn-green" hover-class="btn-pressed" bindtap="goHome">返回</button>
   </view>
 
   <view wx:else class="card">
@@ -92,6 +92,6 @@
       </view>
     </view>
 
-    <button class="btn btn-green" bindtap="goHome">返回首页</button>
+    <button class="btn btn-green" hover-class="btn-pressed" bindtap="goHome">返回首页</button>
   </view>
 </view>
