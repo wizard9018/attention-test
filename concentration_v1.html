@@ -4994,7 +4994,10 @@
     document.body.classList.add("poster-mode");
 
     var qrUrl = "https://wizard9018.github.io/attention-test/concentration_v1.html" + (teacherId ? ("?ref=" + encodeURIComponent(teacherId)) : "");
-    var qrImg = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(qrUrl);
+    // 有工号时优先用小程序码（扫码直接跳进小程序）；没有工号（异常情况）才退回网页二维码
+    var qrImg = teacherId
+      ? "https://knhpwhdgzwhdpnbsrbty.supabase.co/functions/v1/wxacode?ref=" + encodeURIComponent(teacherId)
+      : "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(qrUrl);
 
     var printBtn = document.createElement("button");
     printBtn.id = "posterPrintBtn";
