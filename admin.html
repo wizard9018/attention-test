@@ -597,9 +597,13 @@
       .then(function(ok){
         if(ok === true) {
           addCampusSuccess.style.display = "block";
-          addCampusSuccess.textContent = isEditingCampus ? "已保存修改" : "已添加，主页校区列表和工号申请下拉菜单会同步出现";
+          var autoTeacherId = phone.replace(/\D/g, "").slice(-5);
+          addCampusSuccess.textContent = isEditingCampus
+            ? "已保存修改"
+            : "已添加，并自动生成主工号：" + autoTeacherId + "（初始密码同工号，其他老师可自行申请子工号）";
           loadCampusOptions();
           if(campusesSection.style.display !== "none") loadCampusesList();
+          if(adminsSection.style.display !== "none") loadAdmins();
           setTimeout(closeAddCampusModal, 1200);
         } else {
           addCampusError.textContent = "保存失败，请重试";
