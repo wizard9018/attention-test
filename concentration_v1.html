@@ -4430,17 +4430,15 @@
 
     fetch(SUPABASE_URL + "/rest/v1/" + SUPABASE_TABLE, {
       method: "POST",
-      headers: supabaseHeaders({ "Content-Type": "application/json", "Prefer": "return=representation" }),
+      headers: supabaseHeaders({ "Content-Type": "application/json", "Prefer": "return=minimal" }),
       body: JSON.stringify(payload)
     })
-    .then(function(res){ return res.json(); })
-    .then(function(data){
-      var rec = Array.isArray(data) ? data[0] : data;
-      if(rec && rec.record_id) {
+    .then(function(res){
+      if(res.ok) {
         var badge = document.getElementById("cloudSyncBadge");
         if(badge) {
           badge.style.display = "inline-flex";
-          badge.innerHTML = '<span>☁️ Supabase 数据库：成绩已自动安全同步至云端 (存档编号: ' + rec.record_id + ')</span>';
+          badge.innerHTML = '<span>☁️ Supabase 数据库：成绩已自动安全同步至云端 (存档编号: ' + payload.record_id + ')</span>';
         }
       }
       loadCloudLeaderboard(age);
