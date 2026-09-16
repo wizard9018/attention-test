@@ -311,6 +311,20 @@
   </div>
 </div>
 
+<div class="modal-backdrop" id="editContactModalBackdrop">
+  <div class="modal-card">
+    <h3>编辑联系人 · <span id="editContactTarget"></span></h3>
+    <label>联系人姓名</label>
+    <input type="text" id="editContactName" autocomplete="off">
+    <p id="editContactError" style="color:var(--red); font-size:0.8rem; margin-top:10px; display:none;"></p>
+    <p id="editContactSuccess" style="color:var(--green); font-size:0.8rem; margin-top:10px; display:none;">已保存</p>
+    <div class="modal-actions">
+      <button id="editContactCancelBtn" style="background:#f1f0eb; color:var(--ink);">取消</button>
+      <button id="editContactSaveBtn" style="background:var(--green); color:#fff;">保存</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-backdrop" id="resetPwModalBackdrop">
   <div class="modal-card">
     <h3>重置密码 · <span id="resetPwTarget"></span></h3>
@@ -422,6 +436,15 @@
   var campusesCount = document.getElementById("campusesCount");
   var campusesEmptyNote = document.getElementById("campusesEmptyNote");
   var refreshCampusesBtn = document.getElementById("refreshCampusesBtn");
+
+  var editContactModalBackdrop = document.getElementById("editContactModalBackdrop");
+  var editContactTarget = document.getElementById("editContactTarget");
+  var editContactName = document.getElementById("editContactName");
+  var editContactError = document.getElementById("editContactError");
+  var editContactSuccess = document.getElementById("editContactSuccess");
+  var editContactSaveBtn = document.getElementById("editContactSaveBtn");
+  var editContactCancelBtn = document.getElementById("editContactCancelBtn");
+  var editContactTeacherId = null;
 
   var resetPwModalBackdrop = document.getElementById("resetPwModalBackdrop");
   var resetPwTarget = document.getElementById("resetPwTarget");
@@ -542,6 +565,12 @@
             "<td>" + escapeHtml(admin.contact_name || "—") + "</td>" +
             "<td></td>";
           var actionTd = tr.lastElementChild;
+          actionTd.style.cssText = "display:flex; gap:8px;";
+          var editContactBtn = document.createElement("button");
+          editContactBtn.textContent = "编辑联系人";
+          editContactBtn.style.cssText = "background:var(--brass); color:#fff; border:none; border-radius:8px; padding:6px 12px; font-size:0.8rem; font-weight:800; cursor:pointer;";
+          editContactBtn.addEventListener("click", function(){ openEditContactModal(admin.teacher_id, admin.campus_name, admin.contact_name); });
+          actionTd.appendChild(editContactBtn);
           var resetBtn = document.createElement("button");
           resetBtn.textContent = "重置密码";
           resetBtn.style.cssText = "background:var(--blue); color:#fff; border:none; border-radius:8px; padding:6px 12px; font-size:0.8rem; font-weight:800; cursor:pointer;";
@@ -650,6 +679,40 @@
       });
   }
   refreshCampusesBtn.addEventListener("click", loadCampusesList);
+
+  function openEditContactModal(teacherId, campusName, contactName) {
+    editContactTeacherId = teacherId;
+    editContactTarget.textContent = campusName + "（" + teacherId + "）";
+    editContactName.value = contactName || "";
+    editContactError.style.display = "none";
+    editContactSuccess.style.display = "none";
+    editContactModalBackdrop.classList.add("open");
+  }
+  function closeEditContactModal() { editContactModalBackdrop.classList.remove("open"); }
+  editContactCancelBtn.addEventListener("click", closeEditContactModal);
+  editContactModalBackdrop.addEventListener("click", function(e){ if(e.target === editContactModalBackdrop) closeEditContactModal(); });
+
+  editContactSaveBtn.addEventListener("click", function(){
+    editContactError.style.display = "none";
+    editContactSuccess.style.display = "none";
+    var newName = editContactName.value.trim();
+    rpcCall("admin_update_contact_name", { p_admin_user: "admin", p_admin_pass: "admin", p_teacher_id: editContactTeacherId, p_contact_name: newName })
+      .then(function(ok){
+        if(ok === true) {
+          editContactSuccess.style.display = "block";
+          loadAdmins();
+          setTimeout(closeEditContactModal, 900);
+        } else {
+          editContactError.textContent = "保存失败，请重试";
+          editContactError.style.display = "block";
+        }
+      })
+      .catch(function(err){
+        editContactError.textContent = "保存失败，请检查网络";
+        editContactError.style.display = "block";
+        console.warn(err);
+      });
+  });
 
   function openResetPwModal(teacherId, campusName) {
     resetPwTeacherId = teacherId;
