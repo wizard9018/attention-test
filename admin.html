@@ -470,6 +470,12 @@
     return h;
   }
 
+  function ownerAuth(extra) {
+    var params = { p_admin_user: "admin", p_admin_pass: "admin" };
+    if(extra) { for(var k in extra) params[k] = extra[k]; }
+    return params;
+  }
+
   function rpcCall(name, body) {
     return fetch(SUPABASE_URL + "/rest/v1/rpc/" + name, {
       method: "POST",
@@ -505,7 +511,7 @@
   }
 
   function loadCampusFilterOptions() {
-    rpcCall("get_all_campus_admins", { p_admin_user: "admin", p_admin_pass: "admin" })
+    rpcCall("get_all_campus_admins", ownerAuth())
       .then(function(list){
         list = Array.isArray(list) ? list : [];
         campusFilterSelect.innerHTML = '<option value="">全部校区</option>';
@@ -551,7 +557,7 @@
 
   function loadAdmins() {
     adminCount.textContent = "加载中...";
-    rpcCall("get_all_campus_admins", { p_admin_user: "admin", p_admin_pass: "admin" })
+    rpcCall("get_all_campus_admins", ownerAuth())
       .then(function(list){
         list = Array.isArray(list) ? list : [];
         adminCount.textContent = "共 " + list.length + " 个管理员账号";
@@ -622,7 +628,7 @@
       addCampusError.style.display = "block";
       return;
     }
-    rpcCall("add_campus", { p_admin_user: "admin", p_admin_pass: "admin", p_campus_name: name, p_address: addr, p_phone: phone })
+    rpcCall("add_campus", ownerAuth({ p_campus_name: name, p_address: addr, p_phone: phone }))
       .then(function(ok){
         if(ok === true) {
           addCampusSuccess.style.display = "block";
@@ -696,7 +702,7 @@
     editContactError.style.display = "none";
     editContactSuccess.style.display = "none";
     var newName = editContactName.value.trim();
-    rpcCall("admin_update_contact_name", { p_admin_user: "admin", p_admin_pass: "admin", p_teacher_id: editContactTeacherId, p_contact_name: newName })
+    rpcCall("admin_update_contact_name", ownerAuth({ p_teacher_id: editContactTeacherId, p_contact_name: newName }))
       .then(function(ok){
         if(ok === true) {
           editContactSuccess.style.display = "block";
@@ -733,7 +739,7 @@
     var newPw2 = resetPwNew2.value;
     if(!newPw) { resetPwError.textContent = "请填写新密码"; resetPwError.style.display = "block"; return; }
     if(newPw !== newPw2) { resetPwError.textContent = "两次输入的新密码不一致"; resetPwError.style.display = "block"; return; }
-    rpcCall("admin_reset_campus_password", { p_admin_user: "admin", p_admin_pass: "admin", p_teacher_id: resetPwTeacherId, p_new_password: newPw })
+    rpcCall("admin_reset_campus_password", ownerAuth({ p_teacher_id: resetPwTeacherId, p_new_password: newPw }))
       .then(function(ok){
         if(ok === true) {
           resetPwSuccess.style.display = "block";
@@ -905,7 +911,7 @@
     var rpcName = session.role === "campus" ? "get_campus_records" : "get_all_records";
     var body = session.role === "campus"
       ? { p_teacher_id: session.teacher_id, p_password: session.password }
-      : { p_admin_user: "admin", p_admin_pass: "admin" };
+      : ownerAuth();
     recordCount.textContent = "加载中...";
     rpcCall(rpcName, body)
       .then(function(list){
@@ -962,22 +968,35 @@
 
   refreshBtn.addEventListener("click", loadRecords);
 
+  var CAMPUS_NAMES_FALLBACK = [
+    "小步智学逆袭基地", "海山托管中心", "学霸智造塘沽店", "泰达一中一小校区",
+    "生态城小外校区", "泰达新天地校区", "邯郸校区", "红岩校区",
+    "中新生态城小外校区", "泰兴市哈喽阅读馆", "聊城智点通教育"
+  ];
+
+  function renderCampusOptions(names) {
+    regCampusSelect.innerHTML = '<option value="">请选择校区</option>';
+    names.forEach(function(name){
+      var opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      regCampusSelect.appendChild(opt);
+    });
+  }
+
   function loadCampusOptions() {
     fetch(SUPABASE_URL + "/rest/v1/campuses?select=campus_name&order=campus_name.asc", {
       headers: supabaseHeaders()
     })
       .then(function(res){ return res.json(); })
       .then(function(list){
-        list = Array.isArray(list) ? list : [];
-        regCampusSelect.innerHTML = '<option value="">请选择校区</option>';
-        list.forEach(function(c){
-          var opt = document.createElement("option");
-          opt.value = c.campus_name;
-          opt.textContent = c.campus_name;
-          regCampusSelect.appendChild(opt);
-        });
+        var names = Array.isArray(list) && list.length > 0 ? list.map(function(c){ return c.campus_name; }) : CAMPUS_NAMES_FALLBACK;
+        renderCampusOptions(names);
       })
-      .catch(function(err){ console.warn(err); });
+      .catch(function(err){
+        console.warn(err);
+        renderCampusOptions(CAMPUS_NAMES_FALLBACK);
+      });
   }
   loadCampusOptions();
 
