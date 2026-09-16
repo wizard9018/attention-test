@@ -1,0 +1,15 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/auditory/auditory",
+    "pages/visual/visual",
+    "pages/report/report"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#10131a",
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "清良思维 · 听觉专注力测试",
+    "backgroundColor": "#f7f5ef"
+  },
+  "sitemapLocation": "sitemap.json"
+}

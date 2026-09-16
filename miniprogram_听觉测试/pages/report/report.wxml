@@ -1,0 +1,52 @@
+<view class="page">
+  <view wx:if="{{!hasData}}" class="card">
+    <text class="empty-text">暂无{{typeLabel}}测评数据，请先完成对应测试。</text>
+    <button class="btn btn-green" bindtap="goHome">返回</button>
+  </view>
+
+  <view wx:else class="card">
+    <view class="player-row">
+      <text class="player-item">考生：{{playerName}}</text>
+      <text class="player-item">学校：{{playerSchool}}</text>
+      <text class="player-item">日期：{{reportDate}}</text>
+    </view>
+
+    <text class="report-title">{{isComposite ? '📊 视听双通道综合专注力评估报告' : ('📊 ' + typeLabel + '测评报告')}}</text>
+
+    <block wx:if="{{isComposite}}">
+      <view class="score-box">
+        <text class="score-num">{{compositeTotal}}</text>
+        <text class="score-unit">综合总分</text>
+      </view>
+      <view class="composite-sub-row">
+        <text class="composite-sub">🎧 听觉 第 {{auditoryLevel}} 级</text>
+        <text class="composite-sub">👁️ 视觉 第 {{visualLevel}} 级</text>
+      </view>
+    </block>
+    <block wx:else>
+      <view class="score-box">
+        <text class="score-num">{{finalLevel}}</text>
+        <text class="score-unit">级 / 满 {{maxLevel}} 级</text>
+      </view>
+    </block>
+
+    <view class="grade-badge {{gradeCls}}">{{gradeText}}</view>
+
+    <text wx:if="{{interpretation}}" class="interpretation">{{interpretation}}</text>
+
+    <block wx:if="{{!isComposite}}">
+      <text class="section-label">逐级测评记录</text>
+      <view class="history-list">
+        <view wx:for="{{historyRows}}" wx:key="index" class="history-row">
+          <text class="history-label">{{item.label}}</text>
+          <view class="history-right">
+            <text class="history-detail">{{item.detail}}</text>
+            <text class="history-status {{item.passed ? 'pass' : 'fail'}}">{{item.passed ? '通过' : '未通过'}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <button class="btn btn-green" bindtap="goHome">返回首页</button>
+  </view>
+</view>

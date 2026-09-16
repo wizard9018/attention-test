@@ -1,0 +1,112 @@
+.page {
+  min-height: 100vh;
+  background: #f7f5ef;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+.card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 40rpx 32rpx;
+  box-shadow: 0 2rpx 12rpx rgba(16,19,26,0.06);
+}
+.empty-text {
+  display: block;
+  text-align: center;
+  font-size: 26rpx;
+  color: #5b6472;
+  margin-bottom: 24rpx;
+}
+.player-row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8rpx 20rpx;
+  margin-bottom: 20rpx;
+}
+.player-item { font-size: 22rpx; color: #9aa1b0; }
+
+.report-title {
+  display: block;
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: 800;
+  color: #10131a;
+  margin-bottom: 28rpx;
+}
+.composite-sub-row {
+  display: flex;
+  justify-content: center;
+  gap: 32rpx;
+  margin-bottom: 20rpx;
+}
+.composite-sub { font-size: 26rpx; font-weight: 700; color: #5b6472; }
+.score-box {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10rpx;
+  margin-bottom: 20rpx;
+}
+.score-num {
+  font-size: 96rpx;
+  font-weight: 900;
+  color: #b08d57;
+}
+.score-unit { font-size: 26rpx; color: #5b6472; }
+
+.grade-badge {
+  display: block;
+  text-align: center;
+  font-size: 26rpx;
+  font-weight: 800;
+  padding: 14rpx;
+  border-radius: 16rpx;
+  margin-bottom: 24rpx;
+}
+.grade-superior { background: rgba(28,176,246,0.12); color: #1cb0f6; }
+.grade-excellent { background: rgba(88,204,2,0.12); color: #4ade80; }
+.grade-good { background: rgba(250,204,21,0.15); color: #b45309; }
+.grade-developing { background: rgba(251,146,60,0.14); color: #c2410c; }
+
+.interpretation {
+  display: block;
+  font-size: 24rpx;
+  line-height: 1.75;
+  color: #5b6472;
+  background: #f7f5ef;
+  padding: 20rpx;
+  border-radius: 16rpx;
+  margin-bottom: 28rpx;
+}
+
+.section-label {
+  display: block;
+  font-size: 24rpx;
+  font-weight: 800;
+  color: #10131a;
+  margin-bottom: 14rpx;
+}
+.history-list { margin-bottom: 28rpx; }
+.history-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1px solid #e6e1d6;
+}
+.history-row:last-child { border-bottom: none; }
+.history-label { font-size: 24rpx; color: #10131a; font-weight: 700; }
+.history-right { display: flex; align-items: center; gap: 12rpx; }
+.history-detail { font-size: 22rpx; color: #9aa1b0; }
+.history-status { font-size: 22rpx; font-weight: 800; }
+.history-status.pass { color: #58cc02; }
+.history-status.fail { color: #ff4b4b; }
+
+.btn {
+  width: 100%;
+  border-radius: 16rpx;
+  font-weight: 800;
+  font-size: 28rpx;
+}
+.btn-green { background: #58cc02; color: #fff; }

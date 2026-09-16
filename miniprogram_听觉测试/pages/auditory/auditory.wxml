@@ -1,0 +1,70 @@
+<view class="page">
+  <view class="header">
+    <text class="level-title">{{levelTitle}}</text>
+    <text class="level-tag">{{levelTag}}</text>
+  </view>
+  <text class="attempt-desc">{{attemptDesc}}</text>
+
+  <!-- 播放阶段 -->
+  <view wx:if="{{stage === 'playing'}}" class="card">
+    <view class="cue-track">
+      <view
+        wx:for="{{cueDots}}"
+        wx:key="index"
+        class="cue-dot {{item}}"
+      ></view>
+    </view>
+    <text class="playing-text">{{playingText}}</text>
+  </view>
+
+  <!-- 输入阶段 -->
+  <view wx:if="{{stage === 'input'}}" class="card">
+    <text class="input-hint">已听完 {{sequenceLen}} 个字，请输入拼音（每个字用空格隔开，如：ni3 hao3）</text>
+    <input
+      class="pinyin-input"
+      value="{{inputValue}}"
+      placeholder="请输入拼音，空格分隔"
+      bindinput="onInputChange"
+      confirm-type="done"
+      bindconfirm="submitAnswer"
+    />
+    <button class="btn btn-green" bindtap="submitAnswer">提交答案</button>
+    <button class="btn btn-ghost" bindtap="replayCurrent">🔁 重听本轮</button>
+  </view>
+
+  <!-- 结果阶段 -->
+  <view wx:if="{{stage === 'result'}}" class="card">
+    <view class="banner {{bannerClass}}">
+      <text class="banner-title">{{bannerTitle}}</text>
+      <text class="banner-sub">{{bannerSub}}</text>
+    </view>
+
+    <view class="chip-row-label">标准读音</view>
+    <view class="chip-row">
+      <view wx:for="{{targetChips}}" wx:key="index" class="chip">
+        <text class="chip-main">{{item.py}}</text>
+        <text class="chip-sub">{{item.tone}}声</text>
+      </view>
+    </view>
+
+    <view class="chip-row-label">你的作答</view>
+    <view class="chip-row">
+      <view wx:for="{{actualChips}}" wx:key="index" class="chip chip-{{item.status}}">
+        <text class="chip-main">{{item.py}}</text>
+        <text class="chip-sub">{{item.tone}}</text>
+      </view>
+    </view>
+
+    <button class="btn btn-green" bindtap="onBannerAction">{{bannerBtnText}}</button>
+  </view>
+
+  <!-- 完成阶段 -->
+  <view wx:if="{{stage === 'done'}}" class="card">
+    <text class="done-title">🏆 听觉专注力测试完成</text>
+    <text class="done-sub">最终等级：第 {{finalLevel}} 级</text>
+    <text class="done-sub">已通过级别：{{passedLevelsText}}</text>
+    <button class="btn btn-green" bindtap="goReport">📊 查看听觉测评报告</button>
+    <button class="btn btn-green" bindtap="goVisual">👁️ 继续挑战视觉专注力测试</button>
+    <button class="btn btn-ghost" bindtap="restart">重新开始</button>
+  </view>
+</view>
