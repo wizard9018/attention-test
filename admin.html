@@ -501,9 +501,9 @@
         "<td>" + escapeHtml(rec.player_school) + "</td>" +
         "<td>" + escapeHtml(rec.player_phone) + "</td>" +
         "<td>" + (rec.player_age || "-") + "</td>" +
-        "<td class='score-cell' style='color:var(--blue);'>" + rec.auditory_score + "</td>" +
-        "<td class='score-cell' style='color:var(--green);'>" + rec.visual_score + "</td>" +
-        "<td class='score-cell' style='color:var(--brass);'>" + rec.total_score + "</td>" +
+        "<td class='score-cell' style='color:var(--blue);'>" + (rec.auditory_score || "—") + "</td>" +
+        "<td class='score-cell' style='color:var(--green);'>" + (rec.visual_score || "—") + "</td>" +
+        "<td class='score-cell' style='color:var(--brass);'>" + (rec.total_score || "—") + "</td>" +
         "<td style='color:var(--slate); font-size:0.8rem;'>" + (rec.test_date || "") + "</td>";
       tr.addEventListener("click", function(){
         window.open("concentration_v1.html?record=" + encodeURIComponent(rec.record_id), "_blank");
