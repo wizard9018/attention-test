@@ -39,6 +39,30 @@
   margin-bottom: 20rpx;
 }
 
+.view-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  flex-wrap: wrap;
+  margin-bottom: 20rpx;
+}
+.view-stage-label { text-align: left; margin-bottom: 0; flex: 1; min-width: 320rpx; }
+.btn-skip-view {
+  background: #1cb0f6;
+  color: #fff;
+  font-size: 24rpx;
+  font-weight: 900;
+  padding: 0 24rpx;
+  height: 64rpx;
+  line-height: 64rpx;
+  border: none;
+  border-radius: 14rpx;
+  border-bottom: 6rpx solid #1899d6;
+  margin: 0;
+}
+.btn-skip-view.btn-pressed { border-bottom-width: 2rpx; }
+
 .corsi-grid {
   display: grid;
   grid-template-columns: repeat(10, 1fr);

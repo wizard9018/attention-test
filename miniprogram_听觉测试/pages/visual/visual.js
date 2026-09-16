@@ -139,6 +139,12 @@ Page({
     }, 1000);
   },
 
+  skipViewStage: function () {
+    if (this.viewTimer) { clearInterval(this.viewTimer); this.viewTimer = null; }
+    this.viewDuration = Math.round((Date.now() - this.viewStartTime) / 1000);
+    this.startMathStage();
+  },
+
   startMathStage: function () {
     if (this.viewTimer) { clearInterval(this.viewTimer); this.viewTimer = null; }
     this.mathStartTime = Date.now();

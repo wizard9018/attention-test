@@ -8,7 +8,10 @@
 
   <!-- 查看阶段 -->
   <view wx:if="{{stage === 'view'}}" class="card">
-    <text class="stage-label">👁️ 请记住色块的位置 · 剩余 {{timeLeft}}s</text>
+    <view class="view-head">
+      <text class="stage-label view-stage-label">👁️ 请记住色块的位置 · 剩余 {{timeLeft}}s</text>
+      <button class="btn-skip-view" hover-class="btn-pressed" bindtap="skipViewStage">我已记好 →</button>
+    </view>
     <view class="corsi-grid">
       <view wx:for="{{gridCells}}" wx:key="index" class="cell {{item}}"></view>
     </view>
