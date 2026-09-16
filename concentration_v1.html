@@ -1127,6 +1127,9 @@
     @page { size: A4; margin: 0; }
   }
 
+  @keyframes onAutoFillStart { from {} to {} }
+  #homeReferrerInput:-webkit-autofill { animation-name: onAutoFillStart; }
+
   .home-form-card {
     background: var(--duo-bg-gray);
     border: 2px solid var(--duo-border);
@@ -1785,6 +1788,10 @@
               <div class="home-form-field">
                 <label>年龄</label>
                 <input type="number" id="homeAgeInput" placeholder="请输入年龄" min="5" max="18" autocomplete="off" />
+              </div>
+              <div class="home-form-field">
+                <label>推荐老师工号（选填）</label>
+                <input type="text" id="homeReferrerInput" name="qlsw_referrer_teacher_id" placeholder="如有推荐老师，请输入其5位工号" maxlength="5" inputmode="numeric" pattern="[0-9]*" autocomplete="new-password" />
               </div>
               <button class="duo-btn btn-green home-start-btn cta-glow" id="homeStartBtn">
                 <span>开始测试 →</span>
@@ -3282,9 +3289,20 @@
   var homeSchoolInput = document.getElementById("homeSchoolInput");
   var homePhoneInput = document.getElementById("homePhoneInput");
   var homeAgeInput = document.getElementById("homeAgeInput");
-  var currentReferrerTeacherId = (function(){
-    var ref = new URLSearchParams(window.location.search).get("ref") || "";
-    return /^\d{5}$/.test(ref) ? ref : "";
+  var homeReferrerInput = document.getElementById("homeReferrerInput");
+  var currentReferrerTeacherId = "";
+  (function(){
+    var userTyped = false;
+    var refParam = new URLSearchParams(window.location.search).get("ref") || "";
+    if(/^\d{5}$/.test(refParam)) {
+      homeReferrerInput.value = refParam;
+      userTyped = true;
+    }
+    homeReferrerInput.addEventListener("input", function(){ userTyped = true; }, { once: true });
+    homeReferrerInput.addEventListener("animationstart", function(e){
+      if(e.animationName === "onAutoFillStart" && !userTyped) homeReferrerInput.value = "";
+    });
+    setTimeout(function(){ if(!userTyped) homeReferrerInput.value = ""; }, 300);
   })();
   var homeStartBtn = document.getElementById("homeStartBtn");
   var homeFormError = document.getElementById("homeFormError");
@@ -4859,6 +4877,10 @@
       playerSchoolInput.value = s;
       playerPhoneInput.value = p;
       playerAgeInput.value = a;
+      var referrerRaw = homeReferrerInput.value
+        .replace(/[０-９]/g, function(ch){ return String.fromCharCode(ch.charCodeAt(0) - 0xFEE0); })
+        .replace(/\s+/g, "");
+      currentReferrerTeacherId = /^\d{5}$/.test(referrerRaw) ? referrerRaw : "";
       isLoggedIn = true;
       enterAssessmentArea();
     }
