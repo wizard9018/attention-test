@@ -23,7 +23,7 @@ Page({
     }
     var referrer = (d.referrerTeacherId || "").trim();
     if (referrer && !/^\d{5}$/.test(referrer)) {
-      this.setData({ errorText: "推荐老师工号需为5位数字，不填则留空" });
+      this.setData({ errorText: "推荐码需为5位数字，不填则留空" });
       return null;
     }
     this.setData({ errorText: "" });

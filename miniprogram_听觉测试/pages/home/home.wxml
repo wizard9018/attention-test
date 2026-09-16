@@ -31,8 +31,8 @@
       <input class="input" type="number" value="{{age}}" placeholder="请输入年龄" bindinput="onAgeInput" />
     </view>
     <view class="field">
-      <text class="label">推荐老师工号（选填）</text>
-      <input class="input" type="number" value="{{referrerTeacherId}}" placeholder="如有推荐老师，请输入其5位工号" maxlength="5" bindinput="onReferrerInput" />
+      <text class="label">推荐码（选填）</text>
+      <input class="input" type="number" value="{{referrerTeacherId}}" placeholder="如有推荐码，请输入5位推荐码" maxlength="5" bindinput="onReferrerInput" />
     </view>
 
     <text wx:if="{{errorText}}" class="error-text">⚠️ {{errorText}}</text>
