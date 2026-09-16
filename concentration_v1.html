@@ -1994,48 +1994,6 @@
       </div>
     </div>
 
-    <!-- 听音硬件检测卡片 -->
-    <div style="background:#f8fafc; border:2px solid var(--duo-border); border-bottom:4px solid var(--duo-border-dark); border-radius:18px; padding:18px; margin-bottom:24px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
-        <div style="font-size:1.02rem; font-weight:900; color:var(--duo-text-dark); display:flex; align-items:center; gap:8px;">
-          <span>🔊</span> 听音设备自检 (请确认耳机或扬声器音量正常)
-        </div>
-        <span id="soundCheckBadge" style="background:#fee2e2; color:#b91c1c; font-size:0.82rem; font-weight:800; padding:4px 12px; border-radius:10px;">
-          未检测
-        </span>
-      </div>
-      <p style="font-size:0.88rem; color:var(--duo-text-muted); margin-bottom:12px;" id="soundHintText">
-        点击“播放测试读音”，确认能清晰听到标准普通话发音。
-      </p>
-      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-        <button class="duo-btn btn-yellow" id="testAudioBtn" style="padding:8px 18px; font-size:0.88rem;">
-          <span>🔔 播放测试读音</span>
-        </button>
-        <button class="duo-btn btn-green" id="confirmSoundOkBtn" style="padding:8px 18px; font-size:0.88rem; display:none;">
-          <span>✓ 我已听清</span>
-        </button>
-      </div>
-
-      <div style="border-top:1px solid var(--duo-border); margin:16px 0 12px;"></div>
-
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
-        <div style="font-size:1.02rem; font-weight:900; color:var(--duo-text-dark); display:flex; align-items:center; gap:8px;">
-          <span>🎤</span> 麦克风自检 (可选，用于听觉测试中的录音辅助回忆)
-        </div>
-        <span id="micCheckBadge" style="background:#f1f5f9; color:#475569; font-size:0.82rem; font-weight:800; padding:4px 12px; border-radius:10px;">
-          未检测
-        </span>
-      </div>
-      <p style="font-size:0.88rem; color:var(--duo-text-muted); margin-bottom:12px;" id="micHintText">
-        点击"测试麦克风"，授权后即可在听觉测试中录下自己的复述声音辅助回忆（不授权也可正常完成测评，仅无法使用录音辅助功能）。
-      </p>
-      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-        <button class="duo-btn btn-blue" id="testMicBtn" style="padding:8px 18px; font-size:0.88rem;">
-          <span>🎙️ 测试麦克风</span>
-        </button>
-      </div>
-    </div>
-
     <div class="home-theory-box" style="max-width:none; margin-bottom:24px;">
       <div class="home-theory-title">📚 理论依据：米勒 7±2 法则</div>
       <p class="home-theory-text">1956 年，美国顶尖心理学家、认知心理学与认知科学奠基人之一、心理语言学开创者乔治·米勒（George A. Miller）发表里程碑论文《神奇数字7±2》，提出人的短时记忆容量约为 5～9 个组块，奠定了听觉记忆广度测评的理论基础。</p>
@@ -2068,12 +2026,9 @@
     </div>
 
     <div style="text-align:center;">
-      <button class="duo-btn btn-green disabled" id="welcomeStartBtn" disabled style="font-size:1.2rem; padding:16px 48px;">
+      <button class="duo-btn btn-green" id="welcomeStartBtn" style="font-size:1.2rem; padding:16px 48px;">
         <span>🚀 开始双通道综合专注力测评</span>
       </button>
-      <p id="prereqNotice" style="color:var(--duo-red); font-size:0.88rem; font-weight:800; margin-top:10px;">
-        ⚠️ 请先点击上方【播放测试读音】确认声音正常，方可解锁测评
-      </p>
     </div>
   </div>
 
@@ -3182,7 +3137,6 @@
   var auditoryDone = false;
   var auditoryHistory = [];
   var auditoryCurrentSequence = [];
-  var soundTested = false;
 
   // 学生复述录音状态
   var supportsRecording = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
@@ -3298,16 +3252,9 @@
   var adminRefreshBtn = document.getElementById("adminRefreshBtn");
 
   var welcomeView = document.getElementById("welcomeView");
-  var testAudioBtn = document.getElementById("testAudioBtn");
-  var confirmSoundOkBtn = document.getElementById("confirmSoundOkBtn");
-  var soundCheckBadge = document.getElementById("soundCheckBadge");
-  var soundHintText = document.getElementById("soundHintText");
   var welcomeStartBtn = document.getElementById("welcomeStartBtn");
-  var prereqNotice = document.getElementById("prereqNotice");
   var soloAuditoryBtn = document.getElementById("soloAuditoryBtn");
   var soloVisualBtn = document.getElementById("soloVisualBtn");
-  var testMicBtn = document.getElementById("testMicBtn");
-  var micCheckBadge = document.getElementById("micCheckBadge");
 
   var auditoryView = document.getElementById("auditoryView");
   var subStagePlaying = document.getElementById("subStagePlaying");
@@ -3466,26 +3413,6 @@
     resetTestBtn.style.display = "none";
     headerNav.style.display = "";
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  function checkHardwareGate() {
-    if(soundTested) {
-      soundCheckBadge.style.background = "#dcfce7";
-      soundCheckBadge.style.color = "#15803d";
-      soundCheckBadge.textContent = "已通过";
-      welcomeStartBtn.disabled = false;
-      welcomeStartBtn.classList.remove("btn-gray", "disabled");
-      welcomeStartBtn.classList.add("btn-green");
-      prereqNotice.style.display = "none";
-    } else {
-      soundCheckBadge.style.background = "#fee2e2";
-      soundCheckBadge.style.color = "#b91c1c";
-      soundCheckBadge.textContent = "未检测";
-      welcomeStartBtn.disabled = true;
-      welcomeStartBtn.classList.remove("btn-green");
-      welcomeStartBtn.classList.add("btn-gray", "disabled");
-      prereqNotice.style.display = "block";
-    }
   }
 
   // ==========================================
@@ -4724,68 +4651,6 @@
   // 11. 事件监听绑定
   // ==========================================
   function initEvents() {
-    testAudioBtn.addEventListener("click", async function() {
-      testAudioBtn.disabled = true;
-      confirmSoundOkBtn.style.display = "none";
-      soundHintText.innerHTML = "正在播放普通话测试音，请仔细倾听...";
-
-      var testItems = [
-        { char: "天", pinyin: "tiān" },
-        { char: "明", pinyin: "míng" },
-        { char: "海", pinyin: "hǎi" }
-      ];
-
-      await DiscreteTTSPlayer.playSequence(
-        testItems,
-        function(idx) {
-          testAudioBtn.innerHTML = "<span>🔊 正在朗读 (" + (idx + 1) + "/3)...</span>";
-        },
-        async function() {
-          await new Promise(function(r){ setTimeout(r, 200); });
-          testAudioBtn.disabled = false;
-          testAudioBtn.innerHTML = "<span>🔔 重新试听</span>";
-          soundHintText.innerHTML = "<span style='color:#15803d; font-weight:800;'>🎉 3个测试音已播放完毕！声音清晰请点击确认：</span>";
-          confirmSoundOkBtn.style.display = "inline-flex";
-          AudioFX.playTick();
-        }
-      );
-    });
-
-    confirmSoundOkBtn.addEventListener("click", function() {
-      soundTested = true;
-      confirmSoundOkBtn.disabled = true;
-      confirmSoundOkBtn.innerHTML = "<span>✓ 已确认听清</span>";
-      checkHardwareGate();
-      AudioFX.playPass();
-      welcomeStartBtn.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    });
-
-    testMicBtn.addEventListener("click", function() {
-      if(!supportsRecording) {
-        micCheckBadge.style.background = "#fee2e2";
-        micCheckBadge.style.color = "#b91c1c";
-        micCheckBadge.textContent = "不支持";
-        return;
-      }
-      testMicBtn.disabled = true;
-      testMicBtn.innerHTML = "<span>🎙️ 正在请求麦克风权限...</span>";
-      navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
-        micStream = stream;
-        micCheckBadge.style.background = "#dcfce7";
-        micCheckBadge.style.color = "#15803d";
-        micCheckBadge.textContent = "已授权";
-        testMicBtn.disabled = false;
-        testMicBtn.innerHTML = "<span>✓ 麦克风正常</span>";
-        AudioFX.playPass();
-      }).catch(function() {
-        micCheckBadge.style.background = "#fee2e2";
-        micCheckBadge.style.color = "#b91c1c";
-        micCheckBadge.textContent = "未授权";
-        testMicBtn.disabled = false;
-        testMicBtn.innerHTML = "<span>🎙️ 重新测试麦克风</span>";
-      });
-    });
-
     welcomeStartBtn.addEventListener("click", function() {
       testMode = "dual";
       startAuditoryPhase();
@@ -4793,11 +4658,6 @@
 
     soloAuditoryBtn.addEventListener("click", function(e) {
       e.stopPropagation();
-      if(!soundTested) {
-        alert("请先在下方播放测试读音并点击【我已听清】，确认声音正常后再开始听觉专注力测试。");
-        soundCheckBadge.scrollIntoView({ behavior: "smooth", block: "center" });
-        return;
-      }
       testMode = "auditory";
       startAuditoryPhase();
     });
@@ -5259,7 +5119,6 @@
     checkWeChatBrowser();
     initMobileKeyboardScroll();
     initEvents();
-    checkHardwareGate();
     resetRecordingUI();
     loadCloudLeaderboard();
     initTrustDossier();
