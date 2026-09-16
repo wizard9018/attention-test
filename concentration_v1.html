@@ -1094,10 +1094,18 @@
   .poster-section { padding: 4mm 18mm 0; }
   .poster-section-title { font-size: 7.5pt; font-weight: 900; color: var(--duo-green-dark); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 2.5mm; }
 
+  .poster-section.poster-ink-band { background: linear-gradient(135deg, #1e293b, #0f172a); color: #e2e8f0; padding: 6mm 18mm 7mm; margin-top: 0; }
+  .poster-ink-band .poster-section-title { color: #86efac; }
+
   .poster-brand-block { background: var(--duo-bg-gray); border-left: 3.5px solid var(--duo-green); border-radius: 0 3mm 3mm 0; padding: 4mm 7mm; }
   .poster-brand-lines p { font-size: 8.6pt; font-weight: 700; color: var(--duo-text-dark); line-height: 1.5; }
   .poster-brand-lines p.accent { color: var(--duo-green-dark); margin-top: 1.5mm; }
   .poster-brand-story { font-size: 7.3pt; color: var(--duo-text-body); line-height: 1.55; margin-top: 3mm; }
+
+  .poster-ink-band .poster-brand-block { background: rgba(255,255,255,0.07); border-left-color: #4ade80; }
+  .poster-ink-band .poster-brand-lines p { color: #f1f5f9; }
+  .poster-ink-band .poster-brand-lines p.accent { color: #4ade80; }
+  .poster-ink-band .poster-brand-story { color: #cbd5e1; }
 
   .poster-founders { display: flex; gap: 5mm; margin-top: 4mm; }
   .poster-founder-card { flex: 1; display: flex; gap: 3mm; align-items: flex-start; background: #fff; border: 1px solid var(--duo-border); border-radius: 3mm; padding: 3mm; }
@@ -1117,6 +1125,7 @@
   .poster-cta img { width: 28mm; height: 28mm; border-radius: 3mm; background: #fff; padding: 2mm; }
   .poster-cta .poster-cta-text { font-size: 11pt; font-weight: 900; margin-top: 3mm; }
   .poster-cta .poster-cta-sub { font-size: 7.5pt; margin-top: 1.5mm; opacity: 0.92; }
+  .poster-cta .poster-cta-url { font-size: 7pt; margin-top: 1mm; opacity: 0.85; font-family: monospace; }
 
   .poster-footer { background: #0f172a; color: #94a3b8; font-size: 6.5pt; text-align: center; padding: 2.5mm; }
 
@@ -5172,7 +5181,6 @@
     var params = new URLSearchParams(window.location.search);
     if(params.get("poster") !== "1") return;
     var teacherId = params.get("ref") || "";
-    var campusName = params.get("campus") || "";
     document.body.classList.add("poster-mode");
 
     var qrUrl = "https://wizard9018.github.io/attention-test/concentration_v1.html" + (teacherId ? ("?ref=" + encodeURIComponent(teacherId)) : "");
@@ -5201,8 +5209,8 @@
         '</div>' +
       '</div>' +
       '<div class="poster-divider"></div>' +
-      '<div class="poster-section">' +
-        '<div class="poster-section-title">品牌理念</div>' +
+      '<div class="poster-section poster-ink-band">' +
+        '<div class="poster-section-title">教学理念</div>' +
         '<div class="poster-brand-block">' +
           '<div class="poster-brand-lines">' +
             '<p>提高专注力，解决底层学习能力</p>' +
@@ -5243,7 +5251,8 @@
       '<div class="poster-cta">' +
         '<img src="' + qrImg + '" alt="扫码参与测试二维码">' +
         '<div class="poster-cta-text">📱 请扫码参与测试</div>' +
-        (campusName ? ('<div class="poster-cta-sub">推荐校区：' + campusName + '</div>') : '') +
+        (teacherId ? ('<div class="poster-cta-sub">推荐工号：' + teacherId + '</div>') : '') +
+        '<div class="poster-cta-url">或直接访问：wizard9018.github.io/attention-test/concentration_v1.html</div>' +
       '</div>' +
       '<div class="poster-footer">清良思维 · 认知与思维发展实验室 出品 · 孪生智能科技（天津）有限公司</div>';
     document.getElementById("homeView").appendChild(poster);
