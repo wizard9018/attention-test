@@ -234,6 +234,10 @@ Page({
     playingText: "",
     sequenceLen: 0,
     inputValue: "",
+    previewChips: [],
+    filledCount: 0,
+    isRecording: false,
+    hasMyRecording: false,
     targetChips: [],
     actualChips: [],
     bannerClass: "",
@@ -250,14 +254,49 @@ Page({
   history: [],
   currentSequence: [],
   audioCtx: null,
+  recorderManager: null,
+  myRecordAudioCtx: null,
+  myRecordingPath: null,
 
   onLoad: function () {
     this.audioCtx = wx.createInnerAudioContext();
+    this.initRecorder();
     this.startLevel();
   },
 
   onUnload: function () {
     if (this.audioCtx) this.audioCtx.destroy();
+    if (this.myRecordAudioCtx) this.myRecordAudioCtx.destroy();
+  },
+
+  initRecorder: function () {
+    var self = this;
+    this.recorderManager = wx.getRecorderManager();
+    this.recorderManager.onStop(function (res) {
+      self.myRecordingPath = res.tempFilePath;
+      self.setData({ isRecording: false, hasMyRecording: true });
+    });
+    this.recorderManager.onError(function (err) {
+      console.warn("Recorder note:", err);
+      self.setData({ isRecording: false });
+      wx.showToast({ title: "录音失败，可直接输入拼音完成测试", icon: "none" });
+    });
+  },
+
+  toggleMyRecording: function () {
+    if (this.data.isRecording) {
+      this.recorderManager.stop();
+      return;
+    }
+    this.recorderManager.start({ duration: 60000, format: "mp3" });
+    this.setData({ isRecording: true });
+  },
+
+  playMyRecording: function () {
+    if (!this.myRecordingPath) return;
+    if (!this.myRecordAudioCtx) this.myRecordAudioCtx = wx.createInnerAudioContext();
+    this.myRecordAudioCtx.src = this.myRecordingPath;
+    this.myRecordAudioCtx.play();
   },
 
   restart: function () {
@@ -365,11 +404,35 @@ Page({
   },
 
   startInputStage: function () {
-    this.setData({ stage: "input", inputValue: "" });
+    this.myRecordingPath = null;
+    this.setData({
+      stage: "input",
+      inputValue: "",
+      isRecording: false,
+      hasMyRecording: false
+    });
+    this.updatePreviewChips("");
   },
 
   onInputChange: function (e) {
-    this.setData({ inputValue: e.detail.value });
+    var value = e.detail.value;
+    this.setData({ inputValue: value });
+    this.updatePreviewChips(value);
+  },
+
+  updatePreviewChips: function (raw) {
+    var tokens = ScoringEngine.tokenizeText(raw);
+    var targetCount = this.currentSequence.length;
+    var chips = [];
+    for (var i = 0; i < targetCount; i++) {
+      if (i < tokens.length) {
+        var t = tokens[i];
+        chips.push({ idx: i + 1, py: t.pinyinMark || formatPinyinWithToneMark(t.pinyin), filled: true });
+      } else {
+        chips.push({ idx: i + 1, py: "__", filled: false });
+      }
+    }
+    this.setData({ previewChips: chips, filledCount: Math.min(tokens.length, targetCount) });
   },
 
   submitAnswer: function () {

@@ -21,6 +21,15 @@
   <!-- 输入阶段 -->
   <view wx:if="{{stage === 'input'}}" class="card">
     <text class="input-hint">已听完 {{sequenceLen}} 个字，请输入拼音（每个字用空格隔开，如：ni hao）</text>
+
+    <view class="record-aid-card">
+      <text class="record-aid-text">🎙️ 可先录下您记住的复述声音，遗忘拼音时随时回放辅助回忆</text>
+      <view class="record-aid-btns">
+        <button class="btn-record {{isRecording ? 'recording' : ''}}" bindtap="toggleMyRecording">{{isRecording ? '⏹ 停止录音' : '🎙️ 录制复述'}}</button>
+        <button wx:if="{{hasMyRecording}}" class="btn-play" bindtap="playMyRecording">▶ 回放录音</button>
+      </view>
+    </view>
+
     <input
       class="pinyin-input"
       value="{{inputValue}}"
@@ -29,6 +38,20 @@
       confirm-type="done"
       bindconfirm="submitAnswer"
     />
+
+    <view class="preview-card">
+      <view class="preview-head">
+        <text class="preview-label">实时拼音解析预览</text>
+        <text class="preview-count">已输入: {{filledCount}} 字 / 目标: {{sequenceLen}} 字</text>
+      </view>
+      <view class="preview-chips">
+        <view wx:for="{{previewChips}}" wx:key="index" class="preview-chip {{item.filled ? 'filled' : ''}}">
+          <text class="preview-chip-idx">第{{item.idx}}字</text>
+          <text class="preview-chip-py">{{item.py}}</text>
+        </view>
+      </view>
+    </view>
+
     <button class="btn btn-green" bindtap="submitAnswer">提交答案</button>
     <button class="btn btn-ghost" bindtap="replayCurrent">🔁 重听本轮</button>
   </view>
