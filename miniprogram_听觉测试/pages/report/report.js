@@ -129,6 +129,9 @@ Page({
     diagnosisText: "",
     trainingRows: [],
     dimensionRows: [],
+    showContinueBtn: false,
+    continueBtnText: "",
+    continueUrl: "",
     synced: false
   },
 
@@ -156,11 +159,29 @@ Page({
       return;
     }
     this.renderSingle(type, result, age);
+
+    var testMode = app.globalData.testMode;
+    if (testMode === "dual") {
+      // 双通道模式下只完成了一项，先展示这一项的结果，暂不同步数据库，
+      // 等两项都做完在 composite 分支一次性同步，避免生成两条重复记录
+      var otherIsAuditory = type === "visual";
+      this.setData({
+        showContinueBtn: true,
+        continueBtnText: otherIsAuditory ? "🎧 继续挑战听觉专注力测试" : "👁️ 继续挑战视觉专注力测试",
+        continueUrl: otherIsAuditory ? "/pages/auditory/auditory" : "/pages/visual/visual"
+      });
+      return;
+    }
+
     var auditoryScore = type === "auditory" ? result.finalLevel : 0;
     var visualScore = type === "visual" ? result.finalLevel : 0;
     var rawKey = type === "auditory" ? "auditory" : "visual";
     var rawDetails = {}; rawDetails[rawKey] = result;
     this.syncIfNeeded(auditoryScore, visualScore, 0, rawDetails);
+  },
+
+  goContinue: function () {
+    wx.redirectTo({ url: this.data.continueUrl });
   },
 
   renderSingle: function (type, result, age) {

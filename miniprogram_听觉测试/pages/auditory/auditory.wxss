@@ -160,17 +160,3 @@
 .chip-fuzzy { background: rgba(255,193,7,0.18); }
 .chip-wrong, .chip-miss { background: rgba(255,75,75,0.15); }
 
-.done-title {
-  display: block;
-  font-size: 34rpx;
-  font-weight: 800;
-  text-align: center;
-  margin-bottom: 16rpx;
-}
-.done-sub {
-  display: block;
-  font-size: 26rpx;
-  color: #5b6472;
-  text-align: center;
-  margin-bottom: 8rpx;
-}

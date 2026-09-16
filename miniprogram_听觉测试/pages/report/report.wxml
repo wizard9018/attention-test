@@ -78,6 +78,7 @@
       </view>
     </block>
 
-    <button class="btn btn-green" hover-class="btn-pressed" bindtap="goHome">返回首页</button>
+    <button wx:if="{{showContinueBtn}}" class="btn btn-green" hover-class="btn-pressed" bindtap="goContinue">{{continueBtnText}}</button>
+    <button class="btn {{showContinueBtn ? 'btn-ghost' : 'btn-green'}}" hover-class="btn-pressed" bindtap="goHome">返回首页</button>
   </view>
 </view>

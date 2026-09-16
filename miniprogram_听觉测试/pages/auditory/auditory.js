@@ -243,9 +243,7 @@ Page({
     bannerClass: "",
     bannerTitle: "",
     bannerSub: "",
-    bannerBtnText: "",
-    finalLevel: 0,
-    passedLevelsText: ""
+    bannerBtnText: ""
   },
 
   currentLevel: "trial", // "trial" | 5..12
@@ -297,14 +295,6 @@ Page({
     if (!this.myRecordAudioCtx) this.myRecordAudioCtx = wx.createInnerAudioContext();
     this.myRecordAudioCtx.src = this.myRecordingPath;
     this.myRecordAudioCtx.play();
-  },
-
-  restart: function () {
-    this.currentLevel = "trial";
-    this.levelFails = 0;
-    this.passedLevels = [];
-    this.history = [];
-    this.startLevel();
   },
 
   startLevel: function () {
@@ -549,22 +539,6 @@ Page({
       passedLevels: this.passedLevels,
       history: this.history
     };
-    if (app.globalData.testMode === "auditory") {
-      wx.redirectTo({ url: "/pages/report/report?type=auditory" });
-      return;
-    }
-    this.setData({
-      stage: "done",
-      finalLevel: maxLevel,
-      passedLevelsText: this.passedLevels.length ? this.passedLevels.join("、") + " 级" : "无"
-    });
-  },
-
-  goReport: function () {
-    wx.navigateTo({ url: "/pages/report/report?type=auditory" });
-  },
-
-  goVisual: function () {
-    wx.navigateTo({ url: "/pages/visual/visual" });
+    wx.redirectTo({ url: "/pages/report/report?type=auditory" });
   }
 });

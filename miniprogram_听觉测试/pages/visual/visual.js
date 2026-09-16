@@ -60,9 +60,7 @@ Page({
     bannerClass: "",
     bannerTitle: "",
     bannerSub: "",
-    bannerBtnText: "",
-    finalLevel: 0,
-    passedLevelsText: ""
+    bannerBtnText: ""
   },
 
   currentLevel: "trial",
@@ -88,14 +86,6 @@ Page({
   onUnload: function () {
     if (this.viewTimer) clearInterval(this.viewTimer);
     if (this.mathTimer) clearInterval(this.mathTimer);
-  },
-
-  restart: function () {
-    this.currentLevel = "trial";
-    this.levelFails = 0;
-    this.passedLevels = [];
-    this.history = [];
-    this.startRound("trial");
   },
 
   startRound: function (lvl) {
@@ -355,22 +345,6 @@ Page({
       passedLevels: this.passedLevels,
       history: this.history
     };
-    if (app.globalData.testMode === "visual") {
-      wx.redirectTo({ url: "/pages/report/report?type=visual" });
-      return;
-    }
-    this.setData({
-      stage: "done",
-      finalLevel: maxLevel,
-      passedLevelsText: this.passedLevels.length ? this.passedLevels.join("、") + " 级" : "无"
-    });
-  },
-
-  goReport: function () {
-    wx.navigateTo({ url: "/pages/report/report?type=visual" });
-  },
-
-  goAuditory: function () {
-    wx.navigateTo({ url: "/pages/auditory/auditory" });
+    wx.redirectTo({ url: "/pages/report/report?type=visual" });
   }
 });
