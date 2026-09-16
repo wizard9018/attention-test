@@ -8,11 +8,12 @@ Page({
     errorText: ""
   },
 
-  onNameInput: function (e) { this.setData({ name: e.detail.value }); },
-  onSchoolInput: function (e) { this.setData({ school: e.detail.value }); },
-  onPhoneInput: function (e) { this.setData({ phone: e.detail.value }); },
-  onAgeInput: function (e) { this.setData({ age: e.detail.value }); },
-  onReferrerInput: function (e) { this.setData({ referrerTeacherId: e.detail.value }); },
+  onFieldInput: function (e) {
+    var field = e.currentTarget.dataset.field;
+    var data = {};
+    data[field] = e.detail.value;
+    this.setData(data);
+  },
 
   validate: function () {
     var d = this.data;

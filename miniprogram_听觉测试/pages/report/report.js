@@ -4,10 +4,11 @@
 // 的 gradeSingleChannel / AUDITORY_LEVEL_INTERPRETATION / getAgeNorm /
 // renderTrainingPrescriptions / renderCognitiveDiagnosis
 // ==========================================
-var AUDITORY_MIN_LEVEL = 5;
-var AUDITORY_MAX_LEVEL = 12;
-var VISUAL_MIN_LEVEL = 5;
-var VISUAL_MAX_LEVEL = 10;
+var LEVELS = require("../../utils/constants.js");
+var AUDITORY_MIN_LEVEL = LEVELS.AUDITORY_MIN_LEVEL;
+var AUDITORY_MAX_LEVEL = LEVELS.AUDITORY_MAX_LEVEL;
+var VISUAL_MIN_LEVEL = LEVELS.VISUAL_MIN_LEVEL;
+var VISUAL_MAX_LEVEL = LEVELS.VISUAL_MAX_LEVEL;
 
 var AUDITORY_AGE_NORMS = { 5:4, 6:4, 7:5, 8:5, 9:6, 10:6, 11:7, 12:7, 13:8, 14:8, 15:8, 16:9, 17:9, 18:9 };
 var VISUAL_AGE_NORMS = { 5:4, 6:5, 7:5, 8:6, 9:6, 10:7, 11:7, 12:8, 13:8, 14:8, 15:9, 16:9, 17:9, 18:10 };

@@ -1,0 +1,6 @@
+module.exports = {
+  AUDITORY_MIN_LEVEL: 5,
+  AUDITORY_MAX_LEVEL: 12,
+  VISUAL_MIN_LEVEL: 5,
+  VISUAL_MAX_LEVEL: 10
+};

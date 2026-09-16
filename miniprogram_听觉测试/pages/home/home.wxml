@@ -16,23 +16,23 @@
 
     <view class="field">
       <text class="label">学生姓名</text>
-      <input class="input" value="{{name}}" placeholder="请输入姓名" maxlength="10" bindinput="onNameInput" />
+      <input class="input" value="{{name}}" placeholder="请输入姓名" maxlength="10" data-field="name" bindinput="onFieldInput" />
     </view>
     <view class="field">
       <text class="label">所在学校</text>
-      <input class="input" value="{{school}}" placeholder="请输入学校" maxlength="16" bindinput="onSchoolInput" />
+      <input class="input" value="{{school}}" placeholder="请输入学校" maxlength="16" data-field="school" bindinput="onFieldInput" />
     </view>
     <view class="field">
       <text class="label">手机号/微信号</text>
-      <input class="input" value="{{phone}}" placeholder="请输入手机号或微信号" maxlength="20" bindinput="onPhoneInput" />
+      <input class="input" value="{{phone}}" placeholder="请输入手机号或微信号" maxlength="20" data-field="phone" bindinput="onFieldInput" />
     </view>
     <view class="field">
       <text class="label">年龄</text>
-      <input class="input" type="number" value="{{age}}" placeholder="请输入年龄" bindinput="onAgeInput" />
+      <input class="input" type="number" value="{{age}}" placeholder="请输入年龄" data-field="age" bindinput="onFieldInput" />
     </view>
     <view class="field">
       <text class="label">推荐码（选填）</text>
-      <input class="input" type="number" value="{{referrerTeacherId}}" placeholder="如有推荐码，请输入5位推荐码" maxlength="5" bindinput="onReferrerInput" />
+      <input class="input" type="number" value="{{referrerTeacherId}}" placeholder="如有推荐码，请输入5位推荐码" maxlength="5" data-field="referrerTeacherId" bindinput="onFieldInput" />
     </view>
 
     <text wx:if="{{errorText}}" class="error-text">⚠️ {{errorText}}</text>

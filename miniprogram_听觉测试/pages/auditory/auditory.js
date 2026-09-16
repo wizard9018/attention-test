@@ -38,8 +38,9 @@ var WORD_BLACKLIST_LIST = [
 ];
 function inBlacklist(w) { return WORD_BLACKLIST_LIST.indexOf(w) !== -1; }
 
-var AUDITORY_MIN_LEVEL = 5;
-var AUDITORY_MAX_LEVEL = 12;
+var LEVELS = require("../../utils/constants.js");
+var AUDITORY_MIN_LEVEL = LEVELS.AUDITORY_MIN_LEVEL;
+var AUDITORY_MAX_LEVEL = LEVELS.AUDITORY_MAX_LEVEL;
 
 var SequenceGenerator = {
   generate: function (length) {

@@ -32,8 +32,9 @@ var VISUAL_LEVELS_CONFIG = {
   9: { count: 7, title: "7 格 (不同行列)", benchmarkSec: 60 },
   10: { count: 8, title: "8 格 (不同行列)", benchmarkSec: 60 }
 };
-var VISUAL_MIN_LEVEL = 5;
-var VISUAL_MAX_LEVEL = 10;
+var LEVELS = require("../../utils/constants.js");
+var VISUAL_MIN_LEVEL = LEVELS.VISUAL_MIN_LEVEL;
+var VISUAL_MAX_LEVEL = LEVELS.VISUAL_MAX_LEVEL;
 
 function emptyGrid() {
   var g = [];
