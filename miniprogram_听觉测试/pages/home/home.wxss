@@ -13,55 +13,6 @@
 }
 .card:last-child { margin-bottom: 0; }
 
-.section-eyebrow {
-  display: block;
-  font-size: 22rpx;
-  font-weight: 900;
-  color: #58cc02;
-  letter-spacing: 2rpx;
-  text-transform: uppercase;
-  margin-bottom: 16rpx;
-}
-.brand-card { background: linear-gradient(135deg, #1e293b, #0f172a); }
-.brand-card .section-eyebrow { color: #86efac; }
-.brand-slogan { display: block; font-size: 34rpx; font-weight: 900; color: #fff; margin-bottom: 12rpx; }
-.brand-line { display: block; font-size: 24rpx; font-weight: 700; color: #f1f5f9; line-height: 1.6; }
-.brand-line.accent { color: #4ade80; margin-top: 6rpx; }
-.brand-story { display: block; font-size: 22rpx; color: #cbd5e1; line-height: 1.7; margin-top: 20rpx; }
-
-.founder-row { display: flex; gap: 20rpx; margin-bottom: 24rpx; }
-.founder-item { flex: 1; text-align: center; }
-.founder-photo { width: 100rpx; height: 100rpx; border-radius: 50%; margin-bottom: 12rpx; border: 3rpx solid #d7ffb8; }
-.founder-name { display: block; font-size: 26rpx; font-weight: 900; color: #10131a; margin-bottom: 8rpx; }
-.founder-badge {
-  font-size: 18rpx;
-  font-weight: 800;
-  color: #fff;
-  background: #58cc02;
-  padding: 3rpx 12rpx;
-  border-radius: 99px;
-  margin-left: 6rpx;
-}
-.founder-bio { display: block; font-size: 20rpx; color: #5b6472; line-height: 1.6; }
-
-.mentor-label { display: block; font-size: 24rpx; font-weight: 800; color: #10131a; margin-bottom: 14rpx; }
-.mentor-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 12rpx 0;
-  border-bottom: 1px dashed #e6e1d6;
-}
-.mentor-row:last-child { border-bottom: none; }
-.mentor-name { font-size: 24rpx; font-weight: 800; color: #10131a; }
-.mentor-school { font-size: 22rpx; color: #9aa1b0; }
-
-.scroll-hint {
-  text-align: center;
-  font-size: 22rpx;
-  color: #9aa1b0;
-  margin-bottom: 24rpx;
-}
-
 .intro-card { text-align: center; }
 .eyebrow {
   display: inline-block;
@@ -88,15 +39,6 @@
   color: #5b6472;
   line-height: 1.7;
   margin-bottom: 24rpx;
-}
-.badge-row { display: flex; justify-content: center; gap: 12rpx; flex-wrap: wrap; margin-bottom: 24rpx; }
-.badge {
-  font-size: 20rpx;
-  font-weight: 800;
-  color: #1899d6;
-  background: #ddf4ff;
-  padding: 8rpx 18rpx;
-  border-radius: 99px;
 }
 .theory-box {
   background: #ddf4ff;

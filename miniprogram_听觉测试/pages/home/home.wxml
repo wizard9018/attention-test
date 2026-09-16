@@ -1,50 +1,10 @@
 <view class="page">
   <brand-header></brand-header>
 
-  <view class="card brand-card">
-    <text class="section-eyebrow">品牌理念</text>
-    <text class="brand-slogan">清良思维</text>
-    <text class="brand-line">提高专注力，解决底层学习能力</text>
-    <text class="brand-line">告别低效苦学，学习事半功倍。</text>
-    <text class="brand-line accent">让孩子更聪明，学习变轻松</text>
-    <text class="brand-line">小初高一路领跑，冲刺理想名校，成就精彩人生。</text>
-    <text class="brand-story">清良思维（运营主体：孪生智能科技（天津）有限公司）成立于 2019 年，位于天津滨海 · 中关村科技园，是一家集科技与教育于一体的人工智能教育平台。团队自 2016 年申请"电子信息克隆分析"技术发明专利以来，持续对比研究学霸与普通学生的思考路径，2020 年思维训练体系趋于成熟，并将研究成果应用于本测评系统的研发。</text>
-  </view>
-
-  <view class="card team-card">
-    <text class="section-eyebrow">团队成员</text>
-    <view class="founder-row">
-      <view class="founder-item">
-        <image class="founder-photo" src="/assets/team/founder_dingdaliang.jpg" mode="aspectFill"></image>
-        <text class="founder-name">丁大良 <text class="founder-badge">创始人</text></text>
-        <text class="founder-bio">毕业于中国石油大学，曾任职世界五百强斯伦贝谢高级工程师，拥有"电子信息克隆分析"技术发明专利，已帮助上千位学生提高学校成绩。</text>
-      </view>
-      <view class="founder-item">
-        <image class="founder-photo" src="/assets/team/founder_zhushan.jpg" mode="aspectFill"></image>
-        <text class="founder-name">朱杉 <text class="founder-badge">创始人</text></text>
-        <text class="founder-bio">清华大学工程学士 / 英属哥伦比亚大学工商管理硕士，10多年教育咨询、升学咨询经验，曾辅导学生考入哈佛、耶鲁等常春藤名校。</text>
-      </view>
-    </view>
-    <text class="mentor-label">题目开发与测评团队</text>
-    <view class="mentor-row"><text class="mentor-name">常老师</text><text class="mentor-school">北京大学 · 数理化方向</text></view>
-    <view class="mentor-row"><text class="mentor-name">季老师</text><text class="mentor-school">军校 · 数理化方向</text></view>
-    <view class="mentor-row"><text class="mentor-name">李老师</text><text class="mentor-school">天津大学 · 数理化方向</text></view>
-    <view class="mentor-row"><text class="mentor-name">Eva 老师</text><text class="mentor-school">香港中文大学 · 中文方向</text></view>
-    <view class="mentor-row"><text class="mentor-name">Michelle 老师</text><text class="mentor-school">美国伯克利大学 · 经济学与统计学方向</text></view>
-  </view>
-
-  <view class="scroll-hint">
-    <text>👇 下滑填写信息，开始测评</text>
-  </view>
-
   <view class="card intro-card">
     <text class="eyebrow">🎓 K12 认知与专注力发展测评</text>
     <text class="title">读懂孩子的<text class="accent">专注力</text>，从一次科学测评开始</text>
     <text class="subtitle">10~15 分钟量化孩子的听觉序列记忆广度与视觉空间工作记忆容量，测后即时生成专业发展报告</text>
-    <view class="badge-row">
-      <text class="badge">🎓 清华、北大毕业生团队研发</text>
-      <text class="badge">🔬 中国科学院相关团队测试验证</text>
-    </view>
     <view class="theory-box">
       <text class="theory-title">📚 理论依据：米勒 7±2 法则</text>
       <text class="theory-text">1956 年，美国心理学家乔治·米勒发表里程碑论文《神奇数字7±2》，提出人的短时记忆容量约为 5～9 个组块，奠定了本测评听觉记忆广度维度的理论基础。</text>
