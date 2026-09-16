@@ -87,6 +87,29 @@
   color: #10131a;
   margin-bottom: 14rpx;
 }
+.section-block { margin-bottom: 28rpx; }
+
+.dimension-row { display: flex; align-items: center; gap: 12rpx; margin-bottom: 14rpx; }
+.dimension-label { flex: 0 0 160rpx; font-size: 20rpx; color: #5b6472; font-weight: 700; }
+.dimension-track { flex: 1; height: 14rpx; background: #f1f0eb; border-radius: 99px; overflow: hidden; }
+.dimension-fill { height: 100%; background: linear-gradient(90deg, #1cb0f6, #58cc02); border-radius: 99px; }
+.dimension-value { flex: 0 0 48rpx; font-size: 20rpx; font-weight: 800; color: #10131a; text-align: right; }
+
+.norm-row { margin-bottom: 8rpx; }
+.norm-text { font-size: 22rpx; color: #475569; line-height: 1.6; }
+
+.diagnosis-text {
+  display: block;
+  font-size: 23rpx;
+  line-height: 1.75;
+  color: #475569;
+  background: #f7f5ef;
+  padding: 20rpx;
+  border-radius: 16rpx;
+}
+
+.training-row { margin-bottom: 10rpx; }
+.training-text { font-size: 22rpx; line-height: 1.7; color: #475569; }
 .history-list { margin-bottom: 28rpx; }
 .history-row {
   display: flex;

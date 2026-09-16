@@ -1,5 +1,8 @@
 {
   "navigationBarTitleText": "测评报告",
   "navigationBarBackgroundColor": "#10131a",
-  "navigationBarTextStyle": "white"
+  "navigationBarTextStyle": "white",
+  "usingComponents": {
+    "brand-header": "/components/brand-header/brand-header"
+  }
 }

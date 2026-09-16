@@ -1,4 +1,5 @@
 <view class="page">
+  <brand-header></brand-header>
   <view wx:if="{{!hasData}}" class="card">
     <text class="empty-text">暂无{{typeLabel}}测评数据，请先完成对应测试。</text>
     <button class="btn btn-green" bindtap="goHome">返回</button>
@@ -33,6 +34,36 @@
     <view class="grade-badge {{gradeCls}}">{{gradeText}}</view>
 
     <text wx:if="{{interpretation}}" class="interpretation">{{interpretation}}</text>
+
+    <view wx:if="{{dimensionRows.length}}" class="section-block">
+      <text class="section-label">六大认知维度画像</text>
+      <view wx:for="{{dimensionRows}}" wx:key="index" class="dimension-row">
+        <text class="dimension-label">{{item.label}}</text>
+        <view class="dimension-track">
+          <view class="dimension-fill" style="width:{{item.value}}%;"></view>
+        </view>
+        <text class="dimension-value">{{item.value}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{ageNormRows.length}}" class="section-block">
+      <text class="section-label">同年龄段常模对比</text>
+      <view wx:for="{{ageNormRows}}" wx:key="index" class="norm-row">
+        <text class="norm-text">{{item}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{diagnosisText}}" class="section-block">
+      <text class="section-label">认知能力诊断</text>
+      <text class="diagnosis-text">{{diagnosisText}}</text>
+    </view>
+
+    <view wx:if="{{trainingRows.length}}" class="section-block">
+      <text class="section-label">个性化提升处方</text>
+      <view wx:for="{{trainingRows}}" wx:key="index" class="training-row">
+        <text class="training-text">• {{item}}</text>
+      </view>
+    </view>
 
     <block wx:if="{{!isComposite}}">
       <text class="section-label">逐级测评记录</text>

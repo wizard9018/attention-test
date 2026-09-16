@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "清良思维 · 专注力测评"
+  "navigationBarTitleText": "清良思维 · 专注力测评",
+  "usingComponents": {
+    "brand-header": "/components/brand-header/brand-header"
+  }
 }

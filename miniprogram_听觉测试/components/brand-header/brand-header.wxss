@@ -1,0 +1,22 @@
+.brand-header {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  padding: 20rpx 24rpx;
+  margin-bottom: 20rpx;
+}
+.brand-mark {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 16rpx;
+  background: #58cc02;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  flex-shrink: 0;
+}
+.brand-text { display: flex; flex-direction: column; }
+.brand-name { font-size: 28rpx; font-weight: 900; color: #fff; }
+.brand-sub { font-size: 20rpx; color: #94a3b8; margin-top: 2rpx; }

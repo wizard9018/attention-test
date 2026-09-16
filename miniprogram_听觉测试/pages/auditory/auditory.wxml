@@ -1,4 +1,5 @@
 <view class="page">
+  <brand-header></brand-header>
   <view class="header">
     <text class="level-title">{{levelTitle}}</text>
     <text class="level-tag">{{levelTag}}</text>

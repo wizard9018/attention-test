@@ -1,5 +1,8 @@
 {
   "navigationBarTitleText": "听觉专注力测试",
   "navigationBarBackgroundColor": "#10131a",
-  "navigationBarTextStyle": "white"
+  "navigationBarTextStyle": "white",
+  "usingComponents": {
+    "brand-header": "/components/brand-header/brand-header"
+  }
 }

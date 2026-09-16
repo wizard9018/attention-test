@@ -1,13 +1,25 @@
 // ==========================================
 // 测评报告（单项听觉 / 单项视觉 / 双通道综合）
-// 分级评语逻辑移植自 concentration_v1.html 的 gradeSingleChannel /
-// AUDITORY_LEVEL_INTERPRETATION，双通道总分分级移植自
-// showFinalCompositeReport 的 compositeTotal 判定
+// 分级评语、常模对比、训练处方、认知诊断逐项移植自 concentration_v1.html
+// 的 gradeSingleChannel / AUDITORY_LEVEL_INTERPRETATION / getAgeNorm /
+// renderTrainingPrescriptions / renderCognitiveDiagnosis
 // ==========================================
 var AUDITORY_MIN_LEVEL = 5;
 var AUDITORY_MAX_LEVEL = 12;
 var VISUAL_MIN_LEVEL = 5;
 var VISUAL_MAX_LEVEL = 10;
+
+var AUDITORY_AGE_NORMS = { 5:4, 6:4, 7:5, 8:5, 9:6, 10:6, 11:7, 12:7, 13:8, 14:8, 15:8, 16:9, 17:9, 18:9 };
+var VISUAL_AGE_NORMS = { 5:4, 6:5, 7:5, 8:6, 9:6, 10:7, 11:7, 12:8, 13:8, 14:8, 15:9, 16:9, 17:9, 18:10 };
+function getAgeNorm(table, age) {
+  var clamped = Math.max(5, Math.min(18, age));
+  return table[clamped];
+}
+function ageNormText(label, userLevel, avgLevel) {
+  var diff = userLevel - avgLevel;
+  var cmp = diff > 0 ? ("高于同龄平均 " + diff + " 级") : diff < 0 ? ("低于同龄平均 " + Math.abs(diff) + " 级") : "与同龄平均持平";
+  return label + "：您 " + userLevel + " 级 · 同龄平均 " + avgLevel + " 级（" + cmp + "）";
+}
 
 var AUDITORY_LEVEL_INTERPRETATION = {
   5: "听觉记忆广度偏弱，机械记忆效率较低，1 小时约能记住 3 个单词以内，背诵过程较为吃力。课堂上听觉信息留存时间短，容易走神。",
@@ -35,6 +47,66 @@ function gradeComposite(total) {
   return { text: "📈 视听协同综合表现：发展中 (Developing · 需专项强化)", cls: "grade-developing" };
 }
 
+function cognitiveDiagnosis(sAud, sVis) {
+  var normAud = sAud / 12;
+  var normVis = sVis / 10;
+  var diff = normAud - normVis;
+  if (Math.abs(diff) <= 0.12) {
+    return "【双通道均衡协同型】考生的听觉序列记忆与视觉空间加工能力高度匹配，大脑双侧感知加工通路协同良好。在日常课堂听讲与板书记录时能流畅无缝切换，在复合信息处理时具有极强的认知稳定性和持久抗干扰能力。";
+  }
+  if (diff > 0.12) {
+    return "【听觉感知优势型】考生的听觉记忆跨度显著优于视觉空间记忆，对声音、语调、语言复述具有很强的敏感度与记忆粘性，但对复杂空间图形或版面排布的复原相对容易出现偏差。学习建议：采用\"出声诵读\"、\"自我复述\"法强化记忆，在理科几何或图表学习中多辅以语言口诀辅助建立空间表象。";
+  }
+  return "【视觉空间优势型】考生的视觉空间模式识别与工作记忆显著优于听觉序列复述，在看图、几何感知、板书捕捉方面具备敏锐直觉，但纯口播听讲时容易出现听觉疲劳或漏听。学习建议：在听讲时配合做思维导图或关键词勾画（以视带听），避免长时间处于纯声音无视觉载体的单调信息流中。";
+}
+
+function avgOf(list, key, fallback) {
+  if (!list || !list.length) return fallback;
+  var sum = 0;
+  list.forEach(function (item) { sum += (item[key] || 0); });
+  return sum / list.length;
+}
+
+function cognitiveDimensions(aud, vis, total) {
+  var audAcc = avgOf(aud.history, "accuracy", 80);
+  var visAcc = avgOf(vis.history, "accuracy", 80);
+  var avgMathTime = avgOf(vis.history, "mathTime", 8);
+
+  var d1 = Math.min(100, Math.max(30, Math.round(((aud.finalLevel - 4) / 8) * 100)));
+  var d2 = Math.min(100, Math.max(35, Math.round(audAcc)));
+  var d3 = Math.min(100, Math.max(30, Math.round(((vis.finalLevel - 4) / 6) * 100)));
+  var d4 = Math.min(100, Math.max(35, Math.round(visAcc)));
+  var d5 = Math.min(100, Math.max(40, Math.round(100 - avgMathTime * 4)));
+  var d6 = Math.min(100, Math.max(30, Math.round((total / 120) * 100)));
+
+  return [
+    { label: "听觉记忆跨度", value: d1 },
+    { label: "听辨辨析精度", value: d2 },
+    { label: "视空工作记忆", value: d3 },
+    { label: "空间重构精度", value: d4 },
+    { label: "抗干扰稳定性", value: d5 },
+    { label: "双通道协同效能", value: d6 }
+  ];
+}
+
+function trainingPrescriptions(sAud, sVis, mode) {
+  var list = [];
+  if (mode === "dual" || mode === "auditory") {
+    list.push(sAud <= 6
+      ? "【听觉记忆跨度强化】建议每日进行 5 分钟『数字倒背』或『无关联词倒背』训练，由 4 词起步逐步递增至 8 词，建立听觉缓冲区的容量扩展。"
+      : "【听觉进阶挑战】听觉记忆跨度良好，建议开展『背景噪音抗干扰复述』，在微弱环境音背景下练习听取核心指令，锻炼高阶听觉注意选择性。");
+  }
+  if (mode === "dual" || mode === "visual") {
+    list.push(sVis <= 6
+      ? "【空间定桩与工作记忆训练】采用 3×3 至 5×5 的『舒尔特方格』及空间位置记忆积木进行视觉广度扩充，学会利用对称性或图形特征线索建立视觉记忆桩。"
+      : "【视空结构深度迁移】视觉空间建构能力扎实，可在日常学习中多接触复杂几何折叠、三视图还原等高阶空间智力游戏，进一步激发空间推理潜能。");
+  }
+  if (mode === "dual") {
+    list.push("【双通道联合编码】提倡多模态协同记忆法（眼看、耳听、口读、手写四位一体），彻底打通左右脑感觉通道的快速通路。");
+  }
+  return list;
+}
+
 Page({
   data: {
     isComposite: false,
@@ -53,6 +125,10 @@ Page({
     compositeTotal: 0,
     auditoryLevel: 0,
     visualLevel: 0,
+    ageNormRows: [],
+    diagnosisText: "",
+    trainingRows: [],
+    dimensionRows: [],
     synced: false
   },
 
@@ -61,6 +137,7 @@ Page({
     var aud = app.globalData.auditoryResult;
     var vis = app.globalData.visualResult;
     var info = app.globalData.playerInfo || {};
+    var age = info.age || 9;
     var isComposite = !!(aud && vis);
     var type = query.type === "visual" ? "visual" : "auditory";
 
@@ -68,7 +145,7 @@ Page({
     this.setData({ playerName: info.name || "考生", playerSchool: info.school || "未填写学校", reportDate: dateStr });
 
     if (isComposite) {
-      this.renderComposite(aud, vis);
+      this.renderComposite(aud, vis, age);
       this.syncIfNeeded(aud.finalLevel, vis.finalLevel, aud.finalLevel * vis.finalLevel, { auditory: aud, visual: vis });
       return;
     }
@@ -78,7 +155,7 @@ Page({
       this.setData({ type: type, typeLabel: type === "visual" ? "视觉专注力" : "听觉专注力", hasData: false });
       return;
     }
-    this.renderSingle(type, result);
+    this.renderSingle(type, result, age);
     var auditoryScore = type === "auditory" ? result.finalLevel : 0;
     var visualScore = type === "visual" ? result.finalLevel : 0;
     var rawKey = type === "auditory" ? "auditory" : "visual";
@@ -86,7 +163,7 @@ Page({
     this.syncIfNeeded(auditoryScore, visualScore, 0, rawDetails);
   },
 
-  renderSingle: function (type, result) {
+  renderSingle: function (type, result, age) {
     var minLevel = type === "visual" ? VISUAL_MIN_LEVEL : AUDITORY_MIN_LEVEL;
     var maxLevel = type === "visual" ? VISUAL_MAX_LEVEL : AUDITORY_MAX_LEVEL;
     var grade = gradeSingleChannel(result.finalLevel, minLevel, maxLevel);
@@ -106,6 +183,10 @@ Page({
       };
     });
 
+    var ageNormRows = type === "visual"
+      ? [ageNormText("视觉空间记忆容量", result.finalLevel, getAgeNorm(VISUAL_AGE_NORMS, age))]
+      : [ageNormText("听觉记忆跨度", result.finalLevel, getAgeNorm(AUDITORY_AGE_NORMS, age))];
+
     this.setData({
       isComposite: false,
       type: type,
@@ -116,13 +197,19 @@ Page({
       gradeCls: grade.cls,
       interpretation: type === "auditory" ? (AUDITORY_LEVEL_INTERPRETATION[result.finalLevel] || "") : "",
       historyRows: historyRows,
+      ageNormRows: ageNormRows,
+      trainingRows: trainingPrescriptions(type === "auditory" ? result.finalLevel : 0, type === "visual" ? result.finalLevel : 0, type),
       hasData: true
     });
   },
 
-  renderComposite: function (aud, vis) {
+  renderComposite: function (aud, vis, age) {
     var total = aud.finalLevel * vis.finalLevel;
     var grade = gradeComposite(total);
+    var ageNormRows = [
+      ageNormText("听觉记忆跨度", aud.finalLevel, getAgeNorm(AUDITORY_AGE_NORMS, age)),
+      ageNormText("视觉空间记忆容量", vis.finalLevel, getAgeNorm(VISUAL_AGE_NORMS, age))
+    ];
     this.setData({
       isComposite: true,
       hasData: true,
@@ -131,7 +218,11 @@ Page({
       compositeTotal: total,
       gradeText: grade.text,
       gradeCls: grade.cls,
-      interpretation: AUDITORY_LEVEL_INTERPRETATION[aud.finalLevel] || ""
+      interpretation: AUDITORY_LEVEL_INTERPRETATION[aud.finalLevel] || "",
+      ageNormRows: ageNormRows,
+      diagnosisText: cognitiveDiagnosis(aud.finalLevel, vis.finalLevel),
+      trainingRows: trainingPrescriptions(aud.finalLevel, vis.finalLevel, "dual"),
+      dimensionRows: cognitiveDimensions(aud, vis, total)
     });
   },
 

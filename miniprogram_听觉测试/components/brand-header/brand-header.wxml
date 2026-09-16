@@ -1,0 +1,7 @@
+<view class="brand-header">
+  <view class="brand-mark">🧠</view>
+  <view class="brand-text">
+    <text class="brand-name">清良思维</text>
+    <text class="brand-sub">认知与思维发展实验室</text>
+  </view>
+</view>
