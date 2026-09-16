@@ -4384,7 +4384,13 @@
     renderTrainingPrescriptions(sAuditory, sVisual, testMode);
 
     // 自动实时同步至 Supabase 数据库 (存储姓名、学校、手机号/微信号、年龄、听觉得分、视觉得分、总分)
-    syncRecordToSupabase(name, school, phone, age, sAuditory, sVisual, compositeTotal);
+    // 单项测评时，未测的通道传 null，避免默认值 4 被误存为"已测得分"
+    syncRecordToSupabase(
+      name, school, phone, age,
+      (isDual || testMode === "auditory") ? sAuditory : null,
+      (isDual || testMode === "visual") ? sVisual : null,
+      isDual ? compositeTotal : null
+    );
   }
 
   // ==========================================
