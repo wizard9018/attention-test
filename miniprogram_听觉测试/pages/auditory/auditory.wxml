@@ -19,7 +19,7 @@
 
   <!-- 输入阶段 -->
   <view wx:if="{{stage === 'input'}}" class="card">
-    <text class="input-hint">已听完 {{sequenceLen}} 个字，请输入拼音（每个字用空格隔开，如：ni3 hao3）</text>
+    <text class="input-hint">已听完 {{sequenceLen}} 个字，请输入拼音（每个字用空格隔开，如：ni hao）</text>
     <input
       class="pinyin-input"
       value="{{inputValue}}"
