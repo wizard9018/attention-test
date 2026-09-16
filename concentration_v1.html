@@ -5091,7 +5091,7 @@
     var teacherId = params.get("ref") || "";
     document.body.classList.add("poster-mode");
     if(homeHeroForm) {
-      var qrUrl = window.location.origin + window.location.pathname.replace(/[^/]*$/, "") + "concentration_v1.html" + (teacherId ? ("?ref=" + encodeURIComponent(teacherId)) : "");
+      var qrUrl = "https://wizard9018.github.io/attention-test/concentration_v1.html" + (teacherId ? ("?ref=" + encodeURIComponent(teacherId)) : "");
       homeHeroForm.innerHTML =
         '<div class="poster-qr-block">' +
           '<img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(qrUrl) + '" alt="扫码参与测试二维码">' +
