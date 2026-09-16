@@ -11,5 +11,6 @@
     "navigationBarTitleText": "清良思维 · 听觉专注力测试",
     "backgroundColor": "#f7f5ef"
   },
+  "lazyCodeLoading": "requiredComponents",
   "sitemapLocation": "sitemap.json"
 }
