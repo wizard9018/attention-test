@@ -486,6 +486,10 @@ Page({
       passedLevels: this.passedLevels,
       history: this.history
     };
+    if (app.globalData.testMode === "auditory") {
+      wx.redirectTo({ url: "/pages/report/report?type=auditory" });
+      return;
+    }
     this.setData({
       stage: "done",
       finalLevel: maxLevel,

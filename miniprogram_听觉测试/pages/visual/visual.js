@@ -349,6 +349,10 @@ Page({
       passedLevels: this.passedLevels,
       history: this.history
     };
+    if (app.globalData.testMode === "visual") {
+      wx.redirectTo({ url: "/pages/report/report?type=visual" });
+      return;
+    }
     this.setData({
       stage: "done",
       finalLevel: maxLevel,
