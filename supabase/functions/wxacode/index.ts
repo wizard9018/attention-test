@@ -45,19 +45,6 @@ async function getAccessToken(supabase: ReturnType<typeof createClient>): Promis
 
 Deno.serve(async (req: Request) => {
   const url = new URL(req.url);
-
-  // 临时调试用：确认 Supabase 到底有没有读到 WX_APPID / WX_APPSECRET 这两个环境变量
-  // （只回传长度和前4位，不会暴露完整密钥），排查完可以删掉这一段
-  if (url.searchParams.get("debug") === "1") {
-    return new Response(JSON.stringify({
-      appid_set: !!WX_APPID,
-      appid_length: (WX_APPID || "").length,
-      appid_prefix: (WX_APPID || "").slice(0, 4),
-      appsecret_set: !!WX_APPSECRET,
-      appsecret_length: (WX_APPSECRET || "").length
-    }), { headers: { "Content-Type": "application/json" } });
-  }
-
   const ref = (url.searchParams.get("ref") || "").trim();
   if (!/^\d{5}$/.test(ref)) {
     return new Response(JSON.stringify({ error: "ref 需为5位数字工号" }), {
