@@ -12,33 +12,9 @@
   </view>
 
   <view class="card">
-    <text class="title">👋 填写信息，开始测试</text>
-
-    <view class="field">
-      <text class="label">学生姓名</text>
-      <input class="input" value="{{name}}" placeholder="请输入姓名" maxlength="10" data-field="name" bindinput="onFieldInput" />
-    </view>
-    <view class="field">
-      <text class="label">所在学校</text>
-      <input class="input" value="{{school}}" placeholder="请输入学校" maxlength="16" data-field="school" bindinput="onFieldInput" />
-    </view>
-    <view class="field">
-      <text class="label">手机号/微信号</text>
-      <input class="input" value="{{phone}}" placeholder="请输入手机号或微信号" maxlength="20" data-field="phone" bindinput="onFieldInput" />
-    </view>
-    <view class="field">
-      <text class="label">年龄</text>
-      <input class="input" type="number" value="{{age}}" placeholder="请输入年龄" data-field="age" bindinput="onFieldInput" />
-    </view>
-    <view class="field">
-      <text class="label">推荐码（选填）</text>
-      <input class="input" type="number" value="{{referrerTeacherId}}" placeholder="如有推荐码，请输入5位推荐码" maxlength="5" data-field="referrerTeacherId" bindinput="onFieldInput" />
-    </view>
-
-    <text wx:if="{{errorText}}" class="error-text">⚠️ {{errorText}}</text>
-
-    <button class="btn btn-green" bindtap="startDual">🚀 开始双通道综合专注力测评</button>
-    <text class="privacy-note">🔒 信息仅用于生成本次测评报告</text>
+    <text class="title">👋 选择测评类型，开始测试</text>
+    <button class="btn btn-green" hover-class="btn-pressed" bindtap="startDual">🚀 开始双通道综合专注力测评</button>
+    <text class="privacy-note">🔒 测评过程不收集任何个人信息</text>
   </view>
 
   <view class="card phase-card phase-auditory" bindtap="startAuditory">

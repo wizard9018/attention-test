@@ -3,10 +3,22 @@ var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 
 App({
   globalData: {
-    playerInfo: null,     // { name, school, phone, age, referrerTeacherId }
-    testMode: "dual",     // "dual" | "auditory" | "visual"
-    auditoryResult: null, // { finalLevel, passedLevels, history }
-    visualResult: null    // { finalLevel, passedLevels, history }
+    playerInfo: null,        // { name, school, phone, age, referrerTeacherId } (未使用，保留兼容旧字段)
+    testMode: "dual",        // "dual" | "auditory" | "visual"
+    auditoryResult: null,    // { finalLevel, passedLevels, history }
+    visualResult: null,      // { finalLevel, passedLevels, history }
+    visitorId: "",           // 匿名访客编号，不收集个人信息，仅用于区分测评记录
+    referrerTeacherId: ""    // 扫码链接里的 ?ref= 工号，用于统计来源
+  },
+
+  // 匿名访客编号：存在本地存储里，同一台设备下次打开小程序沿用同一个编号
+  getVisitorId: function () {
+    var id = wx.getStorageSync("visitorId");
+    if (!id) {
+      id = "v_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      wx.setStorageSync("visitorId", id);
+    }
+    return id;
   },
 
   SUPABASE_URL: SUPABASE_URL,
@@ -43,5 +55,7 @@ App({
     });
   },
 
-  onLaunch: function () {}
+  onLaunch: function () {
+    this.globalData.visitorId = this.getVisitorId();
+  }
 });

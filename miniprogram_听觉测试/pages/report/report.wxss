@@ -129,3 +129,8 @@
 .history-status.pass { color: #58cc02; }
 .history-status.fail { color: #ff4b4b; }
 
+.contact-card { margin-top: 24rpx; text-align: center; }
+.contact-title { display: block; font-size: 28rpx; font-weight: 800; color: #10131a; margin-bottom: 10rpx; }
+.contact-sub { display: block; font-size: 22rpx; color: #5b6472; margin-bottom: 20rpx; }
+.contact-qrcode { width: 280rpx; height: 280rpx; border-radius: 16rpx; }
+

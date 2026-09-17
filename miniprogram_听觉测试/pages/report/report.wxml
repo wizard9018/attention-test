@@ -7,8 +7,7 @@
 
   <view wx:else class="card">
     <view class="player-row">
-      <text class="player-item">考生：{{playerName}}</text>
-      <text class="player-item">学校：{{playerSchool}}</text>
+      <text class="player-item">测评编号：{{playerName}}</text>
       <text class="player-item">日期：{{reportDate}}</text>
     </view>
 
@@ -80,5 +79,11 @@
 
     <button wx:if="{{showContinueBtn}}" class="btn btn-green" hover-class="btn-pressed" bindtap="goContinue">{{continueBtnText}}</button>
     <button class="btn {{showContinueBtn ? 'btn-ghost' : 'btn-green'}}" hover-class="btn-pressed" bindtap="goHome">返回首页</button>
+  </view>
+
+  <view wx:if="{{hasData}}" class="card contact-card">
+    <text class="contact-title">🤝 联系专注力专家老师</text>
+    <text class="contact-sub">长按识别二维码，获取孩子专属免费测评分析</text>
+    <image class="contact-qrcode" src="/assets/team/teacher_qrcode.jpg" mode="widthFix" show-menu-by-longpress="{{true}}"></image>
   </view>
 </view>

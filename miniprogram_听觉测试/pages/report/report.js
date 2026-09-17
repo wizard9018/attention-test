@@ -140,13 +140,12 @@ Page({
     var app = getApp();
     var aud = app.globalData.auditoryResult;
     var vis = app.globalData.visualResult;
-    var info = app.globalData.playerInfo || {};
-    var age = info.age || 9;
+    var age = 9;
     var isComposite = !!(aud && vis);
     var type = query.type === "visual" ? "visual" : "auditory";
 
     var dateStr = new Date().toLocaleDateString("zh-CN");
-    this.setData({ playerName: info.name || "考生", playerSchool: info.school || "未填写学校", reportDate: dateStr });
+    this.setData({ playerName: app.globalData.visitorId, reportDate: dateStr });
 
     if (isComposite) {
       this.renderComposite(aud, vis, age);
@@ -252,16 +251,15 @@ Page({
     if (this.data.synced) return;
     this.setData({ synced: true });
     var app = getApp();
-    var info = app.globalData.playerInfo || {};
     app.syncRecordToSupabase({
-      name: info.name || "考生",
-      school: info.school || "未填写学校",
-      phone: info.phone || "",
-      age: info.age || 9,
+      name: app.globalData.visitorId,
+      school: "",
+      phone: "",
+      age: 9,
       auditoryScore: auditoryScore,
       visualScore: visualScore,
       totalScore: totalScore,
-      referrerTeacherId: info.referrerTeacherId || "",
+      referrerTeacherId: app.globalData.referrerTeacherId || "",
       rawDetails: rawDetails
     });
   },

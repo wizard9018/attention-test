@@ -1066,6 +1066,22 @@
     font-weight: 800;
     cursor: pointer;
   }
+  #posterDownloadBtn {
+    position: fixed;
+    top: 16px;
+    right: 190px;
+    z-index: 500;
+    background: var(--duo-blue);
+    color: #fff;
+    border: none;
+    border-bottom: 4px solid var(--duo-blue-dark);
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+  #posterDownloadBtn:disabled { opacity: 0.6; cursor: default; }
   #posterPage {
     width: 210mm;
     min-height: 297mm;
@@ -1077,6 +1093,7 @@
     overflow: hidden;
   }
   .poster-header { background: linear-gradient(135deg, #1e293b, #0f172a); color: #fff; text-align: center; padding: 10mm 16mm 7mm; }
+  .poster-logo { width: 13mm; height: 13mm; display: block; margin: 0 auto 3mm; }
   .poster-brand { font-size: 19pt; font-weight: 900; letter-spacing: 1px; }
   .poster-tagline { font-size: 9pt; font-weight: 600; color: #cbd5e1; margin-top: 2.5mm; }
 
@@ -1121,6 +1138,15 @@
   .poster-mentor-school { color: var(--duo-text-muted); font-weight: 700; margin-left: 2mm; }
   .poster-mentor-note { display: block; color: var(--duo-text-body); margin-top: 0.5mm; }
 
+  .poster-map-note-top { font-size: 7.5pt; color: var(--duo-text-body); margin-bottom: 3mm; }
+  .poster-map-wrap { text-align: center; }
+  .poster-map-wrap .poster-map-svg { width: 90mm; height: auto; }
+  .poster-campus-list { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; margin-top: 4mm; }
+  .poster-campus-card { background: var(--duo-bg-gray); border: 1px solid var(--duo-border); border-radius: 2.5mm; padding: 3mm 3.5mm; }
+  .poster-campus-name { font-size: 7.6pt; font-weight: 900; color: var(--duo-text-dark); margin-bottom: 1mm; }
+  .poster-campus-addr { font-size: 6.6pt; color: var(--duo-text-body); line-height: 1.4; margin-bottom: 1mm; }
+  .poster-campus-phone { font-size: 6.6pt; color: var(--duo-green-dark); font-weight: 800; }
+
   .poster-cta { margin-top: auto; background: linear-gradient(135deg, var(--duo-green), var(--duo-green-dark)); padding: 6mm 16mm 6mm; text-align: center; color: #fff; }
   .poster-cta img { width: 28mm; height: 28mm; border-radius: 3mm; background: #fff; padding: 2mm; }
   .poster-cta .poster-cta-text { font-size: 11pt; font-weight: 900; margin-top: 3mm; }
@@ -1130,7 +1156,7 @@
   .poster-footer { background: #0f172a; color: #94a3b8; font-size: 6.5pt; text-align: center; padding: 2.5mm; }
 
   @media print {
-    #posterPrintBtn, header.duo-header { display: none !important; }
+    #posterPrintBtn, #posterDownloadBtn, header.duo-header { display: none !important; }
     body.poster-mode { background: #fff !important; }
     #posterPage { margin: 0; box-shadow: none; width: auto; min-height: auto; }
     @page { size: A4; margin: 0; }
@@ -4987,6 +5013,15 @@
     showFinalCompositeReport();
   }
 
+  function loadHtml2Canvas(callback) {
+    if(window.html2canvas) { callback(); return; }
+    var script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js";
+    script.onload = callback;
+    script.onerror = function(){ alert("下载组件加载失败，请检查网络后重试，或改用“打印/保存为PDF”"); };
+    document.head.appendChild(script);
+  }
+
   function initPosterMode() {
     var params = new URLSearchParams(window.location.search);
     if(params.get("poster") !== "1") return;
@@ -5005,10 +5040,45 @@
     printBtn.addEventListener("click", function(){ window.print(); });
     document.body.appendChild(printBtn);
 
+    var downloadBtn = document.createElement("button");
+    downloadBtn.id = "posterDownloadBtn";
+    downloadBtn.innerHTML = "💾 下载海报图片";
+    downloadBtn.addEventListener("click", function(){
+      downloadBtn.disabled = true;
+      downloadBtn.innerHTML = "生成中...";
+      loadHtml2Canvas(function(){
+        html2canvas(document.getElementById("posterPage"), { useCORS: true, scale: 2 }).then(function(canvas){
+          var link = document.createElement("a");
+          link.download = "清良思维宣传海报" + (teacherId ? ("_" + teacherId) : "") + ".png";
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+          downloadBtn.disabled = false;
+          downloadBtn.innerHTML = "💾 下载海报图片";
+        }).catch(function(err){
+          console.warn(err);
+          alert("图片生成失败，请改用上方“打印/保存为PDF”");
+          downloadBtn.disabled = false;
+          downloadBtn.innerHTML = "💾 下载海报图片";
+        });
+      });
+    });
+    document.body.appendChild(downloadBtn);
+
     var poster = document.createElement("div");
     poster.id = "posterPage";
     poster.innerHTML =
       '<div class="poster-header">' +
+        '<svg class="poster-logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+          '<rect x="2" y="4" width="44" height="42" rx="12" fill="#46A302"/>' +
+          '<rect x="2" y="2" width="44" height="41" rx="12" fill="#58CC02"/>' +
+          '<rect x="4" y="4" width="40" height="18" rx="9" fill="white" fill-opacity="0.18"/>' +
+          '<polygon points="24,9 35,16 24,23 13,16" fill="#38BDF8"/>' +
+          '<polygon points="13,16 24,23 24,35 13,28" fill="#15803D"/>' +
+          '<polygon points="24,23 35,16 35,28 24,35" fill="#FBBF24"/>' +
+          '<path d="M24 13L25.8 20.2L33 22L25.8 23.8L24 31L22.2 23.8L15 22L22.2 20.2L24 13Z" fill="#FFFFFF"/>' +
+          '<circle cx="24" cy="22" r="2.6" fill="#0F172A"/>' +
+          '<circle cx="24" cy="22" r="1.4" fill="#58CC02"/>' +
+        '</svg>' +
         '<div class="poster-brand">清良思维</div>' +
         '<div class="poster-tagline">视听双通道专注力训练系统 · K12 认知与专注力发展测评</div>' +
       '</div>' +
@@ -5067,8 +5137,29 @@
         (teacherId ? ('<div class="poster-cta-sub">推荐工号：' + teacherId + '</div>') : '') +
         '<div class="poster-cta-url">或直接访问：wizard9018.github.io/attention-test/concentration_v1.html</div>' +
       '</div>' +
+      '<div class="poster-section">' +
+        '<div class="poster-section-title">校区分布</div>' +
+        '<p class="poster-map-note-top">全国校区分布，就近联系测评老师</p>' +
+        '<div class="poster-map-wrap" id="posterCampusMapSlot"></div>' +
+        '<div class="poster-campus-list" id="posterCampusListSlot"></div>' +
+      '</div>' +
       '<div class="poster-footer">清良思维 · 认知与思维发展实验室 出品 · 孪生智能科技（天津）有限公司</div>';
     document.getElementById("homeView").appendChild(poster);
+
+    // 校区地图/列表：跟网页保持一致，直接克隆网页上已有的地图SVG，避免重复一份巨大的地图路径数据
+    var sourceMapSvg = document.querySelector(".campus-map-svg");
+    if (sourceMapSvg) {
+      var clonedMap = sourceMapSvg.cloneNode(true);
+      clonedMap.classList.add("poster-map-svg");
+      document.getElementById("posterCampusMapSlot").appendChild(clonedMap);
+    }
+    document.getElementById("posterCampusListSlot").innerHTML = CAMPUS_LIST_FALLBACK.map(function(c){
+      return '<div class="poster-campus-card">' +
+        '<div class="poster-campus-name">🏫 ' + escapeHtml(c.campus_name) + '</div>' +
+        '<div class="poster-campus-addr">' + escapeHtml(c.address) + '</div>' +
+        '<div class="poster-campus-phone">📞 ' + escapeHtml(c.phone) + '</div>' +
+      '</div>';
+    }).join("");
   }
 
   var CAMPUS_LIST_FALLBACK = [
