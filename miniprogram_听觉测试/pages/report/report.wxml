@@ -9,6 +9,7 @@
     <view class="player-row">
       <text class="player-item">测评编号：{{playerName}}</text>
       <text class="player-item">日期：{{reportDate}}</text>
+      <text wx:if="{{referrerTeacherId}}" class="player-item">推荐码：{{referrerTeacherId}}</text>
     </view>
 
     <text class="report-title">{{isComposite ? '📊 视听双通道综合专注力评估报告' : ('📊 ' + typeLabel + '测评报告')}}</text>
@@ -57,13 +58,6 @@
       <text class="diagnosis-text">{{diagnosisText}}</text>
     </view>
 
-    <view wx:if="{{trainingRows.length}}" class="section-block">
-      <text class="section-label">个性化提升处方</text>
-      <view wx:for="{{trainingRows}}" wx:key="index" class="training-row">
-        <text class="training-text">• {{item}}</text>
-      </view>
-    </view>
-
     <block wx:if="{{!isComposite}}">
       <text class="section-label">逐级测评记录</text>
       <view class="history-list">
@@ -82,8 +76,8 @@
   </view>
 
   <view wx:if="{{hasData}}" class="card contact-card">
-    <text class="contact-title">🤝 联系专注力专家老师</text>
-    <text class="contact-sub">长按识别二维码，获取孩子专属免费测评分析</text>
+    <text class="contact-title">🎁 凭报告截图免费领取</text>
+    <text class="contact-sub">截图保存本次测评报告，长按识别二维码添加专注力专家老师，凭截图免费领取针对短板维度定制的《7天家庭视觉/听觉提升训练计划表》，并可预约专家1对1免费语音诊断15分钟</text>
     <image class="contact-qrcode" src="/assets/team/teacher_qrcode.jpg" mode="widthFix" show-menu-by-longpress="{{true}}"></image>
   </view>
 </view>

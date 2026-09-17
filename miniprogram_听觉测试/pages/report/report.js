@@ -90,42 +90,6 @@ function cognitiveDimensions(aud, vis, total) {
   ];
 }
 
-// 5~8级取自《听觉视觉训练时长建议.docx》；9级及以上按文档已有的递减趋势
-// 类推（听觉每周时长在7~8级已持平于2小时，累计时长按原有的每级-20小时
-// 趋势递减，触底后维持10小时的最低巩固量；视觉每天时长全程持平于0.5
-// 小时，累计时长延续约-10小时/级的趋势）。
-var AUDITORY_TRAINING_PLAN = {
-  5: { unit: "每周训练时长", duration: "6小时", total: "80小时" },
-  6: { unit: "每周训练时长", duration: "4小时", total: "60小时" },
-  7: { unit: "每周训练时长", duration: "2小时", total: "40小时" },
-  8: { unit: "每周训练时长", duration: "2小时", total: "20小时" },
-  9: { unit: "每周训练时长", duration: "2小时", total: "10小时" },
-  10: { unit: "每周训练时长", duration: "2小时", total: "10小时" },
-  11: { unit: "每周训练时长", duration: "2小时", total: "10小时" },
-  12: { unit: "每周训练时长", duration: "2小时", total: "10小时" }
-};
-var VISUAL_TRAINING_PLAN = {
-  5: { unit: "每天训练时长", duration: "0.5小时", total: "60小时" },
-  6: { unit: "每天训练时长", duration: "0.5小时", total: "50小时" },
-  7: { unit: "每天训练时长", duration: "0.5小时", total: "40小时" },
-  8: { unit: "每天训练时长", duration: "0.5小时", total: "40小时" },
-  9: { unit: "每天训练时长", duration: "0.5小时", total: "30小时" },
-  10: { unit: "每天训练时长", duration: "0.5小时", total: "20小时" }
-};
-
-function trainingPrescriptions(sAud, sVis, mode) {
-  var list = [];
-  if (mode === "dual" || mode === "auditory") {
-    var audPlan = AUDITORY_TRAINING_PLAN[sAud];
-    list.push("🎧 听觉专注力（第 " + sAud + " 级）：建议" + audPlan.unit + " " + audPlan.duration + "，累计训练时长约 " + audPlan.total);
-  }
-  if (mode === "dual" || mode === "visual") {
-    var visPlan = VISUAL_TRAINING_PLAN[sVis];
-    list.push("👁️ 视觉专注力（第 " + sVis + " 级）：建议" + visPlan.unit + " " + visPlan.duration + "，累计训练时长约 " + visPlan.total);
-  }
-  return list;
-}
-
 Page({
   data: {
     isComposite: false,
@@ -141,12 +105,12 @@ Page({
     playerName: "",
     playerSchool: "",
     reportDate: "",
+    referrerTeacherId: "",
     compositeTotal: 0,
     auditoryLevel: 0,
     visualLevel: 0,
     ageNormRows: [],
     diagnosisText: "",
-    trainingRows: [],
     dimensionRows: [],
     showContinueBtn: false,
     continueBtnText: "",
@@ -163,7 +127,7 @@ Page({
     var type = query.type === "visual" ? "visual" : "auditory";
 
     var dateStr = new Date().toLocaleDateString("zh-CN");
-    this.setData({ playerName: app.globalData.visitorId, reportDate: dateStr });
+    this.setData({ playerName: app.globalData.visitorId, reportDate: dateStr, referrerTeacherId: app.globalData.referrerTeacherId || "" });
 
     if (isComposite) {
       this.renderComposite(aud, vis, age);
@@ -237,7 +201,6 @@ Page({
       interpretation: type === "auditory" ? (AUDITORY_LEVEL_INTERPRETATION[result.finalLevel] || "") : "",
       historyRows: historyRows,
       ageNormRows: ageNormRows,
-      trainingRows: trainingPrescriptions(type === "auditory" ? result.finalLevel : 0, type === "visual" ? result.finalLevel : 0, type),
       hasData: true
     });
   },
@@ -260,7 +223,6 @@ Page({
       interpretation: AUDITORY_LEVEL_INTERPRETATION[aud.finalLevel] || "",
       ageNormRows: ageNormRows,
       diagnosisText: cognitiveDiagnosis(aud.finalLevel, vis.finalLevel),
-      trainingRows: trainingPrescriptions(aud.finalLevel, vis.finalLevel, "dual"),
       dimensionRows: cognitiveDimensions(aud, vis, total)
     });
   },

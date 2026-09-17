@@ -2331,9 +2331,10 @@
         📊 视听双通道综合专注力评估报告
       </h2>
       <p style="color:var(--duo-text-muted); font-size:0.95rem; font-weight:700; margin-top:4px;">
-        考生：<span id="reportPlayerName" style="color:var(--duo-text-dark); font-weight:900;">考生</span> &nbsp;|&nbsp; 
+        考生：<span id="reportPlayerName" style="color:var(--duo-text-dark); font-weight:900;">考生</span> &nbsp;|&nbsp;
         学校：<span id="reportPlayerSchool" style="color:var(--duo-text-dark); font-weight:900;">未填写学校</span> &nbsp;|&nbsp;
         测评日期：<span id="reportDateText">2026-09-07</span>
+        <span id="reportReferrerRow" style="display:none;">&nbsp;|&nbsp; 推荐码：<span id="reportReferrerCode" style="color:var(--duo-text-dark); font-weight:900;"></span></span>
       </p>
     </div>
 
@@ -2487,12 +2488,13 @@
       </div>
     </div>
 
-    <!-- 6. TARGETED TRAINING PRESCRIPTION -->
-    <div class="duo-card" style="background:#f0fdf4; border-color:#86efac; padding:20px; border-radius:20px; margin-bottom:24px;">
-      <h3 style="font-size:1.1rem; font-weight:900; color:#15803d; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
-        <span>💡</span> <span id="trainingAdviceTitle">视听双通道个性化专注力提升处方</span>
+    <!-- 6. FREE GIFT CTA -->
+    <div class="duo-card" style="background:#f0fdf4; border-color:#86efac; padding:20px; border-radius:20px; margin-bottom:24px; text-align:center;">
+      <h3 style="font-size:1.1rem; font-weight:900; color:#15803d; margin-bottom:10px; display:flex; align-items:center; justify-content:center; gap:8px;">
+        <span>🎁</span> <span>凭报告截图免费领取</span>
       </h3>
-      <div id="trainingAdviceContent" style="font-size:0.9rem; color:#166534; line-height:1.7;"></div>
+      <p style="font-size:0.9rem; color:#166534; line-height:1.7;">截图保存本次测评报告，长按识别下方二维码添加专注力专家老师，凭截图免费领取针对短板维度定制的《7天家庭视觉/听觉提升训练计划表》，并可预约专家1对1免费语音诊断15分钟</p>
+      <img src="assets/team/franchise_qrcode.png" alt="专注力专家老师微信二维码" style="width:160px; height:160px; border-radius:12px; margin-top:14px; border:2px solid var(--duo-border);">
     </div>
 
     <!-- ACTION BUTTONS -->
@@ -3356,7 +3358,8 @@
   var reportView = document.getElementById("reportView");
   var reportMainTitle = document.getElementById("reportMainTitle");
   var reportTopBadge = document.getElementById("reportTopBadge");
-  var trainingAdviceTitle = document.getElementById("trainingAdviceTitle");
+  var reportReferrerRow = document.getElementById("reportReferrerRow");
+  var reportReferrerCode = document.getElementById("reportReferrerCode");
   var reportPlayerName = document.getElementById("reportPlayerName");
   var reportPlayerSchool = document.getElementById("reportPlayerSchool");
   var reportDateText = document.getElementById("reportDateText");
@@ -3395,7 +3398,6 @@
   var visualLogSection = document.getElementById("visualLogSection");
   var auditoryLogTableBody = document.getElementById("auditoryLogTableBody");
   var visualLogTableBody = document.getElementById("visualLogTableBody");
-  var trainingAdviceContent = document.getElementById("trainingAdviceContent");
   var printReportBtn = document.getElementById("printReportBtn");
   var restartTestBtn = document.getElementById("restartTestBtn");
   var contactExpertBtn = document.getElementById("contactExpertBtn");
@@ -4332,15 +4334,19 @@
     if(isDual) {
       reportMainTitle.textContent = "📊 视听双通道综合专注力评估报告";
       reportTopBadge.textContent = "🧠 认知与神经心理发展评估 · 官方双通道认证";
-      trainingAdviceTitle.textContent = "视听双通道个性化专注力提升处方";
     } else if(testMode === "auditory") {
       reportMainTitle.textContent = "🎧 听觉专注力单项测评报告";
       reportTopBadge.textContent = "🧠 认知与神经心理发展评估 · 听觉专注力单项认证";
-      trainingAdviceTitle.textContent = "听觉专注力个性化提升处方";
     } else {
       reportMainTitle.textContent = "👁️ 视觉专注力单项测评报告";
       reportTopBadge.textContent = "🧠 认知与神经心理发展评估 · 视觉专注力单项认证";
-      trainingAdviceTitle.textContent = "视觉专注力个性化提升处方";
+    }
+
+    if(currentReferrerTeacherId) {
+      reportReferrerCode.textContent = currentReferrerTeacherId;
+      reportReferrerRow.style.display = "inline";
+    } else {
+      reportReferrerRow.style.display = "none";
     }
 
     formulaAuditoryScore.textContent = sAuditory + " 分";
@@ -4399,7 +4405,6 @@
     }
     if(isDual || testMode === "auditory") renderAuditoryTable();
     if(isDual || testMode === "visual") renderVisualTable();
-    renderTrainingPrescriptions(sAuditory, sVisual, testMode);
 
     // 自动实时同步至 Supabase 数据库 (存储姓名、学校、手机号/微信号、年龄、听觉得分、视觉得分、总分)
     // 单项测评时，未测的通道传 0（数据库该列为 NOT NULL，无法传 null；
@@ -4664,46 +4669,6 @@
                      "<td>" + badge + "</td>";
       visualLogTableBody.appendChild(tr);
     });
-  }
-
-  // 5~8级取自《听觉视觉训练时长建议.docx》；9级及以上按文档已有的递减趋势
-  // 类推（听觉每周时长在7~8级已持平于2小时，累计时长按原有的每级-20小时
-  // 趋势递减，触底后维持10小时的最低巩固量；视觉每天时长全程持平于0.5
-  // 小时，累计时长延续约-10小时/级的趋势）。
-  var AUDITORY_TRAINING_PLAN = {
-    5: { unit: "每周训练时长", duration: "6小时", total: "80小时" },
-    6: { unit: "每周训练时长", duration: "4小时", total: "60小时" },
-    7: { unit: "每周训练时长", duration: "2小时", total: "40小时" },
-    8: { unit: "每周训练时长", duration: "2小时", total: "20小时" },
-    9: { unit: "每周训练时长", duration: "2小时", total: "10小时" },
-    10: { unit: "每周训练时长", duration: "2小时", total: "10小时" },
-    11: { unit: "每周训练时长", duration: "2小时", total: "10小时" },
-    12: { unit: "每周训练时长", duration: "2小时", total: "10小时" }
-  };
-  var VISUAL_TRAINING_PLAN = {
-    5: { unit: "每天训练时长", duration: "0.5小时", total: "60小时" },
-    6: { unit: "每天训练时长", duration: "0.5小时", total: "50小时" },
-    7: { unit: "每天训练时长", duration: "0.5小时", total: "40小时" },
-    8: { unit: "每天训练时长", duration: "0.5小时", total: "40小时" },
-    9: { unit: "每天训练时长", duration: "0.5小时", total: "30小时" },
-    10: { unit: "每天训练时长", duration: "0.5小时", total: "20小时" }
-  };
-
-  function renderTrainingPrescriptions(sAud, sVis, mode) {
-    var list = [];
-    if(mode === "dual" || mode === "auditory") {
-      var audPlan = AUDITORY_TRAINING_PLAN[sAud];
-      list.push("<strong>🎧 听觉专注力（第 " + sAud + " 级）</strong>：建议" + audPlan.unit + " " + audPlan.duration + "，累计训练时长约 " + audPlan.total);
-    }
-
-    if(mode === "dual" || mode === "visual") {
-      var visPlan = VISUAL_TRAINING_PLAN[sVis];
-      list.push("<strong>👁️ 视觉专注力（第 " + sVis + " 级）</strong>：建议" + visPlan.unit + " " + visPlan.duration + "，累计训练时长约 " + visPlan.total);
-    }
-
-    trainingAdviceContent.innerHTML = list.map(function(item){
-      return "<div style='margin-bottom:8px;'>• " + item + "</div>";
-    }).join("");
   }
 
   // ==========================================

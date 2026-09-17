@@ -110,9 +110,6 @@
   border-radius: 16rpx;
 }
 
-.training-row { margin-bottom: 10rpx; }
-.training-text { font-size: 22rpx; line-height: 1.7; color: #475569; }
-
 .history-list { margin-bottom: 28rpx; }
 .history-row {
   display: flex;
