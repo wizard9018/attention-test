@@ -1182,8 +1182,6 @@
     @page { size: A4; margin: 0; }
   }
 
-  @keyframes onAutoFillStart { from {} to {} }
-  #homeReferrerInput:-webkit-autofill { animation-name: onAutoFillStart; }
 
   .home-form-card {
     background: var(--duo-bg-gray);
@@ -1846,7 +1844,7 @@
               </div>
               <div class="home-form-field">
                 <label>推荐码（选填）</label>
-                <input type="text" id="homeReferrerInput" name="qlsw_referrer_teacher_id" placeholder="如有推荐码，请输入5位推荐码" maxlength="5" inputmode="numeric" pattern="[0-9]*" autocomplete="new-password" />
+                <input type="text" id="homeReferrerInput" name="qlsw_referrer_teacher_id" placeholder="如有推荐码，请输入5位推荐码" maxlength="5" inputmode="numeric" pattern="[0-9]*" autocomplete="off" readonly onfocus="this.removeAttribute('readonly')" />
               </div>
               <button class="duo-btn btn-green home-start-btn cta-glow" id="homeStartBtn">
                 <span>开始测试 →</span>
@@ -3252,17 +3250,10 @@
   var homeReferrerInput = document.getElementById("homeReferrerInput");
   var currentReferrerTeacherId = "";
   (function(){
-    var userTyped = false;
     var refParam = new URLSearchParams(window.location.search).get("ref") || "";
     if(/^\d{5}$/.test(refParam)) {
       homeReferrerInput.value = refParam;
-      userTyped = true;
     }
-    homeReferrerInput.addEventListener("input", function(){ userTyped = true; }, { once: true });
-    homeReferrerInput.addEventListener("animationstart", function(e){
-      if(e.animationName === "onAutoFillStart" && !userTyped) homeReferrerInput.value = "";
-    });
-    setTimeout(function(){ if(!userTyped) homeReferrerInput.value = ""; }, 300);
   })();
   var campusListContainer = document.getElementById("campusListContainer");
   var homeStartBtn = document.getElementById("homeStartBtn");
