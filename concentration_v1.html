@@ -1068,8 +1068,8 @@
   }
   #posterDownloadBtn {
     position: fixed;
-    top: 16px;
-    right: 190px;
+    top: 68px;
+    right: 16px;
     z-index: 500;
     background: var(--duo-blue);
     color: #fff;
@@ -1108,21 +1108,12 @@
 
   .poster-divider { margin: 4mm 18mm 0; border-top: 1px dashed var(--duo-border); }
 
-  .poster-section { padding: 4mm 18mm 0; }
   .poster-section-title { font-size: 7.5pt; font-weight: 900; color: var(--duo-green-dark); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 2.5mm; }
-
-  .poster-section.poster-ink-band { background: linear-gradient(135deg, #1e293b, #0f172a); color: #e2e8f0; padding: 6mm 18mm 7mm; margin-top: 0; }
-  .poster-ink-band .poster-section-title { color: #86efac; }
 
   .poster-brand-block { background: var(--duo-bg-gray); border-left: 3.5px solid var(--duo-green); border-radius: 0 3mm 3mm 0; padding: 4mm 7mm; }
   .poster-brand-lines p { font-size: 8.6pt; font-weight: 700; color: var(--duo-text-dark); line-height: 1.5; }
   .poster-brand-lines p.accent { color: var(--duo-green-dark); margin-top: 1.5mm; }
   .poster-brand-story { font-size: 7.3pt; color: var(--duo-text-body); line-height: 1.55; margin-top: 3mm; }
-
-  .poster-ink-band .poster-brand-block { background: rgba(255,255,255,0.07); border-left-color: #4ade80; }
-  .poster-ink-band .poster-brand-lines p { color: #f1f5f9; }
-  .poster-ink-band .poster-brand-lines p.accent { color: #4ade80; }
-  .poster-ink-band .poster-brand-story { color: #cbd5e1; }
 
   .poster-founders { display: flex; gap: 5mm; margin-top: 4mm; }
   .poster-founder-card { flex: 1; display: flex; gap: 3mm; align-items: flex-start; background: #fff; border: 1px solid var(--duo-border); border-radius: 3mm; padding: 3mm; }
@@ -1138,20 +1129,58 @@
   .poster-mentor-school { color: var(--duo-text-muted); font-weight: 700; margin-left: 2mm; }
   .poster-mentor-note { display: block; color: var(--duo-text-body); margin-top: 0.5mm; }
 
-  .poster-map-note-top { font-size: 7.5pt; color: var(--duo-text-body); margin-bottom: 3mm; }
-  .poster-map-wrap { text-align: center; }
-  .poster-map-wrap .poster-map-svg { width: 90mm; height: auto; }
-  .poster-campus-list { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; margin-top: 4mm; }
-  .poster-campus-card { background: var(--duo-bg-gray); border: 1px solid var(--duo-border); border-radius: 2.5mm; padding: 3mm 3.5mm; }
-  .poster-campus-name { font-size: 7.6pt; font-weight: 900; color: var(--duo-text-dark); margin-bottom: 1mm; }
-  .poster-campus-addr { font-size: 6.6pt; color: var(--duo-text-body); line-height: 1.4; margin-bottom: 1mm; }
-  .poster-campus-phone { font-size: 6.6pt; color: var(--duo-green-dark); font-weight: 800; }
+  .poster-campus-row { display: flex; gap: 3mm; align-items: flex-start; }
+  .poster-map-wrap { flex: 0 0 28mm; text-align: center; }
+  .poster-map-wrap .poster-map-svg { width: 28mm; height: auto; }
+  .poster-campus-list { flex: 1 1 auto; display: flex; flex-direction: column; gap: 1mm; min-width: 0; }
+  .poster-campus-card { border-bottom: 1px dashed var(--duo-border); padding-bottom: 1mm; }
+  .poster-campus-name { font-size: 6.2pt; font-weight: 900; color: var(--duo-text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .poster-campus-phone { font-size: 5.8pt; color: var(--duo-green-dark); font-weight: 800; }
 
-  .poster-cta { margin-top: auto; background: linear-gradient(135deg, var(--duo-green), var(--duo-green-dark)); padding: 6mm 16mm 6mm; text-align: center; color: #fff; }
-  .poster-cta img { width: 28mm; height: 28mm; border-radius: 3mm; background: #fff; padding: 2mm; }
-  .poster-cta .poster-cta-text { font-size: 11pt; font-weight: 900; margin-top: 3mm; }
-  .poster-cta .poster-cta-sub { font-size: 7.5pt; margin-top: 1.5mm; opacity: 0.92; }
-  .poster-cta .poster-cta-url { font-size: 7pt; margin-top: 1mm; opacity: 0.85; font-family: monospace; }
+  /* 2x2 四象限布局：教学理念 / 团队成员 / 校区分布 / 扫码CTA 各占约 1/4 */
+  .poster-quad-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 4mm;
+    border-top: 1px solid var(--duo-border);
+    border-left: 1px solid var(--duo-border);
+  }
+  .poster-quad-cell {
+    border-right: 1px solid var(--duo-border);
+    border-bottom: 1px solid var(--duo-border);
+    padding: 4mm 5mm;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  .poster-quad-philosophy { background: linear-gradient(135deg, #1e293b, #0f172a); color: #e2e8f0; }
+  .poster-quad-philosophy .poster-section-title { color: #86efac; }
+  .poster-quad-philosophy .poster-brand-block { background: rgba(255,255,255,0.07); border-left-color: #4ade80; padding: 3mm 4mm; }
+  .poster-quad-philosophy .poster-brand-lines p { color: #f1f5f9; font-size: 7.6pt; }
+  .poster-quad-philosophy .poster-brand-lines p.accent { color: #4ade80; }
+  .poster-quad-philosophy .poster-brand-story { color: #cbd5e1; font-size: 6.4pt; }
+
+  .poster-quad-team .poster-founders { flex-direction: column; gap: 2.5mm; }
+  .poster-quad-team .poster-founder-card { padding: 2mm; }
+  .poster-quad-team .poster-founder-card img { width: 11mm; height: 11mm; }
+  .poster-quad-team .poster-founder-name { font-size: 7.6pt; }
+  .poster-quad-team .poster-founder-bio { font-size: 6.2pt; }
+  .poster-quad-team .poster-mentor-grid { grid-template-columns: 1fr 1fr; gap: 0.5mm 3mm; }
+  .poster-quad-team .poster-mentor-row { font-size: 6.4pt; padding: 0.5mm 0; }
+
+  .poster-quad-cta {
+    background: linear-gradient(135deg, var(--duo-green), var(--duo-green-dark));
+    color: #fff;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .poster-quad-cta img { width: 24mm; height: 24mm; border-radius: 2.5mm; background: #fff; padding: 1.5mm; }
+  .poster-quad-cta .poster-cta-text { font-size: 8.6pt; font-weight: 900; margin-top: 2.5mm; }
+  .poster-quad-cta .poster-cta-sub { font-size: 6.8pt; margin-top: 1mm; opacity: 0.92; }
+  .poster-quad-cta .poster-cta-url { font-size: 5.8pt; margin-top: 1mm; opacity: 0.85; font-family: monospace; word-break: break-all; }
+
 
   .poster-footer { background: #0f172a; color: #94a3b8; font-size: 6.5pt; text-align: center; padding: 2.5mm; }
 
@@ -5092,56 +5121,59 @@
         '</div>' +
       '</div>' +
       '<div class="poster-divider"></div>' +
-      '<div class="poster-section poster-ink-band">' +
-        '<div class="poster-section-title">教学理念</div>' +
-        '<div class="poster-brand-block">' +
-          '<div class="poster-brand-lines">' +
-            '<p>提高专注力，解决底层学习能力</p>' +
-            '<p>告别低效苦学，学习事半功倍。</p>' +
-            '<p class="accent">让孩子更聪明，学习变轻松</p>' +
-            '<p>小初高一路领跑，冲刺理想名校，成就精彩人生。</p>' +
+      '<div class="poster-quad-grid">' +
+        '<div class="poster-quad-cell poster-quad-philosophy">' +
+          '<div class="poster-section-title">教学理念</div>' +
+          '<div class="poster-brand-block">' +
+            '<div class="poster-brand-lines">' +
+              '<p>提高专注力，解决底层学习能力</p>' +
+              '<p>告别低效苦学，学习事半功倍。</p>' +
+              '<p class="accent">让孩子更聪明，学习变轻松</p>' +
+              '<p>小初高一路领跑，冲刺理想名校，成就精彩人生。</p>' +
+            '</div>' +
+            '<div class="poster-brand-story">清良思维（运营主体：孪生智能科技（天津）有限公司）成立于 2019 年，位于天津滨海 · 中关村科技园，是一家集科技与教育于一体的人工智能教育平台。团队自 2016 年申请"电子信息克隆分析"技术发明专利以来，持续对比研究学霸与普通学生的思考路径，2020 年思维训练体系趋于成熟，并将研究成果应用于本测评系统的研发。</div>' +
           '</div>' +
-          '<div class="poster-brand-story">清良思维（运营主体：孪生智能科技（天津）有限公司）成立于 2019 年，位于天津滨海 · 中关村科技园，是一家集科技与教育于一体的人工智能教育平台。团队自 2016 年申请"电子信息克隆分析"技术发明专利以来，持续对比研究学霸与普通学生的思考路径，2020 年思维训练体系趋于成熟，并将研究成果应用于本测评系统的研发。</div>' +
         '</div>' +
-      '</div>' +
-      '<div class="poster-section">' +
-        '<div class="poster-section-title">团队成员</div>' +
-        '<div class="poster-founders">' +
-          '<div class="poster-founder-card">' +
-            '<img src="assets/team/founder_dingdaliang.png" alt="丁大良">' +
-            '<div>' +
-              '<div class="poster-founder-name">丁大良<span class="poster-founder-badge">创始人</span></div>' +
-              '<div class="poster-founder-bio">毕业于中国石油大学，曾任职世界五百强斯伦贝谢高级工程师，拥有"电子信息克隆分析"技术发明专利，已帮助上千位学生提高学校成绩。</div>' +
+        '<div class="poster-quad-cell poster-quad-team">' +
+          '<div class="poster-section-title">团队成员</div>' +
+          '<div class="poster-founders">' +
+            '<div class="poster-founder-card">' +
+              '<img src="assets/team/founder_dingdaliang.png" alt="丁大良">' +
+              '<div>' +
+                '<div class="poster-founder-name">丁大良<span class="poster-founder-badge">创始人</span></div>' +
+                '<div class="poster-founder-bio">中国石油大学毕业，曾任世界五百强斯伦贝谢高级工程师，拥有"电子信息克隆分析"技术发明专利。</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="poster-founder-card">' +
+              '<img src="assets/team/founder_zhushan.png" alt="朱杉">' +
+              '<div>' +
+                '<div class="poster-founder-name">朱杉<span class="poster-founder-badge">创始人</span></div>' +
+                '<div class="poster-founder-bio">清华大学工程学士 / 英属哥伦比亚大学工商管理硕士，曾辅导学生考入哈佛、耶鲁等名校。</div>' +
+              '</div>' +
             '</div>' +
           '</div>' +
-          '<div class="poster-founder-card">' +
-            '<img src="assets/team/founder_zhushan.png" alt="朱杉">' +
-            '<div>' +
-              '<div class="poster-founder-name">朱杉<span class="poster-founder-badge">创始人</span></div>' +
-              '<div class="poster-founder-bio">清华大学工程学士 / 英属哥伦比亚大学工商管理硕士，10多年教育咨询、升学咨询经验，曾辅导学生考入哈佛、耶鲁等常春藤名校。</div>' +
-            '</div>' +
+          '<div class="poster-mentor-label">题目开发与测评团队</div>' +
+          '<div class="poster-mentor-grid">' +
+            '<div class="poster-mentor-row"><span class="poster-mentor-name">常老师</span><span class="poster-mentor-school">北京大学</span></div>' +
+            '<div class="poster-mentor-row"><span class="poster-mentor-name">Eva 老师</span><span class="poster-mentor-school">香港中文大学</span></div>' +
+            '<div class="poster-mentor-row"><span class="poster-mentor-name">季老师</span><span class="poster-mentor-school">军校</span></div>' +
+            '<div class="poster-mentor-row"><span class="poster-mentor-name">Michelle 老师</span><span class="poster-mentor-school">美国伯克利大学</span></div>' +
+            '<div class="poster-mentor-row"><span class="poster-mentor-name">李老师</span><span class="poster-mentor-school">天津大学</span></div>' +
           '</div>' +
         '</div>' +
-        '<div class="poster-mentor-label">题目开发与测评团队</div>' +
-        '<div class="poster-mentor-grid">' +
-          '<div class="poster-mentor-row"><span class="poster-mentor-name">常老师</span><span class="poster-mentor-school">北京大学 · 数理化方向</span><span class="poster-mentor-note">擅长拆解难题，把复杂公式讲透</span></div>' +
-          '<div class="poster-mentor-row"><span class="poster-mentor-name">Eva 老师</span><span class="poster-mentor-school">香港中文大学 · 中文方向</span><span class="poster-mentor-note">擅长写作，帮助学生提高中文成绩</span></div>' +
-          '<div class="poster-mentor-row"><span class="poster-mentor-name">季老师</span><span class="poster-mentor-school">军校 · 数理化方向</span><span class="poster-mentor-note">作风严谨，最看重解题规范</span></div>' +
-          '<div class="poster-mentor-row"><span class="poster-mentor-name">Michelle 老师</span><span class="poster-mentor-school">美国伯克利大学 · 经济学与统计学方向</span><span class="poster-mentor-note">擅长规划和大学申请</span></div>' +
-          '<div class="poster-mentor-row"><span class="poster-mentor-name">李老师</span><span class="poster-mentor-school">天津大学 · 数理化方向</span><span class="poster-mentor-note">耐心细致，擅长从错题找漏洞</span></div>' +
+        '<div class="poster-quad-cell poster-quad-campus">' +
+          '<div class="poster-section-title">校区分布</div>' +
+          '<div class="poster-campus-row">' +
+            '<div class="poster-map-wrap" id="posterCampusMapSlot"></div>' +
+            '<div class="poster-campus-list" id="posterCampusListSlot"></div>' +
+          '</div>' +
         '</div>' +
-      '</div>' +
-      '<div class="poster-cta">' +
-        '<img src="' + qrImg + '" alt="扫码参与测试二维码">' +
-        '<div class="poster-cta-text">📱 请扫码参与测试</div>' +
-        (teacherId ? ('<div class="poster-cta-sub">推荐工号：' + teacherId + '</div>') : '') +
-        '<div class="poster-cta-url">或直接访问：wizard9018.github.io/attention-test/concentration_v1.html</div>' +
-      '</div>' +
-      '<div class="poster-section">' +
-        '<div class="poster-section-title">校区分布</div>' +
-        '<p class="poster-map-note-top">全国校区分布，就近联系测评老师</p>' +
-        '<div class="poster-map-wrap" id="posterCampusMapSlot"></div>' +
-        '<div class="poster-campus-list" id="posterCampusListSlot"></div>' +
+        '<div class="poster-quad-cell poster-quad-cta">' +
+          '<img src="' + qrImg + '" alt="扫码参与测试二维码">' +
+          '<div class="poster-cta-text">📱 请扫码参与测试</div>' +
+          (teacherId ? ('<div class="poster-cta-sub">推荐工号：' + teacherId + '</div>') : '') +
+          '<div class="poster-cta-url">wizard9018.github.io/attention-test/concentration_v1.html</div>' +
+        '</div>' +
       '</div>' +
       '<div class="poster-footer">清良思维 · 认知与思维发展实验室 出品 · 孪生智能科技（天津）有限公司</div>';
     document.getElementById("homeView").appendChild(poster);
