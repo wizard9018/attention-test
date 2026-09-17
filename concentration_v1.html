@@ -4666,26 +4666,34 @@
     });
   }
 
+  var AUDITORY_TRAINING_PLAN = {
+    5: { unit: "每周训练时长", duration: "6小时", total: "80小时" },
+    6: { unit: "每周训练时长", duration: "4小时", total: "60小时" },
+    7: { unit: "每周训练时长", duration: "2小时", total: "40小时" },
+    8: { unit: "每周训练时长", duration: "2小时", total: "20小时" }
+  };
+  var VISUAL_TRAINING_PLAN = {
+    5: { unit: "每天训练时长", duration: "0.5小时", total: "60小时" },
+    6: { unit: "每天训练时长", duration: "0.5小时", total: "50小时" },
+    7: { unit: "每天训练时长", duration: "0.5小时", total: "40小时" },
+    8: { unit: "每天训练时长", duration: "0.5小时", total: "40小时" },
+    9: { unit: "每天训练时长", duration: "0.5小时", total: "30小时" }
+  };
+
   function renderTrainingPrescriptions(sAud, sVis, mode) {
     var list = [];
     if(mode === "dual" || mode === "auditory") {
-      if(sAud <= 6) {
-        list.push("<strong>【听觉记忆跨度强化】</strong> 建议每日进行 5 分钟『数字倒背』或『无关联词倒背』训练，由 4 词起步逐步递增至 8 词，建立听觉缓冲区的容量扩展。");
-      } else {
-        list.push("<strong>【听觉进阶挑战】</strong> 听觉记忆跨度良好，建议开展『背景噪音抗干扰复述』，在微弱环境音背景下练习听取核心指令，锻炼高阶听觉注意选择性。");
-      }
+      var audPlan = AUDITORY_TRAINING_PLAN[sAud];
+      list.push(audPlan
+        ? ("<strong>🎧 听觉专注力（第 " + sAud + " 级）</strong>：建议" + audPlan.unit + " " + audPlan.duration + "，累计训练时长约 " + audPlan.total)
+        : ("<strong>🎧 听觉专注力（第 " + sAud + " 级）</strong>：已达到较高水平，建议保持日常巩固练习"));
     }
 
     if(mode === "dual" || mode === "visual") {
-      if(sVis <= 6) {
-        list.push("<strong>【空间定桩与工作记忆训练】</strong> 采用 3×3 至 5×5 的『舒尔特方格』及空间位置记忆积木进行视觉广度扩充，学会利用对称性或图形特征线索建立视觉记忆桩。");
-      } else {
-        list.push("<strong>【视空结构深度迁移】</strong> 视觉空间建构能力扎实，可在日常学习中多接触复杂几何折叠、三视图还原等高阶空间智力游戏，进一步激发空间推理潜能。");
-      }
-    }
-
-    if(mode === "dual") {
-      list.push("<strong>【双通道联合编码】</strong> 提倡多模态协同记忆法（眼看、耳听、口读、手写四位一体），彻底打通左右脑感觉通道的快速通路。");
+      var visPlan = VISUAL_TRAINING_PLAN[sVis];
+      list.push(visPlan
+        ? ("<strong>👁️ 视觉专注力（第 " + sVis + " 级）</strong>：建议" + visPlan.unit + " " + visPlan.duration + "，累计训练时长约 " + visPlan.total)
+        : ("<strong>👁️ 视觉专注力（第 " + sVis + " 级）</strong>：已达到较高水平，建议保持日常巩固练习"));
     }
 
     trainingAdviceContent.innerHTML = list.map(function(item){
