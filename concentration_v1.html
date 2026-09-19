@@ -2409,8 +2409,9 @@
     <!-- 4.2 AUDITORY LEVEL BEHAVIOR INTERPRETATION -->
     <div class="duo-card" id="auditoryInterpretCard" style="background:#eff6ff; border:2px solid #bfdbfe; padding:20px; border-radius:20px; margin-bottom:20px;">
       <h3 style="font-size:1.1rem; font-weight:900; color:#1d4ed8; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
-        <span>🎧</span> 听觉专注力表现解读
+        <span>🎧</span> 听觉记忆广度分级参照
       </h3>
+      <p style="font-size:0.85rem; color:#475569; margin-bottom:12px;">请对照测评级别，查看对应的听觉记忆与课堂表现特征。</p>
       <div style="font-size:0.9rem; font-weight:600; color:#1e3a5f; line-height:1.8;" id="auditoryInterpretText"></div>
     </div>
 
@@ -4230,17 +4231,24 @@
   }
 
   // 听觉记忆跨度分级行为表现解读 (基于机构长期观察总结，供家长直观理解分数含义)
-  var AUDITORY_LEVEL_INTERPRETATION = {
-    5:  "听觉记忆广度偏弱，机械记忆效率较低，1 小时约能记住 3 个单词以内，背诵过程较为吃力。课堂上听觉信息留存时间短，容易走神，老师常反映孩子上课注意力不集中。",
-    6:  "听觉记忆能力较弱，记忆效率偏低，1 小时约能记住 3 个单词左右，背诵较为困难。上课时听觉专注力不足，容易在听讲过程中分心。",
-    7:  "听觉记忆能力中等偏下，记忆速度较慢，1 小时约能记住 5 个单词。上课时看似在认真听讲，实则容易\"左耳进右耳出\"，信息不易留存，课堂吸收效果一般。",
-    8:  "听觉记忆能力中等，记忆效率尚可，1 小时约能记住 10 个单词。能够认真听讲基础内容，课堂吸收情况良好。",
-    9:  "听觉记忆能力较强，记忆效率较高，1 小时约能记住 15 个单词。无论是基础内容还是提高题目都能保持专注聆听，课堂吸收效果很好。",
-    10: "听觉记忆能力优秀，记忆效率很高，1 小时约能记住 20 个单词。课堂上对任何难度的内容都能保持高度专注，吸收效果好，即使当下未完全理解，也能记住老师的讲解过程，为课后消化打下基础。"
-  };
-  function getAuditoryInterpretation(level) {
-    var clamped = Math.max(5, Math.min(10, level));
-    return AUDITORY_LEVEL_INTERPRETATION[clamped];
+  var AUDITORY_LEVEL_PROFILE = [
+    { level: 5,  tier: "显著偏弱", recite: "背诵效率极低，1 小时内记忆不足 3 个单词", classroom: "听觉信息难以持续保持，课堂注意力高度分散，教师常反馈学生上课走神。" },
+    { level: 6,  tier: "偏弱",     recite: "背诵效率较低，1 小时约记忆 3 个单词",     classroom: "课堂听讲时注意力不易集中，听觉信息接收不完整。" },
+    { level: 7,  tier: "中等偏下", recite: "背诵速度偏慢，1 小时约记忆 5 个单词",     classroom: "外在表现为认真听讲，但听觉信息留存不稳定，容易“左耳进、右耳出”，课堂吸收效果欠佳。" },
+    { level: 8,  tier: "中等",     recite: "背诵速度良好，1 小时约记忆 10 个单词",    classroom: "听讲较为认真，基础内容均能有效接收，课堂吸收情况良好。" },
+    { level: 9,  tier: "较强",     recite: "背诵速度较快，1 小时约记忆 15 个单词",    classroom: "听讲专注度较高，基础题型与拔高题型均能保持专注聆听，课堂吸收效果显著。" },
+    { level: 10, tier: "优秀",     recite: "背诵速度极快，1 小时约记忆 20 个单词",    classroom: "听讲高度专注，各类难度的内容均能持续聆听、充分吸收；即使当堂未完全理解，也能准确记住教师的讲解思路，为课后消化奠定基础。" }
+  ];
+  function renderAuditoryLevelProfile(level) {
+    var current = Math.max(5, Math.min(10, level));
+    auditoryInterpretText.innerHTML = AUDITORY_LEVEL_PROFILE.map(function(p) {
+      var isMine = p.level === current;
+      return '<div style="padding:10px 12px; margin-bottom:8px; border-radius:12px; border:2px solid ' + (isMine ? '#2563eb' : 'transparent') + '; background:' + (isMine ? '#dbeafe' : '#f8fbff') + ';">' +
+        '<div style="font-weight:900; color:#1d4ed8;">第 ' + p.level + ' 级 · 听觉记忆广度' + p.tier + (isMine ? ' <span style="background:#2563eb; color:#fff; border-radius:99px; padding:1px 10px; font-size:0.75rem; margin-left:6px;">您的水平</span>' : '') + '</div>' +
+        '<div>背诵表现：' + p.recite + '</div>' +
+        '<div>课堂表现：' + p.classroom + '</div>' +
+      '</div>';
+    }).join("");
   }
 
   function showFinalCompositeReport() {
@@ -4293,7 +4301,7 @@
     visualLogSection.style.display = (isDual || testMode === "visual") ? "block" : "none";
 
     auditoryInterpretCard.style.display = (isDual || testMode === "auditory") ? "block" : "none";
-    auditoryInterpretText.textContent = getAuditoryInterpretation(sAuditory);
+    renderAuditoryLevelProfile(sAuditory);
 
     var age = parseInt(playerAgeInput.value, 10) || 9;
     var audNorm = getAgeNorm(AUDITORY_AGE_NORMS, age);

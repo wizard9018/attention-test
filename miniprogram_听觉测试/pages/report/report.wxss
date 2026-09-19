@@ -71,16 +71,25 @@
 .grade-good { background: rgba(250,204,21,0.15); color: #b45309; }
 .grade-developing { background: rgba(251,146,60,0.14); color: #c2410c; }
 
-.interpretation {
-  display: block;
-  font-size: 24rpx;
-  line-height: 1.75;
-  color: #5b6472;
-  background: #f7f5ef;
-  padding: 20rpx;
+.profile-lead { display: block; font-size: 22rpx; color: #5b6472; margin-bottom: 14rpx; }
+.profile-row {
+  padding: 16rpx 18rpx;
+  margin-bottom: 12rpx;
   border-radius: 16rpx;
-  margin-bottom: 28rpx;
+  border: 2rpx solid transparent;
+  background: #f7f5ef;
 }
+.profile-mine { border-color: #1cb0f6; background: #ddf4ff; }
+.profile-title { display: block; font-size: 24rpx; font-weight: 800; color: #10131a; margin-bottom: 6rpx; }
+.profile-tag {
+  margin-left: 12rpx;
+  padding: 2rpx 14rpx;
+  border-radius: 99px;
+  background: #1cb0f6;
+  color: #fff;
+  font-size: 20rpx;
+}
+.profile-line { display: block; font-size: 22rpx; line-height: 1.7; color: #475569; }
 
 .section-label {
   display: block;

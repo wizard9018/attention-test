@@ -33,7 +33,15 @@
 
     <view class="grade-badge {{gradeCls}}">{{gradeText}}</view>
 
-    <text wx:if="{{interpretation}}" class="interpretation">{{interpretation}}</text>
+    <view wx:if="{{auditoryProfile.length}}" class="section-block">
+      <text class="section-label">听觉记忆广度分级参照</text>
+      <text class="profile-lead">请对照测评级别，查看对应的听觉记忆与课堂表现特征。</text>
+      <view wx:for="{{auditoryProfile}}" wx:key="index" class="profile-row {{item.isMine ? 'profile-mine' : ''}}">
+        <text class="profile-title">{{item.title}}<text wx:if="{{item.isMine}}" class="profile-tag">您的水平</text></text>
+        <text class="profile-line">{{item.recite}}</text>
+        <text class="profile-line">{{item.classroom}}</text>
+      </view>
+    </view>
 
     <view wx:if="{{dimensionRows.length}}" class="section-block">
       <text class="section-label">六大认知维度画像</text>

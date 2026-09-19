@@ -1,7 +1,7 @@
 // ==========================================
 // 测评报告（单项听觉 / 单项视觉 / 双通道综合）
 // 分级评语、常模对比、训练处方、认知诊断逐项移植自 concentration_v1.html
-// 的 gradeSingleChannel / AUDITORY_LEVEL_INTERPRETATION / getAgeNorm /
+// 的 gradeSingleChannel / AUDITORY_LEVEL_PROFILE / getAgeNorm /
 // renderTrainingPrescriptions / renderCognitiveDiagnosis
 // ==========================================
 var LEVELS = require("../../utils/constants.js");
@@ -22,16 +22,25 @@ function ageNormText(label, userLevel, avgLevel) {
   return label + "：您 " + userLevel + " 级 · 同龄平均 " + avgLevel + " 级（" + cmp + "）";
 }
 
-var AUDITORY_LEVEL_INTERPRETATION = {
-  5: "听觉记忆广度偏弱，机械记忆效率较低，1 小时约能记住 3 个单词以内，背诵过程较为吃力。课堂上听觉信息留存时间短，容易走神。",
-  6: "听觉记忆能力较弱，记忆效率偏低，1 小时约能记住 3 个单词左右，背诵较为困难。上课时听觉专注力不足，容易在听讲过程中分心。",
-  7: "听觉记忆能力中等偏下，记忆速度较慢，1 小时约能记住 5 个单词。上课时看似在认真听讲，实则容易\"左耳进右耳出\"，信息不易留存。",
-  8: "听觉记忆能力中等，记忆效率尚可，1 小时约能记住 10 个单词。能够认真听讲基础内容，课堂吸收情况良好。",
-  9: "听觉记忆能力较强，记忆效率较高，1 小时约能记住 15 个单词。无论是基础内容还是提高题目都能保持专注聆听。",
-  10: "听觉记忆能力优秀，记忆效率很高，1 小时约能记住 20 个单词。课堂上对任何难度的内容都能保持高度专注。",
-  11: "听觉记忆能力优秀，接近同龄上限水平，能够长时间保持高专注度听讲并有效留存信息。",
-  12: "听觉记忆能力卓越，达到同龄顶尖水平，课堂听觉信息几乎不会遗漏。"
-};
+var AUDITORY_LEVEL_PROFILE = [
+  { level: 5,  tier: "显著偏弱", recite: "背诵效率极低，1 小时内记忆不足 3 个单词", classroom: "听觉信息难以持续保持，课堂注意力高度分散，教师常反馈学生上课走神。" },
+  { level: 6,  tier: "偏弱",     recite: "背诵效率较低，1 小时约记忆 3 个单词",     classroom: "课堂听讲时注意力不易集中，听觉信息接收不完整。" },
+  { level: 7,  tier: "中等偏下", recite: "背诵速度偏慢，1 小时约记忆 5 个单词",     classroom: "外在表现为认真听讲，但听觉信息留存不稳定，容易“左耳进、右耳出”，课堂吸收效果欠佳。" },
+  { level: 8,  tier: "中等",     recite: "背诵速度良好，1 小时约记忆 10 个单词",    classroom: "听讲较为认真，基础内容均能有效接收，课堂吸收情况良好。" },
+  { level: 9,  tier: "较强",     recite: "背诵速度较快，1 小时约记忆 15 个单词",    classroom: "听讲专注度较高，基础题型与拔高题型均能保持专注聆听，课堂吸收效果显著。" },
+  { level: 10, tier: "优秀",     recite: "背诵速度极快，1 小时约记忆 20 个单词",    classroom: "听讲高度专注，各类难度的内容均能持续聆听、充分吸收；即使当堂未完全理解，也能准确记住教师的讲解思路，为课后消化奠定基础。" }
+];
+function auditoryProfileRows(level) {
+  var current = Math.max(5, Math.min(10, level));
+  return AUDITORY_LEVEL_PROFILE.map(function (p) {
+    return {
+      title: "第 " + p.level + " 级 · 听觉记忆广度" + p.tier,
+      recite: "背诵表现：" + p.recite,
+      classroom: "课堂表现：" + p.classroom,
+      isMine: p.level === current
+    };
+  });
+}
 
 function gradeSingleChannel(level, minLevel, maxLevel) {
   var ratio = (level - minLevel) / (maxLevel - minLevel);
@@ -99,7 +108,7 @@ Page({
     maxLevel: AUDITORY_MAX_LEVEL,
     gradeText: "",
     gradeCls: "",
-    interpretation: "",
+    auditoryProfile: [],
     historyRows: [],
     hasData: false,
     playerName: "",
@@ -198,7 +207,7 @@ Page({
       maxLevel: maxLevel,
       gradeText: grade.text,
       gradeCls: grade.cls,
-      interpretation: type === "auditory" ? (AUDITORY_LEVEL_INTERPRETATION[result.finalLevel] || "") : "",
+      auditoryProfile: type === "auditory" ? auditoryProfileRows(result.finalLevel) : [],
       historyRows: historyRows,
       ageNormRows: ageNormRows,
       hasData: true
@@ -220,7 +229,7 @@ Page({
       compositeTotal: total,
       gradeText: grade.text,
       gradeCls: grade.cls,
-      interpretation: AUDITORY_LEVEL_INTERPRETATION[aud.finalLevel] || "",
+      auditoryProfile: auditoryProfileRows(aud.finalLevel),
       ageNormRows: ageNormRows,
       diagnosisText: cognitiveDiagnosis(aud.finalLevel, vis.finalLevel),
       dimensionRows: cognitiveDimensions(aud, vis, total)
