@@ -1647,6 +1647,7 @@
       <button class="header-nav-btn" id="navVisualTrainingBtn"><span>👁️</span> 视觉专注力训练</button>
       <button class="header-nav-btn" id="navAuditoryTrainingBtn"><span>🎧</span> 听觉专注力训练</button>
       <button class="header-nav-btn" id="navFranchiseBtn"><span>🤝</span> 加盟合作</button>
+      <button class="header-nav-btn" id="navAdminLoginBtn"><span>🔑</span> 管理员登录</button>
     </nav>
 
     <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="菜单" aria-expanded="false">☰</button>
@@ -1953,25 +1954,53 @@
     </div>
   </div>
 
-  <!-- 管理员登录弹窗 -->
+  <!-- 管理员登录弹窗：测评记录管理 + 听觉训练管理，都在这一个弹窗里 -->
   <div class="test-entry-modal" id="adminModal" style="display:none;">
     <div class="test-entry-modal-backdrop" id="adminModalBackdrop"></div>
-    <div class="test-entry-modal-panel" style="max-width:360px;">
+    <div class="test-entry-modal-panel" style="max-width:380px;">
       <button class="test-entry-modal-close" id="adminModalClose" title="关闭" aria-label="关闭">✕</button>
       <div class="home-form-card">
-        <h3>🔑 管理员登录</h3>
-        <div class="meta-field" style="margin-top:14px; display:flex;">
-          <span>用户名:</span>
-          <input type="text" id="adminUsernameInput" placeholder="用户名" />
+        <!-- 登录：一个入口，账号填推荐码(普通管理员)或 admin(总管理员) -->
+        <div id="adminLoginPane">
+          <h3>🔑 管理员登录</h3>
+          <p style="color:var(--duo-text-muted); font-size:0.78rem; margin-top:4px;">管理员账号填5位推荐码；总管理员填 admin</p>
+          <div class="meta-field" style="margin-top:12px; display:flex;">
+            <span>账号:</span>
+            <input type="text" id="adminUsernameInput" placeholder="如 55168 或 admin" maxlength="5" />
+          </div>
+          <div class="meta-field" style="margin-top:10px; display:flex;">
+            <span>密码:</span>
+            <input type="password" id="adminPasswordInput" placeholder="密码" />
+          </div>
+          <p class="home-form-error" id="adminLoginError" style="display:none;">⚠️ 账号或密码错误</p>
+          <button class="duo-btn btn-green" id="adminLoginSubmitBtn" style="margin-top:12px; width:100%;">
+            <span>登录</span>
+          </button>
+          <p style="text-align:center; margin-top:14px; font-size:0.85rem;">
+            还没有管理员账号？<a href="#" id="adminApplyLink" style="color:var(--duo-blue-dark); font-weight:800;">申请管理员账号</a>
+          </p>
         </div>
-        <div class="meta-field" style="margin-top:10px; display:flex;">
-          <span>密码:</span>
-          <input type="password" id="adminPasswordInput" placeholder="密码" />
+
+        <!-- 申请管理员账号 -->
+        <div id="adminApplyPane" style="display:none;">
+          <h3>📝 申请管理员账号</h3>
+          <p style="color:var(--duo-text-muted); font-size:0.78rem; margin-top:4px;">提交后由总管理员审核。你的管理员账号（推荐码）为手机号后5位。</p>
+          <div class="meta-field" style="margin-top:12px; display:flex;">
+            <span>姓名:</span>
+            <input type="text" id="applyNameInput" placeholder="请输入姓名" maxlength="20" />
+          </div>
+          <div class="meta-field" style="margin-top:10px; display:flex;">
+            <span>手机号:</span>
+            <input type="text" id="applyPhoneInput" placeholder="11位手机号" maxlength="11" inputmode="numeric" />
+          </div>
+          <div class="meta-field" style="margin-top:10px; display:flex;">
+            <span>备注:</span>
+            <input type="text" id="applyNoteInput" placeholder="所在机构/校区（选填）" maxlength="40" />
+          </div>
+          <p class="home-form-error" id="adminApplyMsg" style="display:none;"></p>
+          <button class="duo-btn btn-green" id="adminApplySubmitBtn" style="margin-top:12px; width:100%;"><span>提交申请</span></button>
+          <p style="text-align:center; margin-top:14px; font-size:0.85rem;"><a href="#" id="adminApplyBackLink" style="color:var(--duo-blue-dark); font-weight:800;">← 返回登录</a></p>
         </div>
-        <p class="home-form-error" id="adminLoginError" style="display:none;">⚠️ 用户名或密码错误</p>
-        <button class="duo-btn btn-green" id="adminLoginSubmitBtn" style="margin-top:14px; width:100%;">
-          <span>登录</span>
-        </button>
       </div>
     </div>
   </div>
@@ -3277,6 +3306,8 @@
   var franchiseModal = document.getElementById("franchiseModal");
   var franchiseModalBackdrop = document.getElementById("franchiseModalBackdrop");
   var franchiseModalClose = document.getElementById("franchiseModalClose");
+
+  var navAdminLoginBtn = document.getElementById("navAdminLoginBtn");
 
   var brandHomeLink = document.getElementById("brandHomeLink");
   var adminModal = document.getElementById("adminModal");
@@ -4762,9 +4793,7 @@
       });
     });
     navAuditoryTrainingBtn.addEventListener("click", function() {
-      requireLoginThen(function() {
-        showComingSoon("🎧 听觉专注力训练", "训练内容正在开发中，即将上线，敬请期待。");
-      });
+      window.location.href = "auditory_training.html";
     });
 
     var franchiseModalCtrl = bindModal(franchiseModal, franchiseModalBackdrop, franchiseModalClose);
@@ -4816,33 +4845,70 @@
       });
     });
 
-    function checkAdminCredentials(user, pass) {
-      return user === "admin" && pass === "admin";
-    }
     var adminModalCtrl = bindModal(adminModal, adminModalBackdrop, adminModalClose);
     var adminPanelModalCtrl = bindModal(adminPanelModal, adminPanelBackdrop, adminPanelClose);
     function openAdminLoginModal() {
       adminUsernameInput.value = "";
       adminPasswordInput.value = "";
       adminLoginError.style.display = "none";
+      showAdminPane("adminLoginPane");
       adminModalCtrl.open();
+    }
+    function showAdminPane(id) {
+      ["adminLoginPane", "adminApplyPane"].forEach(function(p) {
+        document.getElementById(p).style.display = (p === id) ? "" : "none";
+      });
+    }
+    function goAuditoryAdmin(account) {
+      window.location.href = "auditory_training.html?adminReferrer=" + encodeURIComponent(account) + "&adminPwd=admin123";
     }
     function openAdminPanelModal() {
       adminPanelModalCtrl.open();
       loadAdminRecords();
     }
+    // 统一登录：5位推荐码 = 听觉训练管理员，直接进；admin = 总管理员，登录后选进入哪个管理
     function trySubmitAdminLogin() {
-      if(checkAdminCredentials(adminUsernameInput.value, adminPasswordInput.value)) {
-        adminModalCtrl.close();
-        openAdminPanelModal();
-      } else {
-        adminLoginError.style.display = "block";
-      }
+      var acct = adminUsernameInput.value.trim();
+      var pwd = adminPasswordInput.value;
+      var isSuper = acct === "admin" && (pwd === "admin123" || pwd === "admin");
+      var isCode = /^\d{5}$/.test(acct) && pwd === "admin123";
+      if (isSuper) { goAuditoryAdmin("admin"); }
+      else if (isCode) { goAuditoryAdmin(acct); }
+      else { adminLoginError.style.display = "block"; }
     }
     brandHomeLink.addEventListener("click", goHome);
+    navAdminLoginBtn.addEventListener("click", openAdminLoginModal);
     adminLoginSubmitBtn.addEventListener("click", trySubmitAdminLogin);
     adminPasswordInput.addEventListener("keydown", function(e) {
       if(e.key === "Enter") trySubmitAdminLogin();
+    });
+
+    // 申请管理员账号：手机号后5位作为账号(推荐码)，提交到 admin_applications，由总管理员在听觉训练管理里查看
+    document.getElementById("adminApplyLink").addEventListener("click", function(e) {
+      e.preventDefault();
+      document.getElementById("adminApplyMsg").style.display = "none";
+      showAdminPane("adminApplyPane");
+    });
+    document.getElementById("adminApplyBackLink").addEventListener("click", function(e) {
+      e.preventDefault();
+      showAdminPane("adminLoginPane");
+    });
+    document.getElementById("adminApplySubmitBtn").addEventListener("click", function() {
+      var msg = document.getElementById("adminApplyMsg");
+      var name = document.getElementById("applyNameInput").value.trim();
+      var phone = document.getElementById("applyPhoneInput").value.trim();
+      var note = document.getElementById("applyNoteInput").value.trim();
+      function say(text, ok) { msg.textContent = text; msg.style.color = ok ? "var(--duo-green-dark)" : ""; msg.style.display = "block"; }
+      if (!name) { say("⚠️ 请填写姓名"); return; }
+      if (!/^1\d{10}$/.test(phone)) { say("⚠️ 请填写11位手机号"); return; }
+      fetch(SUPABASE_URL + "/rest/v1/admin_applications", {
+        method: "POST",
+        headers: { "apikey": SUPABASE_ANON_KEY, "Authorization": "Bearer " + SUPABASE_ANON_KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name, phone: phone, referral_code: phone.slice(-5), note: note || null })
+      }).then(function(r) {
+        if (r.ok) say("✅ 申请已提交！你的管理员账号是 " + phone.slice(-5) + "，审核通过后总管理员会联系你。", true);
+        else say("⚠️ 提交失败，请稍后再试");
+      }).catch(function() { say("⚠️ 网络错误，请稍后再试"); });
     });
     adminRefreshBtn.addEventListener("click", loadAdminRecords);
 

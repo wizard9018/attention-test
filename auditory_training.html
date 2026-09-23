@@ -1,0 +1,2056 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>听觉专注训练 · 清良思维</title>
+<style>
+  :root{
+    --bg:#f7f5ef; --card:#fff; --ink:#10131a; --muted:#5b6472;
+    --blue:#1cb0f6; --green:#58cc02; --gold:#b08d57; --red:#ff4b4b;
+    --border:#e6e1d6;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);}
+  .wrap{max-width:640px;margin:0 auto;padding:24px 20px 60px;}
+  .wrap:has(#viewLogin:not([hidden])){max-width:1080px;}
+  .hero-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:start;}
+  .hero-copy{padding-top:12px;}
+  .hero-eyebrow{display:inline-flex;align-items:center;gap:6px;background:#ddf4ff;color:#0e7fb8;font-size:0.82rem;font-weight:800;padding:6px 14px;border-radius:20px;margin-bottom:14px;}
+  .hero-title{font-size:2rem;font-weight:900;color:var(--ink);line-height:1.32;margin-bottom:14px;}
+  .hero-title-accent{color:var(--blue);}
+  .hero-desc{font-size:1rem;font-weight:600;color:var(--muted);line-height:1.7;max-width:460px;}
+  @media (max-width:760px){ .hero-grid{grid-template-columns:1fr;gap:20px;} }
+  .setup-grid{display:grid;grid-template-columns:1fr;gap:24px;align-items:start;}
+  .setup-grid.has-feedback{grid-template-columns:1.3fr 1fr;}
+  @media (max-width:760px){ .setup-grid.has-feedback{grid-template-columns:1fr;} }
+  .wrap:has(#viewSetup.has-feedback:not([hidden])){max-width:900px;}
+  .wrap:has(#viewAdminStudent:not([hidden])){max-width:1100px;}
+  .wrap:has(#viewAdminRecords:not([hidden])),
+  .wrap:has(#viewAdmin:not([hidden])),
+  .wrap:has(#viewSuperAdmin:not([hidden])){max-width:1100px;}
+  .admin-tabs{display:flex;gap:8px;margin-bottom:16px;}
+  .admin-tab{flex:1;padding:12px 10px;border-radius:14px;border:2px solid var(--border);background:#fff;font:inherit;font-size:15px;font-weight:800;color:var(--muted);cursor:pointer;}
+  .admin-tab.active{border-color:var(--blue);background:#ddf4ff;color:var(--ink);}
+  .rec-entry-2col{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(300px,1fr);gap:24px;align-items:start;}
+  .rec-entry-2col .rec-col{min-width:0;}
+  @media (max-width:860px){ .rec-entry-2col{grid-template-columns:1fr;gap:12px;} }
+  .topbar{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;margin-bottom:20px;}
+  .topbar .page-title{justify-self:center;}
+  .topbar a{color:var(--muted);font-size:14px;text-decoration:none;}
+  .topbar-right{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:nowrap;white-space:nowrap;}
+  .page-title{margin:0;font-size:28px;font-weight:900;letter-spacing:1px;color:var(--ink);white-space:nowrap;}
+  .pt-accent{color:var(--blue);}
+  @media (max-width:760px){ .topbar{grid-template-columns:1fr auto;} .page-title{grid-column:1 / -1;grid-row:2;justify-self:center;} }
+  .brand-link{display:flex;align-items:center;gap:10px;text-decoration:none;}
+  .brand-logo-svg{width:52px;height:52px;flex-shrink:0;}
+  .brand-name{font-size:20px;font-weight:900;color:var(--gold);white-space:nowrap;}
+  .card{background:var(--card);border-radius:20px;padding:28px 24px;box-shadow:0 2px 14px rgba(16,19,26,0.07);margin-bottom:20px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:700;}
+  .field input,.field select{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:16px;background:#fdfcf9;}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--blue);}
+  .btn{display:block;width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;font-weight:800;cursor:pointer;color:#fff;background:var(--green);}
+  .btn:active{transform:translateY(1px);}
+  .btn-blue{background:var(--blue);}
+  .btn-ghost{background:transparent;color:var(--muted);border:1.5px solid var(--border);}
+  .btn-row{display:flex;gap:10px;}
+  .btn-row .btn{flex:1;}
+  .err{color:var(--red);font-size:13px;margin:-6px 0 14px;display:none;}
+  .hint{color:var(--muted);font-size:13px;line-height:1.6;margin-top:10px;}
+  h2{font-size:18px;margin:0 0 18px;}
+  .choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
+  .choice-card{border:2px solid var(--border);border-radius:16px;padding:20px 14px;text-align:center;cursor:pointer;background:#fdfcf9;}
+  .choice-card.active{border-color:var(--blue);background:#ddf4ff;}
+  .choice-card .big{font-size:28px;margin-bottom:6px;}
+  .choice-card .label{font-weight:800;font-size:15px;}
+  .choice-card .sub{font-size:12px;color:var(--muted);margin-top:4px;}
+  .unit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  .unit-cell{border:1.5px solid var(--border);border-radius:12px;padding:14px 4px;text-align:center;font-size:14px;font-weight:800;cursor:pointer;background:#fdfcf9;color:var(--muted);}
+  .unit-cell .uc-sub{display:block;font-size:11px;font-weight:500;margin-top:2px;}
+  .unit-cell.current{border-color:var(--gold);background:#faf3e6;color:var(--ink);}
+  .unit-cell.selected{border-color:var(--blue);background:#ddf4ff;color:var(--ink);}
+  .count-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:20px;}
+  .count-cell{border:1.5px solid var(--border);border-radius:12px;padding:14px 0;text-align:center;font-weight:800;cursor:pointer;background:#fdfcf9;}
+  .count-cell.selected{border-color:var(--green);background:#eafbe0;}
+  .roadmap{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;justify-content:center;}
+  .rm-col{display:flex;flex-direction:column;align-items:center;gap:6px;}
+  .rm-node{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;border:2px solid var(--border);color:var(--muted);background:#fdfcf9;}
+  .rm-node.done{border-color:var(--green);background:var(--green);color:#fff;}
+  .rm-node.active{border-color:var(--blue);background:var(--blue);color:#fff;}
+  .stage{text-align:center;padding:30px 10px 10px;}
+  .stage .zh{font-size:40px;font-weight:900;margin-bottom:10px;}
+  .stage .en{font-size:34px;font-weight:900;color:var(--blue);margin-bottom:10px;}
+  .stage .rep{color:var(--muted);font-size:14px;}
+  .wave-bar-row{height:90px;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;}
+  .wave-bar{width:8px;height:20px;background:var(--blue);border-radius:6px;animation:wavePulse 1.1s ease-in-out infinite alternate;}
+  .wave-bar:nth-child(2){animation-delay:0.15s;}
+  .wave-bar:nth-child(3){animation-delay:0.3s;}
+  .wave-bar:nth-child(4){animation-delay:0.45s;}
+  .wave-bar:nth-child(5){animation-delay:0.6s;}
+  .wave-bar:nth-child(6){animation-delay:0.75s;}
+  .wave-bar:nth-child(7){animation-delay:0.2s;}
+  .wave-bar:nth-child(8){animation-delay:0.5s;}
+  @keyframes wavePulse{0%{height:14px;background:var(--blue);}50%{height:70px;background:#a78bfa;}100%{height:30px;background:var(--green);}}
+  .admin-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;}
+  .admin-row input{flex:1;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;}
+  .admin-row button{padding:10px 14px;border:none;border-radius:10px;background:var(--blue);color:#fff;font-weight:700;cursor:pointer;white-space:nowrap;}
+  .admin-msg{font-size:13px;color:var(--green);min-height:18px;}
+  .voice-toggle{display:flex;gap:8px;margin-bottom:18px;}
+  .voice-toggle button{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px;border-radius:12px;border:1.5px solid var(--border);background:#fdfcf9;font-weight:700;cursor:pointer;}
+  .voice-toggle button.active{border-color:var(--gold);background:#faf3e6;}
+  .voice-photo{width:64px;height:88px;border-radius:10px;object-fit:cover;}
+  .word-jump-grid{display:flex;flex-direction:column;gap:8px;margin:18px 0;}
+  .word-jump-row{display:flex;align-items:center;gap:8px;border:1.5px solid var(--border);border-radius:12px;padding:8px 10px;background:#fdfcf9;}
+  .word-jump-row .wj-meaning{flex:0 0 72px;font-weight:800;font-size:14px;}
+  .word-jump-row button{flex:1;padding:8px 6px;border-radius:10px;border:1.5px solid var(--border);background:#fff;font-weight:700;cursor:pointer;}
+  .word-jump-row button.wj-active{border-color:var(--blue);background:#ddf4ff;}
+  .record-words{display:flex;flex-direction:column;gap:6px;margin:16px 0;text-align:left;}
+  .record-words .rw-item{padding:10px 14px;border-radius:10px;background:#f7f5ef;font-size:15px;font-weight:700;}
+  .record-words .rw-item span{color:var(--muted);font-weight:500;margin-left:8px;}
+  .wave-canvas{width:100%;max-width:560px;height:90px;background:#f7f5ef;border-radius:12px;margin:16px 0;display:block;}
+  .rec-student-group{margin-top:20px;padding-top:14px;border-top:1.5px dashed var(--border);}
+  .rec-student-group:first-child{margin-top:14px;}
+  .rec-student-title{font-size:15px;color:var(--blue);margin:0 0 4px;}
+  .rec-entry{border:1.5px solid var(--border);border-radius:14px;padding:14px;margin:12px 0;text-align:left;background:#fdfcf9;}
+  .fb-title{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+  .fb-chip{background:#ddf4ff;color:#0e7fb8;font-size:14px;font-weight:900;padding:5px 12px;border-radius:10px;}
+  .fb-group{font-size:22px;font-weight:900;color:var(--ink);}
+  .fb-title .status-badge{font-size:14px;font-weight:900;padding:5px 13px;}
+  .rec-entry-head{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:10px;}
+  .rec-word-row{display:flex;align-items:center;gap:8px;padding:6px 0;flex-wrap:wrap;}
+  .rec-pill-row{display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;padding:4px 2px 10px;}
+  .rec-pill{flex-shrink:0;white-space:nowrap;min-width:44px;height:44px;padding:0 16px;border-radius:22px;border:2px solid var(--border);background:#fdfcf9;color:var(--ink);font:inherit;font-size:15px;font-weight:800;cursor:pointer;}
+  .rec-pill.en{color:var(--blue);}
+  .rec-pill:hover{background:#f0eee6;}
+  .rec-pill.on{border-color:var(--blue);background:#ddf4ff;}
+  .rec-word-row button{padding:5px 10px;border-radius:8px;border:1.5px solid var(--border);background:#fff;font-size:12px;cursor:pointer;}
+  .rec-audio{width:100%;margin:10px 0;}
+  .rec-feedback{width:100%;min-height:56px;border:1.5px solid var(--border);border-radius:10px;padding:8px;font-family:inherit;font-size:14px;box-sizing:border-box;}
+  .rec-feedback-msg{font-size:12px;color:var(--green);min-height:16px;}
+  #batchRoadmapBar{padding:14px 16px;}
+  .batch-pill-row{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;}
+  .batch-pill{display:inline-flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;white-space:nowrap;padding:8px 12px;border-radius:16px;border:1.5px solid var(--border);background:#f7f5ef;font-size:13px;font-weight:700;cursor:pointer;color:var(--muted);}
+  .batch-pill.bp-current{border-color:var(--gold);background:#faf3e6;color:var(--ink);}
+  .batch-pill.bp-review{border-color:var(--blue);}
+  .rm-node{cursor:default;}
+  .rm-node.jumpable{cursor:pointer;}
+  .header-btn{background:transparent;border:1.5px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px;color:var(--muted);cursor:pointer;font-weight:700;}
+  .topbar .header-btn{font-size:14px;padding:8px 14px;border-radius:10px;}
+  .admin-table{width:100%;border-collapse:collapse;font-size:14px;}
+  .admin-table th,.admin-table td{padding:8px 6px;text-align:left;border-bottom:1px solid var(--border);}
+  .admin-table td.at-student{color:var(--blue);font-weight:800;cursor:pointer;}
+  .status-badge{display:inline-block;padding:3px 9px;border-radius:99px;font-size:12px;font-weight:800;}
+  .status-badge.pass{background:#eafbe0;color:var(--green);}
+  .status-badge.retry{background:#ffeaea;color:var(--red);}
+  .status-badge.pending{background:#f0eee6;color:var(--muted);}
+  .grade-row{display:flex;gap:8px;margin:8px 0;}
+  .grade-btn{flex:1;padding:8px;border-radius:10px;border:1.5px solid var(--border);background:#fff;font-weight:700;cursor:pointer;font-size:13px;}
+  .grade-btn.gb-pass.active{border-color:var(--green);background:#eafbe0;color:var(--green);}
+  .grade-btn.gb-retry.active{border-color:var(--red);background:#ffeaea;color:var(--red);}
+  .quota-add-row{display:flex;gap:6px;align-items:center;}
+  .quota-add-row input{width:64px;padding:6px 8px;border:1.5px solid var(--border);border-radius:8px;}
+  .quota-add-row button{padding:6px 10px;border:none;border-radius:8px;background:var(--blue);color:#fff;font-weight:700;cursor:pointer;white-space:nowrap;}
+  .modal-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .modal-backdrop{position:absolute;inset:0;background:rgba(16,19,26,0.5);}
+  .modal-panel{position:relative;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;}
+  .modal-close{position:absolute;top:14px;right:14px;width:32px;height:32px;border:none;border-radius:50%;background:#f0eee6;color:var(--muted);font-size:16px;cursor:pointer;}
+  [hidden]{display:none !important;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a href="concentration_v1.html" class="brand-link" title="返回首页">
+      <svg class="brand-logo-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="4" width="44" height="42" rx="12" fill="#46A302"/>
+        <rect x="2" y="2" width="44" height="41" rx="12" fill="#58CC02"/>
+        <rect x="4" y="4" width="40" height="18" rx="9" fill="white" fill-opacity="0.18"/>
+        <polygon points="24,9 35,16 24,23 13,16" fill="#38BDF8"/>
+        <polygon points="13,16 24,23 24,35 13,28" fill="#15803D"/>
+        <polygon points="24,23 35,16 35,28 24,35" fill="#FBBF24"/>
+        <path d="M24 13L25.8 20.2L33 22L25.8 23.8L24 31L22.2 23.8L15 22L22.2 20.2L24 13Z" fill="#FFFFFF"/>
+        <circle cx="24" cy="22" r="2.6" fill="#0F172A"/>
+        <circle cx="24" cy="22" r="1.4" fill="#58CC02"/>
+      </svg>
+      <span class="brand-name">清良思维</span>
+    </a>
+    <h1 class="page-title">听觉<span class="pt-accent">专注力</span>训练</h1>
+    <div class="topbar-right">
+      <button class="header-btn" id="headerWeeklyStatsBtn" hidden>📊 训练记录</button>
+      <button class="header-btn" id="headerStudentPwdBtn" hidden>🔑 修改密码</button>
+      <button class="header-btn" id="headerAdminPwdBtn" hidden>🔑 改密码</button>
+      <button class="header-btn" id="headerLogoutBtn" hidden>退出登录</button>
+    </div>
+  </div>
+
+  <!-- 管理员两个 tab：专注力训练管理 / 专注力测试记录（登录后才出现，入口处不选） -->
+  <div class="admin-tabs" id="adminTabs" hidden>
+    <button class="admin-tab" id="adminTabTrain">🎧 专注力训练管理</button>
+    <button class="admin-tab" id="adminTabRecords">📋 专注力测试记录</button>
+  </div>
+
+  <!-- 管理员改密码：点header的"改密码"展开/收起 -->
+  <div class="card" id="adminPwdPanel" hidden>
+    <h2>重置学生密码</h2>
+    <div class="admin-row">
+      <input id="adminStudentNo" inputmode="numeric" maxlength="3" placeholder="学生账号 001-999">
+      <button id="adminResetBtn">重置为123456</button>
+    </div>
+    <div class="admin-row">
+      <input id="adminNewPwd" placeholder="或输入新密码后点设置">
+      <button id="adminSetBtn">设置密码</button>
+    </div>
+    <div class="admin-msg" id="adminMsg"></div>
+  </div>
+
+  <!-- 今天学习进度条：显示今天学了几组，可以点回任意一组重听/重录 -->
+  <div class="card" id="batchRoadmapBar" hidden>
+    <div class="batch-pill-row" id="batchPillRow"></div>
+  </div>
+
+  <!-- 登录：左边宣传语，右边表单，和专注力测试主页的布局保持一致 -->
+  <div class="hero-grid" id="viewLogin">
+    <div class="hero-copy">
+      <span class="hero-eyebrow">🎧 K12 听觉专注力训练</span>
+      <h1 class="hero-title">用耳朵练<span class="hero-title-accent">专注</span>，让记忆更牢固</h1>
+      <p class="hero-desc">清良思维 · 认知与思维发展实验室出品。中英文交替跟读训练，配合老师人工批改反馈，帮助孩子提升听觉序列记忆与专注时长。</p>
+    </div>
+    <div class="card">
+      <h2>登录</h2>
+      <div class="field">
+        <label>推荐码（手机号后5位）</label>
+        <input id="loginReferrer" inputmode="numeric" maxlength="5" placeholder="如 55168">
+      </div>
+      <div class="field">
+        <label>学生账号（001-999）</label>
+        <input id="loginStudentNo" inputmode="numeric" maxlength="3" placeholder="如 001">
+      </div>
+      <div class="field">
+        <label>密码</label>
+        <input id="loginPassword" type="password" placeholder="默认 123456">
+      </div>
+      <div class="err" id="loginErr"></div>
+      <button class="btn" id="loginBtn">登录</button>
+      <div class="hint">请输入老师给你的推荐码、学生账号和密码（默认密码 123456）。管理员请从主页顶部的"管理员登录"进入。</div>
+    </div>
+  </div>
+
+  <!-- 管理员：学生学习进度列表 -->
+  <div class="card" id="viewAdmin" hidden>
+    <h2>学生学习进度 · 推荐码 <span id="adminReferrerLabel"></span></h2>
+    <div class="hint" id="adminQuotaBanner" style="margin-bottom:10px;" hidden></div>
+    <div class="hint" style="margin-bottom:10px;">点"待批改"或"已批改"进入批改页面，可以听录音、批改、给反馈；点"进度"、"本月时长"查看具体情况，点"姓名"可以填写学生姓名。</div>
+    <div id="adminProgressTableWrap"><p class="hint">加载中…</p></div>  </div>
+
+  <!-- 管理员：单个学生的学习记录 + 批改 -->
+  <div class="card" id="viewAdminStudent" hidden>
+    <button class="btn btn-ghost" id="adminStudentBackBtn" style="margin-bottom:14px;">← 返回学员记录</button>
+    <div class="admin-tabs" style="margin-bottom:14px;">
+      <button class="admin-tab" id="adminStudentTabPending">待批改</button>
+      <button class="admin-tab" id="adminStudentTabGraded">已批改</button>
+    </div>
+    <h2>学生 <span id="adminStudentLabel"></span> · 作业批改</h2>
+    <div class="hint" style="margin-bottom:10px;">提交批改后，这条作业会自动归到"已批改"；学生登录时会看到成绩和反馈。</div>
+    <div id="adminStudentRecordingsList"></div>
+  </div>
+
+  <!-- 点进度条里的某一组：先选"重新学习"还是"退出" -->
+  <div class="modal-overlay" id="batchChoiceModal" hidden>
+    <div class="modal-backdrop" id="batchChoiceBackdrop"></div>
+    <div class="modal-panel card" style="max-width:360px;text-align:center;">
+      <h2 id="batchChoiceTitle">第 1 组</h2>
+      <p class="hint" style="margin:0 0 16px;">重新学习这一组：先听，再录音，不影响你现在的学习进度。</p>
+      <button class="btn" id="batchChoiceRedoBtn">🔁 重新学习</button>
+      <button class="btn btn-ghost" id="batchChoiceExitBtn" style="margin-top:10px;">退出</button>
+    </div>
+  </div>
+
+  <!-- 学生修改自己的密码 -->
+  <div class="modal-overlay" id="studentPwdModal" hidden>
+    <div class="modal-backdrop" id="studentPwdBackdrop"></div>
+    <div class="modal-panel card" style="max-width:420px;">
+      <button class="modal-close" id="studentPwdCloseBtn" aria-label="关闭">✕</button>
+      <h2>🔑 修改密码</h2>
+      <div class="field"><label>旧密码</label><input id="pwdOld" type="password" autocomplete="current-password"></div>
+      <div class="field"><label>新密码（至少4位）</label><input id="pwdNew" type="password" autocomplete="new-password"></div>
+      <div class="field"><label>再输一次新密码</label><input id="pwdNew2" type="password" autocomplete="new-password"></div>
+      <div class="err" id="pwdErr"></div>
+      <button class="btn" id="pwdSaveBtn">保存新密码</button>
+    </div>
+  </div>
+
+  <!-- 管理员：专注力测试记录（普通管理员只看自己推荐码下的，总管理员看全部） -->
+  <div class="card" id="viewAdminRecords" hidden>
+    <h2>专注力测试记录 <span id="adminRecordsScope" class="hint" style="font-weight:400;"></span></h2>
+    <div id="adminRecordsWrap"><p class="hint">加载中…</p></div>
+    <button class="btn btn-ghost" id="adminRecordsRefreshBtn" style="margin-top:14px;">🔄 刷新</button>
+  </div>
+
+  <!-- 管理员：某个学生的具体学习进度（在学员列表里点"进度"弹出） -->
+  <div class="modal-overlay" id="adminProgressModal" hidden>
+    <div class="modal-backdrop" id="adminProgressBackdrop"></div>
+    <div class="modal-panel card">
+      <button class="modal-close" id="adminProgressCloseBtn" aria-label="关闭">✕</button>
+      <h2>学生 <span id="adminProgressStudentLabel"></span> · 学习进度</h2>
+      <div id="adminProgressDetailWrap"><p class="hint">加载中…</p></div>
+    </div>
+  </div>
+
+  <!-- 管理员：某个学生的具体使用记录（在学员列表里点"本月时长"弹出） -->
+  <div class="modal-overlay" id="adminUsageModal" hidden>
+    <div class="modal-backdrop" id="adminUsageBackdrop"></div>
+    <div class="modal-panel card">
+      <button class="modal-close" id="adminUsageCloseBtn" aria-label="关闭">✕</button>
+      <h2>学生 <span id="adminUsageStudentLabel"></span> · 使用记录（北京时间）</h2>
+      <div id="adminUsageListWrap"><p class="hint">加载中…</p></div>
+    </div>
+  </div>
+
+  <!-- 总管理员：推荐码 admin + 密码 admin123，管理每个账号的总时长 -->
+  <div class="card" id="viewSuperAdmin" hidden>
+    <h2>总管理员 · 账号时长管理</h2>
+    <div class="hint" style="margin-bottom:10px;">每个推荐码账号默认 9999 小时总时长，学生使用后从余量里扣除（按5分钟取整计）。这里可以给账号增加时长，也能看每个账号本月用了多少。</div>
+    <div id="superAdminQuotaTableWrap"><p class="hint">加载中…</p></div>
+    <h2 style="margin-top:28px;">管理员账号申请</h2>
+    <div class="hint" style="margin-bottom:10px;">主页"申请管理员账号"提交的申请。申请人的账号（推荐码）是手机号后5位，处理完点"标记已处理"。</div>
+    <div id="superAdminApplicationsWrap"><p class="hint">加载中…</p></div>  </div>
+
+  <!-- 学习设置：难度 + Unit + 每次学几个词，都在一个界面里选；右边一列放老师反馈 -->
+  <div class="setup-grid" id="viewSetup" hidden>
+    <div class="card">
+      <h2>选好难度、Unit、每次学几个词</h2>
+
+      <div class="field">
+        <label>课程难度</label>
+        <div class="choice-grid">
+          <div class="choice-card" data-difficulty="junior">
+            <div class="big">🌱</div>
+            <div class="label">初级词汇</div>
+            <div class="sub" id="juniorMeta"></div>
+          </div>
+          <div class="choice-card" data-difficulty="senior">
+            <div class="big">🚀</div>
+            <div class="label">高级词汇</div>
+            <div class="sub" id="seniorMeta"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>从第几个 Unit 开始</label>
+        <div class="unit-grid" id="unitGrid"></div>
+      </div>
+
+      <div class="field">
+        <label>每次学几个单词</label>
+        <div class="count-grid" id="countGrid"></div>
+      </div>
+
+      <div class="voice-toggle">
+        <button data-gender="male" id="voiceMaleBtn">
+          <img src="training/voice_male.png" alt="男声" class="voice-photo">
+          <span>👦 男声朗读</span>
+        </button>
+        <button data-gender="female" id="voiceFemaleBtn">
+          <img src="training/voice_female.png" alt="女声" class="voice-photo">
+          <span>👧 女声朗读</span>
+        </button>
+      </div>
+
+      <button class="btn" id="startSessionBtn">开始学习</button>
+      <button class="btn btn-ghost" id="logoutBtn" style="margin-top:10px;">退出登录</button>
+    </div>
+
+    <div class="card" id="feedbackPanel" hidden>
+      <h2>老师反馈</h2>
+      <div id="feedbackList"></div>
+    </div>
+  </div>
+
+  <!-- 训练记录：最近7天每日学习时长曲线图 -->
+  <div class="modal-overlay" id="weeklyStatsModal" hidden>
+    <div class="modal-backdrop" id="weeklyStatsBackdrop"></div>
+    <div class="modal-panel card">
+      <button class="modal-close" id="weeklyStatsCloseBtn" aria-label="关闭">✕</button>
+      <h2>训练记录 · 最近7天</h2>
+      <div id="weeklyChartWrap"><p class="hint">加载中…</p></div>
+    </div>
+  </div>
+
+  <!-- 学习界面 -->
+  <div class="card" id="viewPlayer" hidden>
+    <p class="hint" id="passHint" style="text-align:center;"></p>
+    <div class="roadmap" id="roadmap"></div>
+    <div class="stage" id="stage">
+      <div class="wave-bar-row" id="stageWave">
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div>
+      </div>
+      <div class="zh" id="stageZh"></div>
+      <div class="en" id="stageEn"></div>
+      <div class="rep" id="stageRep"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" id="pausePlayBtn">暂停</button>
+      <button class="btn btn-blue" id="gotoRecordBtn" hidden>🎙️ 跳过，直接开始录音</button>
+    </div>
+    <button class="btn btn-ghost" id="exitSessionBtn" style="margin-top:10px;">退出本组</button>
+  </div>
+
+  <!-- 完成 -->
+  <div class="card" id="viewDone" hidden style="text-align:center;">
+    <h2 id="doneTitle">🎉 本次学习完成！</h2>
+    <p class="hint" id="doneSummary"></p>
+    <div class="btn-row">
+      <button class="btn" id="startRecordBtn">🎙️ 开始录音</button>
+      <button class="btn btn-blue" id="relistenBtn">🔁 再听一次</button>
+    </div>
+    <div class="btn-row" style="margin-top:10px;">
+      <button class="btn btn-ghost" id="backToGroupsFromDoneBtn">返回课程选择</button>
+    </div>
+  </div>
+
+  <!-- 录音 -->
+  <div class="card" id="viewRecord" hidden style="text-align:center;">
+    <h2 id="recordTitle">🎙️ 跟读录音</h2>
+    <p class="hint">不显示提示，凭记忆把刚才听到的中英文按顺序完整复述一遍，录完可以回放，老师之后会听。</p>
+    <canvas id="waveCanvas" width="560" height="90" class="wave-canvas"></canvas>
+    <button class="btn" id="recordToggleBtn">🔴 开始录音</button>
+    <audio id="recordPlayback" controls style="width:100%;margin-top:14px;display:none;"></audio>
+    <p class="hint" id="uploadStatus" hidden></p>
+
+    <div id="afterRecordActions" style="margin-top:14px;" hidden>
+      <button class="btn" id="nextRetryBtn" style="margin-bottom:10px;" hidden></button>
+      <button class="btn" id="nextBatchBtn">➡️ 下一组</button>
+      <div class="btn-row" style="margin-top:10px;">
+        <button class="btn btn-ghost" id="rerecordBtn">🔴 重录</button>
+        <button class="btn btn-blue" id="relistenAgainBtn">🔁 重听</button>
+      </div>
+    </div>
+
+    <button class="btn btn-ghost" id="recordBackToGroupsBtn" style="margin-top:10px;">返回课程选择</button>
+  </div>
+</div>
+
+<audio id="player" preload="auto"></audio>
+
+<script>
+(function(){
+  "use strict";
+
+  var SUPABASE_URL = "https://knhpwhdgzwhdpnbsrbty.supabase.co";
+  var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtuaHB3aGRnendoZHBuYnNyYnR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkxNzM5MzIsImV4cCI6MjEwNDc0OTkzMn0.Nsd_fxNquX-_hTLyKwteHuezgp2HI4-rNWiMC-XTohI";
+
+  function sbHeaders(extra) {
+    var h = { "apikey": SUPABASE_ANON_KEY, "Authorization": "Bearer " + SUPABASE_ANON_KEY, "Content-Type": "application/json" };
+    if (extra) for (var k in extra) h[k] = extra[k];
+    return h;
+  }
+  function sbGet(table, query) {
+    return fetch(SUPABASE_URL + "/rest/v1/" + table + "?" + query, { headers: sbHeaders() }).then(function(r){ return r.json(); });
+  }
+  function sbPost(table, rows, extraHeaders) {
+    return fetch(SUPABASE_URL + "/rest/v1/" + table, {
+      method: "POST", headers: sbHeaders(extraHeaders), body: JSON.stringify(rows)
+    });
+  }
+  function sbPatch(table, query, patch) {
+    return fetch(SUPABASE_URL + "/rest/v1/" + table + "?" + query, {
+      method: "PATCH", headers: sbHeaders(), body: JSON.stringify(patch)
+    });
+  }
+  function sbUpsert(table, rows) {
+    return sbPost(table, rows, { "Prefer": "resolution=merge-duplicates" });
+  }
+
+  function pad3(n) { n = String(n); while (n.length < 3) n = "0" + n; return n; }
+
+  // ---------- 使用时长：北京时间显示 ----------
+  function cstDate(iso) { return new Date(iso).toLocaleDateString("zh-CN", { timeZone: "Asia/Shanghai" }); }
+  function cstTime(iso) { return new Date(iso).toLocaleTimeString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false }); }
+  // 时长按5分钟向下取整：3分钟->0，8分钟->5，18分钟->15，66分钟->65
+  function roundedMinutes(startIso, endIso) {
+    var ms = Math.max(0, new Date(endIso) - new Date(startIso));
+    var totalMin = Math.floor(ms / 60000);
+    return Math.floor(totalMin / 5) * 5;
+  }
+  function formatDuration(startIso, endIso) { return roundedMinutes(startIso, endIso) + "分钟"; }
+  function buildUsageTable(rows) {
+    var table = document.createElement("table");
+    table.className = "admin-table";
+    table.innerHTML = "<thead><tr><th>日期</th><th>开始</th><th>结束</th><th>时长</th></tr></thead>";
+    var tbody = document.createElement("tbody");
+    rows.forEach(function(row){
+      var tr = document.createElement("tr");
+      tr.innerHTML = "<td>" + cstDate(row.started_at) + "</td><td>" + cstTime(row.started_at) + "</td><td>" + cstTime(row.ended_at) + "</td><td>" + formatDuration(row.started_at, row.ended_at) + "</td>";
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    return table;
+  }
+
+  // 心跳每20秒把 ended_at 往前推一次，近似记录"用到几点"，不依赖 beforeunload
+  // ponytail: 心跳粒度 20 秒，不是精确到关闭那一刻；要更准就得配合 sendBeacon+服务端会话
+  var usageHeartbeatTimer = null;
+  function heartbeatUsage() {
+    if (!state.usageSessionId) return;
+    sbPatch("training_usage_sessions", "id=eq." + state.usageSessionId, { ended_at: new Date().toISOString() });
+  }
+  var usageStarting = false;
+  function startUsageTracking() {
+    usageStarting = true;
+    sbPost("training_usage_sessions", [{ referral_code: state.referrer, student_no: state.studentNo, started_at: new Date().toISOString(), ended_at: new Date().toISOString() }], { "Prefer": "return=representation" })
+      .then(function(r){ return r.json(); })
+      .then(function(rows){
+        usageStarting = false;
+        if (!Array.isArray(rows) || !rows[0]) return;
+        state.usageSessionId = rows[0].id;
+        if (usageHeartbeatTimer) clearInterval(usageHeartbeatTimer);
+        usageHeartbeatTimer = setInterval(heartbeatUsage, 20000);
+      }).catch(function(){ usageStarting = false; });
+  }
+  function stopUsageTracking() {
+    if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
+    if (usageHeartbeatTimer) { clearInterval(usageHeartbeatTimer); usageHeartbeatTimer = null; }
+    if (state.usageSessionId) { heartbeatUsage(); state.usageSessionId = null; }
+  }
+
+  // 停在"课程选择"或"录完音"这两个界面超过3分钟：多出来的时间不计入学习时长。
+  // 做法：满3分钟就把这段使用记录的结束时间定在"进入这个界面 + 3分钟"，然后停止计时；
+  // 学生离开这个界面去做别的（听、录）时，再新开一段记录。
+  var IDLE_LIMIT_MS = 3 * 60 * 1000;
+  var idleTimer = null, idleStart = 0;
+  function isIdleScreen() {
+    return !el("viewSetup").hidden || (!el("viewRecord").hidden && !el("afterRecordActions").hidden);
+  }
+  function updateIdleWatch() {
+    if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
+    if (!state.referrer || !state.studentNo) return;
+    if (isIdleScreen()) {
+      idleStart = Date.now();
+      idleTimer = setTimeout(function(){
+        idleTimer = null;
+        if (!state.usageSessionId) return;
+        var id = state.usageSessionId;
+        if (usageHeartbeatTimer) { clearInterval(usageHeartbeatTimer); usageHeartbeatTimer = null; }
+        state.usageSessionId = null;
+        sbPatch("training_usage_sessions", "id=eq." + id, { ended_at: new Date(idleStart + IDLE_LIMIT_MS).toISOString() });
+      }, IDLE_LIMIT_MS);
+    } else if (!state.usageSessionId && !usageStarting) {
+      startUsageTracking();
+    }
+  }
+
+  // ---------- state ----------
+  var state = {
+    referrer: null, studentNo: null,
+    difficulty: null, gender: localStorage.getItem("training_voice_gender") || "male",
+    wordData: {}, // difficulty -> {total_words, units:[...]}
+    progress: {}, // difficulty -> {group_index(=unit_index), cursor_index, words_per_session, updated_at}
+    selectedUnit: 0, selectedCount: 3,
+    session: null, // {words:[...], stepIndex, repeatIndex, playing}
+    usageSessionId: null
+  };
+
+  function el(id){ return document.getElementById(id); }
+  var ADMIN_VIEWS = { viewAdmin: 1, viewAdminStudent: 1 };
+  function showView(id) {
+    ["viewLogin","viewAdmin","viewAdminStudent","viewSuperAdmin","viewAdminRecords","viewSetup","viewPlayer","viewDone","viewRecord"].forEach(function(v){
+      el(v).hidden = (v !== id);
+    });
+    // 登录后的每个界面都显示今天的进度条，方便老师批改后随时能看到状态变化
+    var isStudentView = !!(state.referrer && state.studentNo);
+    el("batchRoadmapBar").hidden = !isStudentView;
+    el("headerWeeklyStatsBtn").hidden = !isStudentView;
+    el("headerStudentPwdBtn").hidden = !isStudentView;
+    el("headerLogoutBtn").hidden = (id === "viewLogin");
+    // 改密码按钮只在管理员的两个界面里显示，离开管理模式就收起改密码面板
+    el("headerAdminPwdBtn").hidden = !ADMIN_VIEWS[id];
+    if (!ADMIN_VIEWS[id]) el("adminPwdPanel").hidden = true;
+    // 管理员登录后每个管理页面顶部都有两个 tab，可以来回切换
+    var inAdmin = !!(ADMIN_VIEWS[id] || id === "viewSuperAdmin" || id === "viewAdminRecords");
+    el("adminTabs").hidden = !inAdmin;
+    el("adminTabTrain").classList.toggle("active", inAdmin && id !== "viewAdminRecords");
+    el("adminTabRecords").classList.toggle("active", id === "viewAdminRecords");
+    updateIdleWatch();
+  }
+
+  // ---------- login ----------
+  el("loginBtn").addEventListener("click", function(){
+    var referrer = el("loginReferrer").value.trim();
+    var studentNoRaw = el("loginStudentNo").value.trim();
+    var pwd = el("loginPassword").value;
+    var errEl = el("loginErr");
+    errEl.style.display = "none";
+
+    // 这里只给学生登录；管理员统一在主页 header 的"管理员登录"进入（见 enterAdmin）
+    if (!/^\d{5}$/.test(referrer)) { errEl.textContent = "推荐码需为5位数字"; errEl.style.display = "block"; return; }
+    var studentNum = parseInt(studentNoRaw, 10);
+    if (!studentNum || studentNum < 1 || studentNum > 999) { errEl.textContent = "学生账号需为 001-999"; errEl.style.display = "block"; return; }
+    var studentNo = pad3(studentNum);
+
+    Promise.all([ensureProvisioned(referrer), ensureQuota(referrer)]).then(function(){
+      sbGet("training_students", "referral_code=eq." + referrer + "&student_no=eq." + studentNo + "&select=password").then(function(rows){
+        if (!rows.length) { errEl.textContent = "账号不存在，请联系管理员"; errEl.style.display = "block"; return; }
+        if (rows[0].password !== pwd) { errEl.textContent = "密码错误"; errEl.style.display = "block"; return; }
+        state.referrer = referrer;
+        state.studentNo = studentNo;
+        startUsageTracking();
+        startRoadmapAutoRefresh();
+        enterSetupView();
+      });
+    });
+  });
+
+  // 管理员入口：只从主页 header 的"管理员登录"带着账号跳过来。账号 admin = 总管理员，5位推荐码 = 普通管理员
+  function enterAdmin(account) {
+    if (account === "admin") {
+      state.adminIsSuper = true;
+      showView("viewSuperAdmin");
+      loadSuperAdminQuotaTable();
+      loadAdminApplications();
+      return;
+    }
+    Promise.all([ensureProvisioned(account), ensureQuota(account)]).then(function(){
+      state.referrer = account;
+      state.adminIsSuper = false;
+      el("adminReferrerLabel").textContent = account;
+      showView("viewAdmin");
+      loadAdminProgressTable();
+    });
+  }
+
+  function ensureProvisioned(referrer) {
+    return sbGet("training_students", "referral_code=eq." + referrer + "&limit=1&select=student_no").then(function(rows){
+      if (rows.length) return;
+      var batch = [];
+      for (var i = 1; i <= 999; i++) batch.push({ referral_code: referrer, student_no: pad3(i) });
+      // insert in chunks of 200 to keep request size reasonable
+      var chunks = [];
+      for (var j = 0; j < batch.length; j += 200) chunks.push(batch.slice(j, j + 200));
+      var p = Promise.resolve();
+      chunks.forEach(function(c){ p = p.then(function(){ return sbUpsert("training_students", c); }); });
+      return p;
+    });
+  }
+
+  // 每个推荐码账号默认 9999 小时总时长，第一次登录时建好，之后不会被重置
+  function ensureQuota(referrer) {
+    return sbPost("training_quota", [{ referral_code: referrer, total_minutes: 9999 * 60 }], { "Prefer": "resolution=ignore-duplicates" });
+  }
+  function minToHoursLabel(min) { return (min / 60).toFixed(1) + " 小时"; }
+  function beijingYearMonth(iso) { return new Date(iso).toLocaleDateString("en-CA", { timeZone: "Asia/Shanghai" }).slice(0, 7); }
+  function currentBeijingYearMonth() { return new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Shanghai" }).slice(0, 7); }
+  function beijingDateKey(iso) { return new Date(iso).toLocaleDateString("en-CA", { timeZone: "Asia/Shanghai" }); }
+
+  // ---------- admin ----------
+  el("headerAdminPwdBtn").addEventListener("click", function(){
+    el("adminPwdPanel").hidden = !el("adminPwdPanel").hidden;
+  });
+  el("adminResetBtn").addEventListener("click", function(){ adminSetPassword("123456"); });
+  el("adminSetBtn").addEventListener("click", function(){
+    var v = el("adminNewPwd").value.trim();
+    if (!v) { el("adminMsg").textContent = "请输入新密码"; return; }
+    adminSetPassword(v);
+  });
+  function adminSetPassword(pwd) {
+    var raw = el("adminStudentNo").value.trim();
+    var n = parseInt(raw, 10);
+    if (!n || n < 1 || n > 999) { el("adminMsg").textContent = "请输入正确的学生账号 001-999"; return; }
+    var studentNo = pad3(n);
+    sbPatch("training_students", "referral_code=eq." + state.referrer + "&student_no=eq." + studentNo, { password: pwd }).then(function(r){
+      el("adminMsg").textContent = r.ok ? ("学生 " + studentNo + " 密码已设置为 " + pwd) : "设置失败，请重试";
+    });
+  }
+  var adminRefreshTimer = null;
+  function adminLogout() {
+    if (adminRefreshTimer) { clearInterval(adminRefreshTimer); adminRefreshTimer = null; }
+    state.adminIsSuper = false;
+    showView("viewLogin");
+  }
+  el("adminStudentBackBtn").addEventListener("click", function(){
+    if (adminRefreshTimer) { clearInterval(adminRefreshTimer); adminRefreshTimer = null; }
+    showView("viewAdmin");
+    loadAdminProgressTable();
+  });
+
+  // 这个推荐码账号的总时长 / 总已用 / 本月已用 / 剩余，管理员登录后能看到
+  function loadAdminQuotaBanner() {
+    Promise.all([
+      sbGet("training_quota", "referral_code=eq." + state.referrer),
+      sbGet("training_usage_sessions", "referral_code=eq." + state.referrer + "&select=started_at,ended_at&limit=5000")
+    ]).then(function(results){
+      var q = Array.isArray(results[0]) && results[0][0];
+      var banner = el("adminQuotaBanner");
+      if (!q) { banner.hidden = true; return; }
+      var sessions = Array.isArray(results[1]) ? results[1] : [];
+      var thisMonth = currentBeijingYearMonth();
+      var usedTotal = 0, usedThisMonth = 0;
+      sessions.forEach(function(s){
+        var mins = roundedMinutes(s.started_at, s.ended_at);
+        usedTotal += mins;
+        if (beijingYearMonth(s.started_at) === thisMonth) usedThisMonth += mins;
+      });
+      banner.hidden = false;
+      banner.textContent = "可用额度 " + minToHoursLabel(q.total_minutes - usedTotal) + "（总额度 " + minToHoursLabel(q.total_minutes) +
+        "，本月已用 " + minToHoursLabel(usedThisMonth) + "，累计已用 " + minToHoursLabel(usedTotal) + "）";
+    });
+  }
+
+  // 总管理员：所有推荐码账号的时长一览，可以给某个账号增加时长
+  function loadSuperAdminQuotaTable() {
+    Promise.all([
+      sbGet("training_quota", "order=referral_code.asc"),
+      sbGet("training_usage_sessions", "select=referral_code,started_at,ended_at&limit=5000")
+    ]).then(function(results){
+      var quotaRows = Array.isArray(results[0]) ? results[0] : [];
+      var sessionRows = Array.isArray(results[1]) ? results[1] : [];
+      var wrap = el("superAdminQuotaTableWrap");
+      if (!quotaRows.length) { wrap.innerHTML = "<p class=\"hint\">还没有任何推荐码账号。</p>"; return; }
+
+      var thisMonth = currentBeijingYearMonth();
+      var usedByCode = {}, usedThisMonthByCode = {};
+      sessionRows.forEach(function(s){
+        var mins = roundedMinutes(s.started_at, s.ended_at);
+        usedByCode[s.referral_code] = (usedByCode[s.referral_code] || 0) + mins;
+        if (beijingYearMonth(s.started_at) === thisMonth) {
+          usedThisMonthByCode[s.referral_code] = (usedThisMonthByCode[s.referral_code] || 0) + mins;
+        }
+      });
+
+      var table = document.createElement("table");
+      table.className = "admin-table";
+      table.innerHTML = "<thead><tr><th>推荐码</th><th>可用额度</th><th>本月已用</th><th>累计已用</th><th>总额度</th><th>增加时长(小时)</th></tr></thead>";
+      var tbody = document.createElement("tbody");
+      quotaRows.forEach(function(q){
+        var used = usedByCode[q.referral_code] || 0;
+        var usedThisMonth = usedThisMonthByCode[q.referral_code] || 0;
+        var tr = document.createElement("tr");
+        tr.innerHTML = "<td>" + q.referral_code + "</td><td>" + minToHoursLabel(q.total_minutes - used) + "</td><td>" + minToHoursLabel(usedThisMonth) +
+          "</td><td>" + minToHoursLabel(used) + "</td><td>" + minToHoursLabel(q.total_minutes) + "</td>";
+
+        var tdAdd = document.createElement("td");
+        var row = document.createElement("div");
+        row.className = "quota-add-row";
+        var input = document.createElement("input");
+        input.type = "number";
+        input.placeholder = "小时";
+        var addBtn = document.createElement("button");
+        addBtn.textContent = "增加";
+        addBtn.addEventListener("click", function(){
+          var hours = parseFloat(input.value);
+          if (!hours || hours <= 0) return;
+          sbPatch("training_quota", "referral_code=eq." + q.referral_code, { total_minutes: q.total_minutes + hours * 60 }).then(function(r){
+            if (r.ok) loadSuperAdminQuotaTable();
+          });
+        });
+        row.appendChild(input);
+        row.appendChild(addBtn);
+        tdAdd.appendChild(row);
+        tr.appendChild(tdAdd);
+
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      wrap.innerHTML = "";
+      wrap.appendChild(table);
+    });
+  }
+
+  // 管理员主页：这个推荐码下所有学生的学习进度表，最近更新的排最上面，
+  // 有未批改的录音就在那一行标出来提醒管理员点进去看。每30秒自动刷新。
+  function loadAdminProgressTable() {
+    if (adminRefreshTimer) clearInterval(adminRefreshTimer);
+    fetchAdminProgressTable();
+    adminRefreshTimer = setInterval(fetchAdminProgressTable, 30000);
+  }
+
+  function fetchAdminProgressTable() {
+    loadAdminQuotaBanner();
+    var wrap = el("adminProgressTableWrap");
+    if (wrap.querySelector("input")) return; // 老师正在填姓名，别刷新把输入冲掉
+    Promise.all([
+      sbGet("training_progress", "referral_code=eq." + state.referrer + "&order=updated_at.desc"),
+      sbGet("training_recordings", "referral_code=eq." + state.referrer + "&select=student_no,created_at,admin_status&order=created_at.desc&limit=500"),
+      sbGet("training_usage_sessions", "referral_code=eq." + state.referrer + "&select=student_no,started_at,ended_at&limit=5000"),
+      sbGet("training_students", "referral_code=eq." + state.referrer + "&student_name=not.is.null&select=student_no,student_name&limit=1000")
+    ]).then(function(results){
+      state.studentNames = {};
+      (Array.isArray(results[3]) ? results[3] : []).forEach(function(s){ state.studentNames[s.student_no] = s.student_name; });
+      var progressRows = Array.isArray(results[0]) ? results[0] : [];
+      var recRows = Array.isArray(results[1]) ? results[1] : [];
+      var usageRows = Array.isArray(results[2]) ? results[2] : [];
+      if (!progressRows.length && !recRows.length) { wrap.innerHTML = "<p class=\"hint\">还没有学生开始学习。</p>"; return; }
+
+      var byStudent = {}; // studentNo -> {progress:[], lastActivity: ms, pending: n, monthMinutes: n}
+      function ensure(s) {
+        if (!byStudent[s]) byStudent[s] = { progress: [], lastActivity: 0, pending: 0, monthMinutes: 0, recTotal: 0 };
+        return byStudent[s];
+      }
+      progressRows.forEach(function(p){
+        var e = ensure(p.student_no);
+        e.progress.push(p);
+        e.lastActivity = Math.max(e.lastActivity, new Date(p.updated_at).getTime());
+      });
+      recRows.forEach(function(r){
+        var e = ensure(r.student_no);
+        e.lastActivity = Math.max(e.lastActivity, new Date(r.created_at).getTime());
+        e.recTotal++;
+        if (!r.admin_status) e.pending++;
+      });
+      var thisMonth = currentBeijingYearMonth();
+      usageRows.forEach(function(u){
+        var e = ensure(u.student_no);
+        if (beijingYearMonth(u.started_at) === thisMonth) e.monthMinutes += roundedMinutes(u.started_at, u.ended_at);
+      });
+
+      var order = Object.keys(byStudent).sort(function(a,b){ return byStudent[b].lastActivity - byStudent[a].lastActivity; });
+
+      var table = document.createElement("table");
+      table.className = "admin-table";
+      table.innerHTML = "<thead><tr><th>学生</th><th>姓名</th><th>进度</th><th>本月时长</th><th>状态</th><th>最后更新</th></tr></thead>";
+      var tbody = document.createElement("tbody");
+      order.forEach(function(studentNo){
+        var e = byStudent[studentNo];
+        var tr = document.createElement("tr");
+
+        var tdStudent = document.createElement("td");
+        tdStudent.style.fontWeight = "800";
+        tdStudent.textContent = studentNo;
+        tr.appendChild(tdStudent);
+
+        // 姓名：点一下变成输入框，回车或点别处保存
+        var tdName = document.createElement("td");
+        function showName() {
+          var n = state.studentNames[studentNo];
+          tdName.textContent = n || "＋添加姓名";
+          tdName.style.color = n ? "" : "var(--muted)";
+          tdName.style.cursor = "pointer";
+          tdName.style.fontSize = n ? "" : "12px";
+        }
+        showName();
+        tdName.addEventListener("click", function(){
+          if (tdName.querySelector("input")) return;
+          var input = document.createElement("input");
+          input.value = state.studentNames[studentNo] || "";
+          input.maxLength = 20;
+          input.placeholder = "姓名";
+          input.style.cssText = "width:90px;padding:4px 6px;border:1.5px solid var(--blue);border-radius:6px;font:inherit;";
+          tdName.textContent = "";
+          tdName.appendChild(input);
+          input.focus();
+          var saved = false;
+          function save() {
+            if (saved) return; saved = true;
+            var v = input.value.trim();
+            if (v === (state.studentNames[studentNo] || "")) { showName(); return; }
+            sbPatch("training_students", "referral_code=eq." + state.referrer + "&student_no=eq." + studentNo, { student_name: v || null }).then(function(r){
+              if (r.ok) { if (v) state.studentNames[studentNo] = v; else delete state.studentNames[studentNo]; }
+              else alert("保存姓名失败，请确认数据库已添加 student_name 字段");
+              showName();
+            });
+          }
+          input.addEventListener("blur", save);
+          input.addEventListener("keydown", function(e){ if (e.key === "Enter") input.blur(); if (e.key === "Escape") { saved = true; showName(); } });
+        });
+        tr.appendChild(tdName);
+
+        var tdProgress = document.createElement("td");
+        tdProgress.textContent = e.progress.map(function(p){
+          return (p.difficulty === "junior" ? "初级" : "高级") + " U" + (p.group_index + 1);
+        }).join(" / ") || "-";
+        tdProgress.className = "at-student";
+        tdProgress.title = "点击查看具体进度";
+        tdProgress.addEventListener("click", function(){ openAdminProgress(studentNo, e.progress); });
+        tr.appendChild(tdProgress);
+
+        var tdMonth = document.createElement("td");
+        tdMonth.textContent = minToHoursLabel(e.monthMinutes);
+        tdMonth.className = "at-student";
+        tdMonth.title = "点击查看具体使用记录";
+        tdMonth.addEventListener("click", function(){
+          el("adminUsageStudentLabel").textContent = studentLabel(studentNo);
+          el("adminUsageListWrap").innerHTML = "<p class=\"hint\">加载中…</p>";
+          el("adminUsageModal").hidden = false;
+          loadAdminUsageLog(studentNo);
+        });
+        tr.appendChild(tdMonth);
+
+        var tdStatus = document.createElement("td");
+        if (e.pending > 0) {
+          var badge = document.createElement("span");
+          badge.className = "status-badge retry";
+          badge.textContent = "🔴 " + e.pending + " 条待批改";
+          badge.style.cursor = "pointer";
+          badge.title = "点击进入批改";
+          badge.addEventListener("click", function(){ enterAdminStudentView(studentNo); });
+          tdStatus.appendChild(badge);
+        }
+        if (e.pending === 0 && e.recTotal === 0) {
+          tdStatus.textContent = "暂无作业";
+          tdStatus.style.color = "var(--muted)";
+          tdStatus.style.fontSize = "12px";
+        } else if (e.pending === 0) {
+          // 没有待批改时也能点进去看已批改的记录，不用单独的按钮
+          var ok = document.createElement("span");
+          ok.className = "status-badge pass";
+          ok.textContent = "✅ 已批改";
+          ok.style.cursor = "pointer";
+          ok.title = "点击查看批改记录";
+          ok.addEventListener("click", function(){ enterAdminStudentView(studentNo); });
+          tdStatus.appendChild(ok);
+        }
+        tr.appendChild(tdStatus);
+
+        var tdTime = document.createElement("td");
+        tdTime.textContent = e.lastActivity ? new Date(e.lastActivity).toLocaleString() : "-";
+        tr.appendChild(tdTime);
+
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      wrap.innerHTML = "";
+      wrap.appendChild(table);
+    });
+  }
+
+  // 管理员查看单个学生的学习记录：每一组的中英文文字 + 标准朗读 + 学生录音，可以批改给反馈
+  function enterAdminStudentView(studentNo) {
+    if (adminRefreshTimer) clearInterval(adminRefreshTimer);
+    state.adminViewingStudent = studentNo;
+    adminVoiceBusy = false;
+    el("adminStudentLabel").textContent = studentLabel(studentNo);
+    showView("viewAdminStudent");
+    refreshAdminStudentView();
+  }
+
+  function refreshAdminStudentView() {
+    loadAdminStudentRecordings(true);
+  }
+  el("adminProgressCloseBtn").addEventListener("click", function(){ el("adminProgressModal").hidden = true; });
+  el("adminProgressBackdrop").addEventListener("click", function(){ el("adminProgressModal").hidden = true; });
+
+  // ---------- 管理员两个 tab ----------
+  el("adminTabTrain").addEventListener("click", function(){
+    if (adminRefreshTimer) { clearInterval(adminRefreshTimer); adminRefreshTimer = null; }
+    if (state.adminIsSuper) { showView("viewSuperAdmin"); loadSuperAdminQuotaTable(); loadAdminApplications(); }
+    else { showView("viewAdmin"); loadAdminProgressTable(); }
+  });
+  el("adminTabRecords").addEventListener("click", function(){
+    if (adminRefreshTimer) { clearInterval(adminRefreshTimer); adminRefreshTimer = null; }
+    showView("viewAdminRecords");
+    loadAdminTestRecords();
+  });
+  el("adminRecordsRefreshBtn").addEventListener("click", loadAdminTestRecords);
+
+  // 专注力测试记录：和主页测评记录同一个数据来源(get_all_records)；普通管理员只看自己推荐码下的
+  function loadAdminTestRecords() {
+    var wrap = el("adminRecordsWrap");
+    el("adminRecordsScope").textContent = state.adminIsSuper ? "（全部）" : "（推荐码 " + state.referrer + "）";
+    wrap.innerHTML = "<p class=\"hint\">加载中…</p>";
+    fetch(SUPABASE_URL + "/rest/v1/rpc/get_all_records", {
+      method: "POST", headers: sbHeaders(), body: JSON.stringify({ p_admin_user: "admin", p_admin_pass: "admin" })
+    }).then(function(r){ return r.json(); }).then(function(list){
+      var rows = Array.isArray(list) ? list : [];
+      if (!state.adminIsSuper) rows = rows.filter(function(r){ return r.referrer_teacher_id === state.referrer; });
+      wrap.innerHTML = "";
+      if (!rows.length) { wrap.innerHTML = "<p class=\"hint\">暂无测试记录。</p>"; return; }
+      var table = document.createElement("table");
+      table.className = "admin-table";
+      table.innerHTML = "<thead><tr><th>姓名</th><th>学校</th><th>年龄</th><th>手机号/微信</th><th>听觉</th><th>视觉</th><th>总分</th><th>推荐码</th><th>测试时间</th></tr></thead>";
+      var tbody = document.createElement("tbody");
+      rows.forEach(function(r){
+        var tr = document.createElement("tr");
+        [r.player_name, r.player_school, r.player_age, r.player_phone, r.auditory_score, r.visual_score, r.total_score, r.referrer_teacher_id || "-",
+          new Date(r.created_at).toLocaleString()].forEach(function(c){
+          var td = document.createElement("td"); td.textContent = (c === null || c === undefined) ? "" : c; tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      var scroll = document.createElement("div");
+      scroll.style.overflowX = "auto";
+      scroll.appendChild(table);
+      wrap.appendChild(scroll);
+    }).catch(function(){ wrap.innerHTML = "<p class=\"hint\">加载失败，请稍后刷新。</p>"; });
+  }
+
+  // 总管理员：主页提交的管理员账号申请
+  function loadAdminApplications() {
+    var wrap = el("superAdminApplicationsWrap");
+    sbGet("admin_applications", "order=handled.asc,created_at.desc&limit=200").then(function(rows){
+      wrap.innerHTML = "";
+      if (!Array.isArray(rows) || !rows.length) { wrap.innerHTML = "<p class=\"hint\">还没有人申请。</p>"; return; }
+      var table = document.createElement("table");
+      table.className = "admin-table";
+      table.innerHTML = "<thead><tr><th>时间</th><th>姓名</th><th>手机号</th><th>账号</th><th>备注</th><th></th></tr></thead>";
+      var tbody = document.createElement("tbody");
+      rows.forEach(function(a){
+        var tr = document.createElement("tr");
+        var cells = [new Date(a.created_at).toLocaleString(), a.name, a.phone, a.referral_code, a.note || ""];
+        cells.forEach(function(c){ var td = document.createElement("td"); td.textContent = c; tr.appendChild(td); });
+        var tdBtn = document.createElement("td");
+        if (a.handled) { tdBtn.textContent = "✅ 已处理"; tdBtn.style.color = "var(--muted)"; }
+        else {
+          var b = document.createElement("button");
+          b.className = "header-btn";
+          b.textContent = "标记已处理";
+          b.addEventListener("click", function(){
+            sbPatch("admin_applications", "id=eq." + a.id, { handled: true }).then(function(r){ if (r.ok) loadAdminApplications(); });
+          });
+          tdBtn.appendChild(b);
+        }
+        tr.appendChild(tdBtn);
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      wrap.appendChild(table);
+    });
+  }
+
+  function studentLabel(no) { var n = state.studentNames && state.studentNames[no]; return n ? no + " " + n : no; }
+
+  function ensureWordData() {
+    return Promise.all(["junior", "senior"].map(function(d){
+      return state.wordData[d] ? Promise.resolve() : fetch("training/" + d + "_words.json").then(function(r){ return r.json(); }).then(function(x){ state.wordData[d] = x; });
+    }));
+  }
+
+  // 每个级别：已学几组（按提交过的组数算）、学了多少词、还差几组（按当前每组词数估算），再按 Unit 分开列
+  function openAdminProgress(studentNo, progressRows) {
+    el("adminProgressStudentLabel").textContent = studentLabel(studentNo);
+    var wrap = el("adminProgressDetailWrap");
+    wrap.innerHTML = "<p class=\"hint\">加载中…</p>";
+    el("adminProgressModal").hidden = false;
+    Promise.all([
+      ensureWordData(),
+      sbGet("training_batches", "referral_code=eq." + state.referrer + "&student_no=eq." + studentNo + "&select=difficulty&limit=5000")
+    ]).then(function(res){
+      var batches = Array.isArray(res[1]) ? res[1] : [];
+      wrap.innerHTML = "";
+      if (!progressRows.length) { wrap.innerHTML = "<p class=\"hint\">这个学生还没有开始学习。</p>"; return; }
+      progressRows.forEach(function(p){
+        var data = state.wordData[p.difficulty];
+        var per = p.words_per_session || 3;
+        var done = 0;
+        data.units.forEach(function(u, i){
+          if (i < p.group_index) done += u.words.length;
+          else if (i === p.group_index) done += p.cursor_index;
+        });
+        var left = data.total_words - done;
+        var groupsDone = batches.filter(function(b){ return b.difficulty === p.difficulty; }).length;
+        var box = document.createElement("div");
+        box.className = "rec-entry";
+        var unitRows = data.units.map(function(u, i){
+          var learned = i < p.group_index ? u.words.length : (i === p.group_index ? p.cursor_index : 0);
+          return "<tr><td>Unit " + (i + 1) + "</td><td>" + learned + " / " + u.words.length + " 词</td></tr>";
+        }).join("");
+        box.innerHTML = "<div class=\"fb-title\"><span class=\"fb-chip\">" + (p.difficulty === "junior" ? "初级" : "高级") + "</span></div>" +
+          "<p style=\"margin:0 0 6px;font-size:15px;\">已学 <b>" + groupsDone + "</b> 组（" + done + " / " + data.total_words + " 词）</p>" +
+          "<p style=\"margin:0 0 10px;font-size:15px;\">还差约 <b>" + Math.ceil(left / per) + "</b> 组没学（剩 " + left + " 词，按每组 " + per + " 词算）</p>" +
+          "<table class=\"admin-table\"><tbody>" + unitRows + "</tbody></table>";
+        wrap.appendChild(box);
+      });
+    });
+  }
+  el("adminUsageCloseBtn").addEventListener("click", function(){ el("adminUsageModal").hidden = true; });
+  el("adminUsageBackdrop").addEventListener("click", function(){ el("adminUsageModal").hidden = true; });
+
+  var adminVoiceBusy = false; // 老师正在录/刚录完还没提交语音反馈时，不要自动刷新把它冲掉
+  // 学生页里两个 tab：待批改 / 已批改。提交批改后这条会自动从"待批改"归到"已批改"
+  var adminStudentTab = "pending";
+  var adminStudentRows = [];
+  var adminGroupNoOf = function(){ return null; };
+  el("adminStudentTabPending").addEventListener("click", function(){ adminStudentTab = "pending"; renderAdminStudentRecordings(); });
+  el("adminStudentTabGraded").addEventListener("click", function(){ adminStudentTab = "graded"; renderAdminStudentRecordings(); });
+
+  function loadAdminStudentRecordings(resetTab) {
+    if (adminVoiceBusy) return;
+    var list = el("adminStudentRecordingsList");
+    if (!list.children.length) list.innerHTML = "<p class=\"hint\">加载中…</p>";
+    var q = "referral_code=eq." + state.referrer + "&student_no=eq." + state.adminViewingStudent;
+    Promise.all([
+      sbGet("training_recordings", q + "&order=created_at.desc&limit=100"),
+      sbGet("training_batches", q + "&order=created_at.asc&select=difficulty,unit_index,words")
+    ]).then(function(res){
+        var rows = res[0];
+        adminGroupNoOf = makeGroupNoFinder(Array.isArray(res[1]) ? res[1] : []);
+        adminStudentRows = Array.isArray(rows) ? rows : [];
+        if (resetTab === true) adminStudentTab = adminStudentRows.some(function(r){ return !r.admin_status; }) ? "pending" : "graded";
+        renderAdminStudentRecordings();
+      });
+  }
+
+  function renderAdminStudentRecordings() {
+    var list = el("adminStudentRecordingsList");
+    var pending = adminStudentRows.filter(function(r){ return !r.admin_status; });
+    var graded = adminStudentRows.filter(function(r){ return !!r.admin_status; });
+    el("adminStudentTabPending").textContent = "待批改（" + pending.length + "）";
+    el("adminStudentTabGraded").textContent = "已批改（" + graded.length + "）";
+    el("adminStudentTabPending").classList.toggle("active", adminStudentTab === "pending");
+    el("adminStudentTabGraded").classList.toggle("active", adminStudentTab === "graded");
+    var items = adminStudentTab === "pending" ? pending : graded;
+    list.innerHTML = "";
+    if (!items.length) {
+      list.innerHTML = "<p class=\"hint\" style=\"font-weight:700;\">" + (adminStudentTab === "pending" ? "✅ 没有待批改的作业了" : "还没有批改过的作业") + "</p>";
+      return;
+    }
+    items.forEach(function(rec){ list.appendChild(buildRecordingEntry(rec, adminGroupNoOf(rec))); });
+  }
+
+  function loadAdminUsageLog(studentNo) {
+    var wrap = el("adminUsageListWrap");
+    sbGet("training_usage_sessions", "referral_code=eq." + state.referrer + "&student_no=eq." + studentNo + "&order=started_at.desc&limit=100")
+      .then(function(rows){
+        wrap.innerHTML = "";
+        if (!Array.isArray(rows) || !rows.length) { wrap.innerHTML = "<p class=\"hint\">还没有使用记录。</p>"; return; }
+        wrap.appendChild(buildUsageTable(rows));
+      });
+  }
+
+  function buildRecordingEntry(rec, groupNo) {
+    // 左列：这一组的记录（文字、声音、学生录音）；右列：批改意见
+    var box = document.createElement("div");
+    box.className = "rec-col";
+    var right = document.createElement("div");
+    right.className = "rec-col";
+
+    var head = document.createElement("div");
+    head.className = "fb-title";
+    var diffLabel = rec.difficulty === "junior" ? "初级" : "高级";
+    head.innerHTML = "<span class=\"fb-chip\">" + diffLabel + " Unit" + (rec.unit_index + 1) + "</span>" +
+      (groupNo ? "<span class=\"fb-group\">第" + groupNo + "组</span>" : "") +
+      "<span class=\"hint\" style=\"margin:0 0 0 auto;\">" + new Date(rec.created_at).toLocaleString() + "</span>";
+    box.appendChild(head);
+
+    // 所有中英文放在一行：每个词的中文、英文各一个圈，圈里写着自己的文字，点哪个播放哪个一遍
+    var pills = document.createElement("div");
+    pills.className = "rec-pill-row";
+    var playing = null, playingPill = null;
+    (rec.words || []).forEach(function(w){
+      [["zh", w.meaning], ["en", w.word]].forEach(function(item){
+        var pill = document.createElement("button");
+        pill.className = "rec-pill " + item[0];
+        pill.textContent = item[1];
+        pill.title = "点击播放标准" + (item[0] === "zh" ? "中文" : "英文");
+        pill.addEventListener("click", function(){
+          if (playing) playing.pause();
+          if (playingPill) playingPill.classList.remove("on");
+          var a = new Audio("training/audio/" + rec.difficulty + "/" + item[0] + "/" + rec.gender + "/" + w.id + ".mp3");
+          playing = a; playingPill = pill; pill.classList.add("on");
+          a.onended = function(){ pill.classList.remove("on"); };
+          a.play().catch(function(){ pill.classList.remove("on"); });
+        });
+        pills.appendChild(pill);
+      });
+    });
+    box.appendChild(pills);
+
+    var audio = document.createElement("audio");
+    audio.className = "rec-audio";
+    audio.controls = true;
+    audio.src = "data:audio/webm;base64," + rec.audio_base64;
+    box.appendChild(audio);
+
+    var status = rec.admin_status || null;
+
+    var gradeRow = document.createElement("div");
+    gradeRow.className = "grade-row";
+    var passBtn = document.createElement("button");
+    passBtn.className = "grade-btn gb-pass" + (status === "pass" ? " active" : "");
+    passBtn.textContent = "✅ 通过";
+    var retryBtn = document.createElement("button");
+    retryBtn.className = "grade-btn gb-retry" + (status === "retry" ? " active" : "");
+    retryBtn.textContent = "🔁 需要重录";
+    passBtn.addEventListener("click", function(){
+      status = "pass"; passBtn.classList.add("active"); retryBtn.classList.remove("active");
+    });
+    retryBtn.addEventListener("click", function(){
+      status = "retry"; retryBtn.classList.add("active"); passBtn.classList.remove("active");
+    });
+    gradeRow.appendChild(passBtn);
+    gradeRow.appendChild(retryBtn);
+    right.appendChild(gradeRow);
+
+    var fb = document.createElement("textarea");
+    fb.className = "rec-feedback";
+    fb.placeholder = "给学生的反馈，比如哪个词读得不准…";
+    fb.value = rec.admin_feedback || "";
+    right.appendChild(fb);
+
+    // 老师语音反馈：录一段话，提交批改时一起保存，学生在"老师反馈"里能听到
+    var voiceAudio = document.createElement("audio");
+    voiceAudio.className = "rec-audio";
+    voiceAudio.controls = true;
+    if (rec.admin_feedback_audio) voiceAudio.src = "data:audio/webm;base64," + rec.admin_feedback_audio;
+    else voiceAudio.hidden = true;
+    var voiceBtn = document.createElement("button");
+    voiceBtn.className = "grade-btn";
+    voiceBtn.style.width = "100%";
+    voiceBtn.textContent = rec.admin_feedback_audio ? "🎙️ 重录语音反馈" : "🎙️ 录语音反馈";
+    var newVoiceB64 = null, voiceRecorder = null, voiceChunks = [];
+    voiceBtn.addEventListener("click", function(){
+      if (voiceRecorder) { voiceRecorder.stop(); return; }
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream){
+        voiceChunks = [];
+        voiceRecorder = new MediaRecorder(stream);
+        voiceRecorder.ondataavailable = function(e){ if (e.data && e.data.size) voiceChunks.push(e.data); };
+        voiceRecorder.onstop = function(){
+          stream.getTracks().forEach(function(t){ t.stop(); });
+          var blob = new Blob(voiceChunks, { type: "audio/webm" });
+          voiceRecorder = null;
+          voiceAudio.src = URL.createObjectURL(blob);
+          voiceAudio.hidden = false;
+          voiceBtn.textContent = "🎙️ 重录语音反馈";
+          blobToBase64(blob).then(function(b64){ newVoiceB64 = b64; adminVoiceBusy = true; });
+        };
+        voiceRecorder.start();
+        adminVoiceBusy = true;
+        voiceBtn.textContent = "⏹ 停止录音";
+      }).catch(function(err){ alert("无法访问麦克风：" + err.message); });
+    });
+    right.appendChild(voiceBtn);
+    right.appendChild(voiceAudio);
+
+    var saveRow = document.createElement("div");
+    saveRow.className = "admin-row";
+    var saveBtn = document.createElement("button");
+    saveBtn.textContent = "提交批改";
+    var msg = document.createElement("span");
+    msg.className = "rec-feedback-msg";
+    saveBtn.addEventListener("click", function(){
+      var patch = { admin_feedback: fb.value, admin_status: status };
+      if (newVoiceB64) patch.admin_feedback_audio = newVoiceB64;
+      sbPatch("training_recordings", "id=eq." + rec.id, patch).then(function(r){
+        msg.textContent = r.ok ? "已保存" : "保存失败";
+        if (r.ok) {
+          adminVoiceBusy = false;
+          // 批改完了：稍等一下让"已保存"闪一下，然后刷新，这条自动从"待批改"归到"已批改"
+          setTimeout(function(){ loadAdminStudentRecordings(); }, 700);
+        }
+      });
+    });
+    saveRow.appendChild(saveBtn);
+    saveRow.appendChild(msg);
+    right.appendChild(saveRow);
+
+    var entry = document.createElement("div");
+    entry.className = "rec-entry rec-entry-2col";
+    entry.appendChild(box);
+    entry.appendChild(right);
+    return entry;
+  }
+
+  // ---------- setup (难度 + unit + 每次学几个词，都在一个界面) ----------
+  function enterSetupView() {
+    Promise.all([
+      state.wordData.junior ? Promise.resolve() : fetch("training/junior_words.json").then(function(r){return r.json();}).then(function(d){ state.wordData.junior = d; }),
+      state.wordData.senior ? Promise.resolve() : fetch("training/senior_words.json").then(function(r){return r.json();}).then(function(d){ state.wordData.senior = d; }),
+      sbGet("training_progress", "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo)
+    ]).then(function(results){
+      var rows = results[2];
+      state.progress.junior = rows.filter(function(r){ return r.difficulty === "junior"; })[0] || { group_index: 0, cursor_index: 0, words_per_session: 3, notStarted: true };
+      state.progress.senior = rows.filter(function(r){ return r.difficulty === "senior"; })[0] || { group_index: 0, cursor_index: 0, words_per_session: 3, notStarted: true };
+
+      // 默认继续上次学习：哪个难度最近更新过，就默认选它；都没学过就默认初级
+      var last = rows.slice().sort(function(a,b){ return new Date(b.updated_at || 0) - new Date(a.updated_at || 0); })[0];
+      state.difficulty = last ? last.difficulty : "junior";
+
+      el("juniorMeta").textContent = state.wordData.junior.total_words + " 词 / 3 个 Unit";
+      el("seniorMeta").textContent = state.wordData.senior.total_words + " 词 / 3 个 Unit";
+      updateVoiceToggleUI();
+      applyDifficultySelection();
+      showView("viewSetup");
+      loadTodayBatches();
+      loadMyFeedback();
+      refreshPendingRecording();
+    });
+  }
+
+  // 每个 batch 在它所属的 unit 里是第几组（按时间顺序数）；返回一个函数：给一条录音，找出它是"第几组"
+  function makeGroupNoFinder(allBatches) {
+    var unitCounters = {};
+    var batchGroupNo = allBatches.map(function(b){
+      var key = b.difficulty + "_" + b.unit_index;
+      unitCounters[key] = (unitCounters[key] || 0) + 1;
+      return unitCounters[key];
+    });
+    return function(rec) {
+      var wordsKey = JSON.stringify(rec.words);
+      for (var i = 0; i < allBatches.length; i++) {
+        var b = allBatches[i];
+        if (b.difficulty === rec.difficulty && b.unit_index === rec.unit_index && JSON.stringify(b.words) === wordsKey) return batchGroupNo[i];
+      }
+      return null;
+    };
+  }
+
+  // 老师批改过的录音（有成绩/反馈的）显示在设置页顶部，让学生登录就能看到
+  function loadMyFeedback() {
+    Promise.all([
+      sbGet("training_recordings", "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo + "&admin_status=eq.retry&order=created_at.desc&limit=50"),
+      sbGet("training_batches", "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo + "&order=created_at.asc&select=difficulty,unit_index,words"),
+      sbGet("training_recordings", "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo + "&select=difficulty,unit_index,words,created_at&order=created_at.desc&limit=300")
+    ]).then(function(results){
+      var rows = Array.isArray(results[0]) ? results[0] : [];
+      var allBatches = Array.isArray(results[1]) ? results[1] : [];
+      var allRecs = Array.isArray(results[2]) ? results[2] : [];
+
+      // 老师反馈里只显示没通过（需要重录）的；已重新录过那一组（后面有同一组的新录音）的旧反馈也不再显示
+      rows = rows.filter(function(rec){
+        if (rec.admin_status !== "retry") return false;
+        var key = batchKey(rec.difficulty, rec.unit_index, rec.words);
+        return !allRecs.some(function(r){ return r.created_at > rec.created_at && batchKey(r.difficulty, r.unit_index, r.words) === key; });
+      });
+      // 还需要重录的组，用来做"重录下一个"
+      state.retryItems = rows.filter(function(r){ return r.admin_status === "retry"; })
+        .map(function(r){ return { difficulty: r.difficulty, unit_index: r.unit_index, cursor_start: 0, words: r.words }; });
+
+      var findGroupNo = makeGroupNoFinder(allBatches);
+
+      var panel = el("feedbackPanel");
+      var list = el("feedbackList");
+      list.innerHTML = "";
+      var hasFeedback = rows.length > 0;
+      panel.hidden = !hasFeedback;
+      el("viewSetup").classList.toggle("has-feedback", hasFeedback);
+      if (!hasFeedback) return;
+      rows.forEach(function(rec){ list.appendChild(buildFeedbackItem(rec, findGroupNo(rec))); });
+    });
+  }
+
+  function buildFeedbackItem(rec, groupNo) {
+    var box = document.createElement("div");
+    box.className = "rec-entry";
+
+    var head = document.createElement("div");
+    head.className = "rec-entry-head";
+    var diffLabel = rec.difficulty === "junior" ? "初级" : "高级";
+    var groupLabel = groupNo ? ("<span class=\"fb-group\">第" + groupNo + "组</span>") : "";
+    var badge = "<span class=\"status-badge " + (rec.admin_status === "pass" ? "pass" : "retry") + "\">" +
+      (rec.admin_status === "pass" ? "☑️ 已通过" : "🔁 需要重录") + "</span>";
+    head.className = "fb-title";
+    head.innerHTML = "<span class=\"fb-chip\">" + diffLabel + " Unit" + (rec.unit_index + 1) + "</span>" + groupLabel + badge;
+    box.appendChild(head);
+
+    if (rec.admin_feedback) {
+      var fb = document.createElement("p");
+      fb.className = "hint";
+      fb.style.margin = "6px 0";
+      fb.textContent = "老师留言：" + rec.admin_feedback;
+      box.appendChild(fb);
+    }
+
+    if (rec.admin_feedback_audio) {
+      var tLabel = document.createElement("p");
+      tLabel.className = "hint";
+      tLabel.style.margin = "8px 0 0";
+      tLabel.textContent = "老师的语音反馈：";
+      box.appendChild(tLabel);
+      var tAudio = document.createElement("audio");
+      tAudio.className = "rec-audio";
+      tAudio.controls = true;
+      tAudio.src = "data:audio/webm;base64," + rec.admin_feedback_audio;
+      box.appendChild(tAudio);
+    }
+
+    var audio = document.createElement("audio");
+    audio.className = "rec-audio";
+    audio.controls = true;
+    audio.src = "data:audio/webm;base64," + rec.audio_base64;
+    box.appendChild(audio);
+
+    // 直接回到这一组重听、重录（不影响当前学习进度）
+    var redo = document.createElement("button");
+    redo.className = "btn btn-blue";
+    redo.textContent = "🔁 重听 / 重录这一组";
+    redo.addEventListener("click", function(){
+      var thisKey = batchKey(rec.difficulty, rec.unit_index, rec.words);
+      // 其它还要重录的组排成队，这一组重录完后可以直接"重录下一个"
+      state.retryQueue = (state.retryItems || []).filter(function(it){ return batchKey(it.difficulty, it.unit_index, it.words) !== thisKey; });
+      enterBatchReview({ difficulty: rec.difficulty, unit_index: rec.unit_index, cursor_start: 0, words: rec.words });
+    });
+    box.appendChild(redo);
+
+    return box;
+  }
+  function updateVoiceToggleUI() {
+    el("voiceMaleBtn").classList.toggle("active", state.gender === "male");
+    el("voiceFemaleBtn").classList.toggle("active", state.gender === "female");
+  }
+  el("voiceMaleBtn").addEventListener("click", function(){ state.gender = "male"; localStorage.setItem("training_voice_gender","male"); updateVoiceToggleUI(); });
+  el("voiceFemaleBtn").addEventListener("click", function(){ state.gender = "female"; localStorage.setItem("training_voice_gender","female"); updateVoiceToggleUI(); });
+  el("logoutBtn").addEventListener("click", function(){ globalGen++; playerEl.pause(); stopUsageTracking(); stopRoadmapAutoRefresh(); state.referrer = null; state.studentNo = null; state.pendingRecording = null; showView("viewLogin"); });
+  // header 右上角的退出登录：按当前是学生还是管理员，走对应的退出流程，都回到登录页
+  el("headerLogoutBtn").addEventListener("click", function(){
+    if (state.studentNo) el("logoutBtn").click();
+    else adminLogout();
+    el("weeklyStatsModal").hidden = true;
+    el("adminUsageModal").hidden = true;
+    el("adminProgressModal").hidden = true;
+    el("studentPwdModal").hidden = true;
+    el("batchChoiceModal").hidden = true;
+  });
+
+  // ---------- 学生修改自己的密码 ----------
+  el("headerStudentPwdBtn").addEventListener("click", function(){
+    ["pwdOld", "pwdNew", "pwdNew2"].forEach(function(id){ el(id).value = ""; });
+    el("pwdErr").style.display = "none";
+    el("studentPwdModal").hidden = false;
+    el("pwdOld").focus();
+  });
+  el("studentPwdCloseBtn").addEventListener("click", function(){ el("studentPwdModal").hidden = true; });
+  el("studentPwdBackdrop").addEventListener("click", function(){ el("studentPwdModal").hidden = true; });
+  el("pwdSaveBtn").addEventListener("click", function(){
+    var oldPwd = el("pwdOld").value, newPwd = el("pwdNew").value, newPwd2 = el("pwdNew2").value;
+    var err = el("pwdErr");
+    function fail(m){ err.textContent = m; err.style.display = "block"; }
+    err.style.display = "none";
+    if (!oldPwd) { fail("请输入旧密码"); return; }
+    if (newPwd.length < 4) { fail("新密码至少4位"); return; }
+    if (newPwd !== newPwd2) { fail("两次输入的新密码不一致"); return; }
+    if (newPwd === oldPwd) { fail("新密码不能和旧密码一样"); return; }
+    var q = "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo;
+    sbGet("training_students", q + "&select=password").then(function(rows){
+      if (!Array.isArray(rows) || !rows[0]) { fail("账号异常，请重新登录"); return; }
+      if (rows[0].password !== oldPwd) { fail("旧密码不对"); return; }
+      return sbPatch("training_students", q, { password: newPwd }).then(function(r){
+        if (!r.ok) { fail("保存失败，请稍后再试"); return; }
+        el("studentPwdModal").hidden = true;
+        alert("密码已修改，下次登录请使用新密码。");
+      });
+    });
+  });
+
+  // ---------- 训练记录：最近7天每日学习时长曲线图，弹窗展示，不切换界面 ----------
+  el("headerWeeklyStatsBtn").addEventListener("click", function(){ el("weeklyStatsModal").hidden = false; loadWeeklyStats(); });
+  el("weeklyStatsCloseBtn").addEventListener("click", function(){ el("weeklyStatsModal").hidden = true; });
+  el("weeklyStatsBackdrop").addEventListener("click", function(){ el("weeklyStatsModal").hidden = true; });
+
+  function loadWeeklyStats() {
+    var days = [];
+    for (var i = 6; i >= 0; i--) days.push(beijingDateKey(new Date(Date.now() - i * 86400000).toISOString()));
+    var sinceIso = new Date(Date.now() - 7 * 86400000).toISOString();
+    sbGet("training_usage_sessions", "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo +
+      "&started_at=gte." + encodeURIComponent(sinceIso) + "&select=started_at,ended_at")
+      .then(function(rows){
+        rows = Array.isArray(rows) ? rows : [];
+        var byDay = {};
+        days.forEach(function(d){ byDay[d] = 0; });
+        rows.forEach(function(r){
+          var d = beijingDateKey(r.started_at);
+          if (d in byDay) byDay[d] += roundedMinutes(r.started_at, r.ended_at);
+        });
+        var labels = days.map(function(d){ var parts = d.split("-"); return parts[1] + "/" + parts[2]; });
+        var values = days.map(function(d){ return byDay[d]; });
+        el("weeklyChartWrap").innerHTML = buildWeeklyChart(labels, values);
+      });
+  }
+
+  function buildWeeklyChart(labels, values) {
+    var w = 560, h = 220, padL = 30, padR = 20, padT = 24, padB = 30;
+    var maxV = Math.max(30, Math.max.apply(null, values));
+    var stepX = (w - padL - padR) / (labels.length - 1);
+    function x(i) { return padL + i * stepX; }
+    function y(v) { return h - padB - (v / maxV) * (h - padT - padB); }
+    var points = values.map(function(v, i){ return x(i) + "," + y(v); }).join(" ");
+    var circles = values.map(function(v, i){ return "<circle cx=\"" + x(i) + "\" cy=\"" + y(v) + "\" r=\"4\" fill=\"#1cb0f6\"/>"; }).join("");
+    var valueLabels = values.map(function(v, i){ return "<text x=\"" + x(i) + "\" y=\"" + (y(v) - 10) + "\" font-size=\"11\" text-anchor=\"middle\" fill=\"#10131a\" font-weight=\"700\">" + v + "</text>"; }).join("");
+    var dayLabels = labels.map(function(l, i){ return "<text x=\"" + x(i) + "\" y=\"" + (h - 8) + "\" font-size=\"11\" text-anchor=\"middle\" fill=\"#5b6472\">" + l + "</text>"; }).join("");
+    return "<svg viewBox=\"0 0 " + w + " " + h + "\" style=\"width:100%;height:auto;display:block;\">" +
+      "<line x1=\"" + padL + "\" y1=\"" + (h - padB) + "\" x2=\"" + (w - padR) + "\" y2=\"" + (h - padB) + "\" stroke=\"#e6e1d6\" stroke-width=\"1.5\"/>" +
+      "<polyline points=\"" + points + "\" fill=\"none\" stroke=\"#1cb0f6\" stroke-width=\"2.5\"/>" +
+      circles + valueLabels + dayLabels +
+      "</svg><p class=\"hint\" style=\"text-align:center;margin-top:6px;\">单位：分钟</p>";
+  }
+  window.addEventListener("beforeunload", function(){ if (state.usageSessionId) heartbeatUsage(); });
+
+  document.querySelectorAll(".choice-card").forEach(function(c){
+    c.addEventListener("click", function(){
+      state.difficulty = c.getAttribute("data-difficulty");
+      applyDifficultySelection();
+    });
+  });
+
+  // 切换难度（或首次进入）时：把这个难度上次学到的 unit / 每次学几个词 设为默认选中，
+  // 这样正常情况下用户什么都不用点，直接"开始学习"就是接着上次学
+  function applyDifficultySelection() {
+    var p = state.progress[state.difficulty];
+    state.selectedUnit = p.group_index || 0;
+    state.selectedCount = p.words_per_session || 3;
+    document.querySelectorAll(".choice-card").forEach(function(c){
+      c.classList.toggle("active", c.getAttribute("data-difficulty") === state.difficulty);
+    });
+    renderUnitGrid();
+    renderCountGrid();
+  }
+
+  function renderUnitGrid() {
+    var data = state.wordData[state.difficulty];
+    var p = state.progress[state.difficulty];
+    var grid = el("unitGrid");
+    grid.innerHTML = "";
+    data.units.forEach(function(u){
+      var cell = document.createElement("div");
+      var cls = "unit-cell";
+      var isLastUnit = !p.notStarted && u.unit_index === p.group_index; // 这个难度还没开始学过，就不标"上次学到这"
+      if (isLastUnit) cls += " current";
+      if (u.unit_index === state.selectedUnit) cls += " selected";
+      cell.className = cls;
+      cell.innerHTML = "Unit " + (u.unit_index + 1) + (isLastUnit ? "<span class=\"uc-sub\">上次学到这</span>" : "");
+      cell.addEventListener("click", function(){
+        state.selectedUnit = u.unit_index;
+        renderUnitGrid();
+      });
+      grid.appendChild(cell);
+    });
+  }
+
+  function renderCountGrid() {
+    var grid = el("countGrid");
+    grid.innerHTML = "";
+    for (var n = 3; n <= 8; n++) {
+      (function(n){
+        var cell = document.createElement("div");
+        cell.className = "count-cell" + (n === state.selectedCount ? " selected" : "");
+        cell.textContent = n;
+        cell.addEventListener("click", function(){
+          state.selectedCount = n;
+          renderCountGrid();
+        });
+        grid.appendChild(cell);
+      })(n);
+    }
+  }
+
+  // ---------- session / player ----------
+  // 全局播放令牌：每次开始/跳转/退出都自增，过期的 setTimeout 回调靠比对这个值失效，
+  // 避免暂停/跳词/重新开始时新旧播放链互相打架。
+  var globalGen = 0;
+
+  el("startSessionBtn").addEventListener("click", function(){ startSession(1); });
+  // 返回课程选择页；没录音时"开始学习"本来就会被拦住，所以这里不用再拦
+  function backToCourseSelect() {
+    backToSetup();
+    loadMyFeedback();
+  }
+  el("backToGroupsFromDoneBtn").addEventListener("click", backToCourseSelect);
+  el("relistenBtn").addEventListener("click", startRelisten);
+  el("startRecordBtn").addEventListener("click", enterRecording);
+  el("gotoRecordBtn").addEventListener("click", enterRecording);
+  el("recordBackToGroupsBtn").addEventListener("click", backToCourseSelect);
+
+  // 一组没录音不能进入下一组：pendingRecording 记着"已听完但还没提交录音"的那一组
+  function batchKey(difficulty, unitIndex, words) {
+    return difficulty + "|" + unitIndex + "|" + words.map(function(w){ return w.id; }).join(",");
+  }
+  function refreshPendingRecording() {
+    var q = "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo;
+    sbGet("training_batches", q + "&order=created_at.desc&limit=1").then(function(rows){
+      var b = Array.isArray(rows) && rows[0];
+      if (!b) { state.pendingRecording = null; state.pendingBatch = null; return; }
+      return sbGet("training_recordings", q + "&created_at=gte." + encodeURIComponent(b.created_at) + "&select=difficulty,unit_index,words").then(function(recs){
+        var key = batchKey(b.difficulty, b.unit_index, b.words);
+        var done = Array.isArray(recs) && recs.some(function(r){ return batchKey(r.difficulty, r.unit_index, r.words) === key; });
+        state.pendingRecording = done ? null : key;
+        state.pendingBatch = done ? null : b;
+      });
+    });
+  }
+
+  // 从学习/录音界面回到设置界面时，重新拉一下进度（可能刚保存过），并保留当前难度的默认选中
+  function backToSetup() {
+    sbGet("training_progress", "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo + "&difficulty=eq." + state.difficulty).then(function(rows){
+      state.progress[state.difficulty] = rows[0] || { group_index: 0, cursor_index: 0, words_per_session: state.selectedCount, notStarted: true };
+      applyDifficultySelection();
+      showView("viewSetup");
+      loadTodayBatches();
+    });
+  }
+
+  function startSession(pass) {
+    // 上一组听完了但还没录音：点"开始学习"就是回到那一组继续（听 → 录音），不开新的一组
+    state.retryQueue = [];
+    if (state.pendingRecording && state.pendingBatch) { enterBatchReview(state.pendingBatch); return; }
+    var data = state.wordData[state.difficulty];
+    var p = state.progress[state.difficulty];
+    var unitIndex = state.selectedUnit;
+    var cursor = (unitIndex === p.group_index) ? p.cursor_index : 0;
+    var unit = data.units[unitIndex];
+    if (!unit) { alert("没有更多 Unit 了"); return; }
+
+    var words = unit.words.slice(cursor, cursor + state.selectedCount);
+    if (!words.length) {
+      // 这个 unit 学完了，自动滚到下一个 unit
+      unitIndex += 1; cursor = 0;
+      unit = data.units[unitIndex];
+      if (!unit) { alert("这个难度的词已经全部学完啦！"); backToSetup(); return; }
+      words = unit.words.slice(0, state.selectedCount);
+    }
+
+    state.session = {
+      groupIndex: unitIndex, startCursor: cursor, words: words,
+      steps: [], stepIndex: 0, repeatIndex: 0, paused: false, pass: pass
+    };
+    words.forEach(function(w){
+      state.session.steps.push({ phase: "zh", word: w, repeats: 3 });
+      state.session.steps.push({ phase: "en", word: w, repeats: 3 });
+    });
+
+    renderRoadmap();
+    applyPassUI();
+    showView("viewPlayer");
+    globalGen++;
+    playStep(0, 0, globalGen);
+  }
+
+  function startRelisten() {
+    // 再听一次：默认还是从第一个词的中文开始，顺序/遍数和第一遍一样，文字依然默认不显示；
+    // 区别是这一遍可以：①勾选显示某几个字/词的文字 ②点 roadmap 上的中/英圆点跳过某些词直接听后面的 ③随时跳去录音。
+    state.session.pass = 2;
+    state.session.paused = false;
+    state.session.revealed = {}; // stepIndex -> true，默认全部不显示，用户自己选择要看哪个
+    el("pausePlayBtn").textContent = "暂停";
+    applyPassUI();
+    renderRoadmap();
+    showView("viewPlayer");
+    globalGen++;
+    playStep(0, 0, globalGen);
+  }
+
+  function applyPassUI() {
+    var pass2 = state.session.pass === 2;
+    el("passHint").textContent = pass2
+      ? "第二遍：默认还是不显示文字，点正在播放的圆点可以显示/再点一次隐藏这个词，点别的圆点会跳过去播放那个词"
+      : "第一遍：先认真听，还不显示文字";
+    el("gotoRecordBtn").hidden = !pass2;
+  }
+
+  // roadmap 每一步是一个圆点(中/英)，第二遍时圆点下面再加一个 👁 小按钮，
+  // 点👁只管这一步的文字显示/隐藏，点圆点本身是跳听（两遍都能跳，方便测试）
+  function renderRoadmap() {
+    var rm = el("roadmap");
+    rm.innerHTML = "";
+    state.session.steps.forEach(function(s, i){
+      var col = document.createElement("div");
+      col.className = "rm-col";
+
+      var node = document.createElement("div");
+      node.className = "rm-node jumpable";
+      node.id = "rmnode-" + i;
+      node.textContent = s.phase === "zh" ? "中" : "英";
+      // 点正在播放的这个圆圈：显示这个词的文字；点别的圆圈：跳过去播放那个词
+      node.addEventListener("click", function(){
+        if (i === state.session.stepIndex) {
+          state.session.revealed[i] = !state.session.revealed[i];
+          updateStageText(state.session.stepIndex);
+        } else {
+          jumpTo(i);
+        }
+      });
+      col.appendChild(node);
+      rm.appendChild(col);
+    });
+  }
+
+  // 屏幕中间的大字展示：只跟着当前正在播放的这一步走
+  function updateStageText(stepIndex) {
+    var step = state.session.steps[stepIndex];
+    var show = state.session.pass === 2 && state.session.revealed[stepIndex];
+    el("stageWave").hidden = show;
+    if (!show) { el("stageZh").textContent = ""; el("stageEn").textContent = ""; return; }
+    if (step.phase === "zh") { el("stageZh").textContent = step.word.meaning; el("stageEn").textContent = ""; }
+    else { el("stageZh").textContent = ""; el("stageEn").textContent = step.word.word; }
+  }
+
+  function jumpTo(stepIndex) {
+    state.session.paused = false;
+    el("pausePlayBtn").textContent = "暂停";
+    playerEl.pause();
+    globalGen++;
+    playStep(stepIndex, 0, globalGen);
+  }
+
+  function audioUrl(step) {
+    var lang = step.phase === "zh" ? "zh" : "en";
+    return "training/audio/" + state.difficulty + "/" + lang + "/" + state.gender + "/" + step.word.id + ".mp3";
+  }
+
+  var playerEl = el("player");
+  function playStep(stepIndex, repeatIndex, gen) {
+    if (gen !== globalGen) return; // 过期的播放链，作废
+    if (state.session.paused) return;
+    if (stepIndex >= state.session.steps.length) { finishSession(); return; }
+    var step = state.session.steps[stepIndex];
+    state.session.stepIndex = stepIndex;
+    state.session.repeatIndex = repeatIndex;
+
+    document.querySelectorAll("#roadmap .rm-node").forEach(function(n, i){
+      n.classList.toggle("active", i === stepIndex);
+      n.classList.toggle("done", i < stepIndex);
+    });
+    updateStageText(stepIndex);
+    el("stageRep").textContent = "第 " + (repeatIndex + 1) + " / " + step.repeats + " 遍";
+
+    playerEl.src = audioUrl(step);
+    playerEl.onerror = function() {
+      // 音频还没生成：跳过这一遍，用等待代替，避免卡住流程
+      setTimeout(function(){ advance(stepIndex, repeatIndex, 1500, gen); }, 200);
+    };
+    playerEl.onended = function() {
+      var dur = (playerEl.duration && isFinite(playerEl.duration)) ? playerEl.duration * 1000 : 800;
+      if (step.phase === "en") dur *= 2; // 间隔按这一遍实际播放时长动态算：英文=2倍时长，中文=1倍时长
+      advance(stepIndex, repeatIndex, dur, gen);
+    };
+    playerEl.play().catch(function(){});
+  }
+  function advance(stepIndex, repeatIndex, gapMs, gen) {
+    if (gen !== globalGen) return;
+    var step = state.session.steps[stepIndex];
+    if (repeatIndex + 1 < step.repeats) {
+      setTimeout(function(){ playStep(stepIndex, repeatIndex + 1, gen); }, gapMs);
+    } else {
+      setTimeout(function(){ playStep(stepIndex + 1, 0, gen); }, gapMs);
+    }
+  }
+
+  el("pausePlayBtn").addEventListener("click", function(){
+    state.session.paused = !state.session.paused;
+    el("pausePlayBtn").textContent = state.session.paused ? "继续" : "暂停";
+    if (state.session.paused) { playerEl.pause(); }
+    else { globalGen++; playStep(state.session.stepIndex, state.session.repeatIndex, globalGen); }
+  });
+  el("exitSessionBtn").addEventListener("click", function(){
+    globalGen++;
+    playerEl.pause();
+    // 回顾之前某一组时不能把它的进度当成"当前进度"存回去，会把真实进度冲掉
+    if (!state.session.reviewMode) saveProgress(state.session.groupIndex, state.session.startCursor);
+    backToSetup();
+  });
+
+  function finishSession() {
+    document.querySelectorAll("#roadmap .rm-node").forEach(function(n){ n.classList.add("done"); n.classList.remove("active"); });
+    if (state.session.reviewMode) {
+      // 回顾模式：听完就完了，不影响进度，也不再算一条新的"今天第N组"
+      if (state.pendingRecording === batchKey(state.difficulty, state.session.groupIndex, state.session.words)) {
+        el("doneTitle").textContent = "🎉 本次学习完成！";
+        el("doneSummary").textContent = "如果已经记住这 " + state.session.words.length + " 个词中英文的顺序，准备好一次性说出来，就点【开始录音】；" +
+          "如果还没记熟，先点【再听一次】。";
+      } else {
+        el("doneTitle").textContent = "🔁 回顾完成";
+        el("doneSummary").textContent = "这是之前学过的一组，回顾不影响你当前的学习进度。";
+      }
+      showView("viewDone");
+      return;
+    }
+    var newCursor = state.session.startCursor + state.session.words.length;
+    var groupLen = state.wordData[state.difficulty].units[state.session.groupIndex].words.length;
+    var groupIndex = state.session.groupIndex;
+    if (newCursor >= groupLen) { groupIndex += 1; newCursor = 0; }
+    // 进度只在第一遍朗读完成时推进，第二遍(再听一次)是复习，不影响下次继续学习的位置
+    if (state.session.pass === 1) {
+      saveProgress(groupIndex, newCursor);
+      logBatch();
+      state.pendingRecording = batchKey(state.difficulty, state.session.groupIndex, state.session.words);
+      state.pendingBatch = {
+        difficulty: state.difficulty, unit_index: state.session.groupIndex, cursor_start: state.session.startCursor,
+        words: state.session.words.map(function(w){ return { id: w.id, word: w.word, meaning: w.meaning }; })
+      };
+    }
+    el("doneTitle").textContent = "🎉 本次学习完成！";
+    el("doneSummary").textContent = "如果已经记住这 " + state.session.words.length + " 个词中英文的顺序，准备好一次性说出来，就点【开始录音】；" +
+      "如果还没记熟，先点【再听一次】。";
+    showView("viewDone");
+  }
+
+  function saveProgress(groupIndex, cursorIndex) {
+    state.progress[state.difficulty] = { group_index: groupIndex, cursor_index: cursorIndex, words_per_session: state.selectedCount };
+    sbUpsert("training_progress", [{
+      referral_code: state.referrer, student_no: state.studentNo, difficulty: state.difficulty,
+      group_index: groupIndex, cursor_index: cursorIndex, words_per_session: state.selectedCount,
+      updated_at: new Date().toISOString()
+    }]);
+  }
+
+  // ---------- 今天的学习进度条 (header roadmap) ----------
+  function logBatch() {
+    var words = state.session.words.map(function(w){ return { id: w.id, word: w.word, meaning: w.meaning }; });
+    sbPost("training_batches", [{
+      referral_code: state.referrer, student_no: state.studentNo,
+      difficulty: state.difficulty, unit_index: state.session.groupIndex,
+      cursor_start: state.session.startCursor, words: words, gender: state.gender
+    }]).then(loadTodayBatches);
+  }
+
+  function todayStartIso() {
+    var d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d.toISOString();
+  }
+
+  function loadTodayBatches() {
+    if (!state.referrer || !state.studentNo) return;
+    Promise.all([
+      sbGet("training_batches", "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo +
+        "&created_at=gte." + encodeURIComponent(todayStartIso()) + "&order=created_at.asc"),
+      sbGet("training_recordings", "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo +
+        "&created_at=gte." + encodeURIComponent(todayStartIso()) + "&select=difficulty,unit_index,words,admin_status,created_at&order=created_at.desc"),
+      sbGet("training_batches", "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo + "&order=created_at.asc&select=difficulty,unit_index,words")
+    ]).then(function(results){
+      state.todayBatches = Array.isArray(results[0]) ? results[0] : [];
+      state.todayRecordings = Array.isArray(results[1]) ? results[1] : [];
+      // 组号和"老师反馈"里用同一个算法（该 Unit 里的第几组），这样两边说的"第3组"是同一组
+      state.groupNoOf = makeGroupNoFinder(Array.isArray(results[2]) ? results[2] : []);
+      renderBatchPills();
+    });
+  }
+
+  // 一批(batch)和对应的录音(recording)没有外键关联，靠 difficulty+unit_index+词表内容 匹配同一批
+  function findRecordingForBatch(batch) {
+    var wordsKey = JSON.stringify(batch.words);
+    var match = (state.todayRecordings || []).filter(function(r){
+      return r.difficulty === batch.difficulty && r.unit_index === batch.unit_index && JSON.stringify(r.words) === wordsKey;
+    });
+    return match[0] || null;
+  }
+
+  function batchStatusBadge(batch) {
+    var rec = findRecordingForBatch(batch);
+    if (!rec) return "";
+    if (rec.admin_status === "pass") return "<span class=\"status-badge pass\">☑️已通过</span>";
+    if (rec.admin_status === "retry") return "<span class=\"status-badge retry\">🔁需重录</span>";
+    return "<span class=\"status-badge pending\">📩待批改</span>";
+  }
+
+  var pendingBatchChoice = null;
+  el("batchChoiceRedoBtn").addEventListener("click", function(){
+    el("batchChoiceModal").hidden = true;
+    if (!pendingBatchChoice) return;
+    state.retryQueue = [];
+    enterBatchReview(pendingBatchChoice);
+  });
+  el("batchChoiceExitBtn").addEventListener("click", function(){ el("batchChoiceModal").hidden = true; });
+  el("batchChoiceBackdrop").addEventListener("click", function(){ el("batchChoiceModal").hidden = true; });
+
+  function renderBatchPills() {
+    var row = el("batchPillRow");
+    row.innerHTML = "";
+    var batches = state.todayBatches || [];
+    if (!batches.length) { row.innerHTML = "<span class=\"hint\">今天还没开始学习</span>"; return; }
+    batches.forEach(function(b, i){
+      var pill = document.createElement("button");
+      var isLast = i === batches.length - 1;
+      pill.className = "batch-pill" + (isLast ? " bp-current" : "");
+      var groupNo = (state.groupNoOf && state.groupNoOf(b)) || (i + 1);
+      // 上面是组号，下面是状态（待批改 / 已通过 / 需重录）；没状态时留个占位，保证每个格子一样高
+      var badge = batchStatusBadge(b) || "<span class=\"status-badge\" style=\"visibility:hidden\">·</span>";
+      pill.innerHTML = "<span>第" + groupNo + "组" + (isLast ? "（当前）" : "") + "</span>" + badge;
+      pill.addEventListener("click", function(){
+        // 不直接跳进朗读：先弹出"重新学习 / 退出"让学生选
+        pendingBatchChoice = b;
+        el("batchChoiceTitle").textContent = "第 " + groupNo + " 组";
+        el("batchChoiceModal").hidden = false;
+      });
+      row.appendChild(pill);
+    });
+  }
+
+  // 登录期间每30秒刷新一次今天的进度条，老师批改后学生这边能较快看到状态变化
+  var roadmapRefreshTimer = null;
+  function startRoadmapAutoRefresh() {
+    if (roadmapRefreshTimer) clearInterval(roadmapRefreshTimer);
+    roadmapRefreshTimer = setInterval(function(){
+      loadTodayBatches();
+      if (!el("viewSetup").hidden) loadMyFeedback();
+    }, 30000);
+  }
+  function stopRoadmapAutoRefresh() {
+    if (roadmapRefreshTimer) { clearInterval(roadmapRefreshTimer); roadmapRefreshTimer = null; }
+  }
+
+  // 回去重听/重录之前学过的某一组：不碰 training_progress，纯粹回顾
+  function enterBatchReview(batch) {
+    state.difficulty = batch.difficulty; // 只影响回顾期间用哪套音频，回顾完 backToSetup 会按进度重新读回来
+    state.session = {
+      groupIndex: batch.unit_index, startCursor: batch.cursor_start, words: batch.words,
+      steps: [], stepIndex: 0, repeatIndex: 0, paused: false, pass: 2, revealed: {}, reviewMode: true
+    };
+    batch.words.forEach(function(w){
+      state.session.steps.push({ phase: "zh", word: w, repeats: 3 });
+      state.session.steps.push({ phase: "en", word: w, repeats: 3 });
+    });
+    renderRoadmap();
+    applyPassUI();
+    showView("viewPlayer");
+    globalGen++;
+    playStep(0, 0, globalGen);
+  }
+
+  // ---------- recording (不打分，存下来给管理员回听) ----------
+  var mediaRecorder = null, recordedChunks = [], micStream = null, isRecording = false;
+  var audioCtx = null, analyser = null, waveRAF = null;
+
+  function enterRecording() {
+    globalGen++;
+    playerEl.pause();
+    // 有意什么提示都不显示，靠记忆把听到的内容复述一遍
+    el("recordPlayback").style.display = "none";
+    el("recordPlayback").src = "";
+    el("uploadStatus").hidden = true;
+    el("afterRecordActions").hidden = true;
+    el("recordToggleBtn").hidden = false;
+    el("nextRetryBtn").hidden = true;
+    el("waveCanvas").hidden = false;
+    el("recordTitle").textContent = "🎙️ 跟读录音";
+    el("recordTitle").style.color = "";
+    clearWave();
+    showView("viewRecord");
+  }
+
+  el("recordToggleBtn").addEventListener("click", function(){
+    if (!isRecording) {
+      el("afterRecordActions").hidden = true;
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream){
+        micStream = stream;
+        recordedChunks = [];
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = function(e){ if (e.data && e.data.size) recordedChunks.push(e.data); };
+        mediaRecorder.onstop = function(){
+          var blob = new Blob(recordedChunks, { type: "audio/webm" });
+          var pb = el("recordPlayback");
+          pb.src = URL.createObjectURL(blob);
+          pb.style.display = "block";
+          micStream.getTracks().forEach(function(t){ t.stop(); });
+          stopWave();
+          el("afterRecordActions").hidden = false;
+          el("recordToggleBtn").hidden = true; // 录完了就不再显示开始录音，想重来点下面的"重录"
+          el("waveCanvas").hidden = true;      // 录完后波形框是空的，直接收起
+          updateIdleWatch();                   // 录完停在这个界面，开始"3分钟不计时"的倒计时
+          uploadRecording(blob);
+        };
+        mediaRecorder.start();
+        isRecording = true;
+        el("recordToggleBtn").textContent = "⏹ 停止录音";
+        startWave(stream);
+      }).catch(function(err){
+        alert("无法访问麦克风：" + err.message);
+      });
+    } else {
+      mediaRecorder.stop();
+      isRecording = false;
+      el("recordToggleBtn").textContent = "🔴 开始录音";
+    }
+  });
+
+  // 实时波形：Web Audio AnalyserNode 画到 canvas 上
+  function startWave(stream) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    var source = audioCtx.createMediaStreamSource(stream);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 1024;
+    source.connect(analyser);
+    var buf = new Uint8Array(analyser.frequencyBinCount);
+    var canvas = el("waveCanvas");
+    var ctx = canvas.getContext("2d");
+    (function draw(){
+      waveRAF = requestAnimationFrame(draw);
+      analyser.getByteTimeDomainData(buf);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#eafbe0";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.beginPath();
+      ctx.strokeStyle = "#58cc02";
+      ctx.lineWidth = 2;
+      var sliceWidth = canvas.width / buf.length;
+      var x = 0;
+      for (var i = 0; i < buf.length; i++) {
+        var v = buf[i] / 128.0;
+        var y = (v * canvas.height) / 2;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        x += sliceWidth;
+      }
+      ctx.stroke();
+    })();
+  }
+  function stopWave() {
+    if (waveRAF) cancelAnimationFrame(waveRAF);
+    waveRAF = null;
+    if (audioCtx) { audioCtx.close(); audioCtx = null; }
+    clearWave();
+  }
+  function clearWave() {
+    var canvas = el("waveCanvas");
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#f7f5ef";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+  clearWave();
+
+  // 录完就存到 Supabase（base64），不打分，给管理员回听用
+  function uploadRecording(blob) {
+    el("uploadStatus").hidden = false;
+    el("uploadStatus").textContent = "⏳ 正在保存录音…";
+    blobToBase64(blob).then(function(b64){
+      var words = state.session.words.map(function(w){ return { id: w.id, word: w.word, meaning: w.meaning }; });
+      return sbPost("training_recordings", [{
+        referral_code: state.referrer, student_no: state.studentNo,
+        difficulty: state.difficulty, unit_index: state.session.groupIndex,
+        gender: state.gender, words: words, audio_base64: b64
+      }]);
+    }).then(function(r){
+      if (r.ok) {
+        // 完成提示放在标题"跟读录音"的位置
+        el("recordTitle").textContent = "🎉 本组已完成！录音已提交，等待老师批改";
+        el("recordTitle").style.color = "#3d9a00";
+        el("uploadStatus").hidden = true;
+      } else {
+        el("uploadStatus").textContent = "⚠️ 保存失败，不影响你继续学习";
+      }
+      if (r.ok) {
+        if (state.pendingRecording === batchKey(state.difficulty, state.session.groupIndex, state.session.words)) { state.pendingRecording = null; state.pendingBatch = null; }
+        var left = (state.retryQueue || []).length;
+        el("nextRetryBtn").hidden = !left;
+        if (left) el("nextRetryBtn").textContent = "🔁 重录下一个（还有 " + left + " 个需要重录）";
+        loadTodayBatches();
+      }
+    }).catch(function(){
+      el("uploadStatus").textContent = "⚠️ 保存失败（可能是网络问题），不影响你继续学习";
+    });
+  }
+
+  function blobToBase64(blob) {
+    return blob.arrayBuffer().then(function(buf){
+      var bytes = new Uint8Array(buf);
+      var chunk = 0x8000, binary = "";
+      for (var i = 0; i < bytes.length; i += chunk) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+      }
+      return btoa(binary);
+    });
+  }
+
+  el("rerecordBtn").addEventListener("click", enterRecording);
+  el("relistenAgainBtn").addEventListener("click", startRelisten);
+  el("nextBatchBtn").addEventListener("click", function(){ startSession(1); });
+  el("nextRetryBtn").addEventListener("click", function(){
+    var it = (state.retryQueue || []).shift();
+    if (it) enterBatchReview(it);
+  });
+
+  // 主页的"管理员登录"弹窗会带着 ?adminReferrer=xxx&adminPwd=xxx 跳过来，自动帮填好登录
+  (function autoAdminLogin(){
+    var params = new URLSearchParams(window.location.search);
+    var referrer = params.get("adminReferrer");
+    var pwd = params.get("adminPwd");
+    if (!referrer || !pwd) return;
+    history.replaceState(null, "", window.location.pathname);
+    if (pwd === "admin123" && (referrer === "admin" || /^\d{5}$/.test(referrer))) enterAdmin(referrer);
+  })();
+
+})();
+</script>
+</body>
+</html>

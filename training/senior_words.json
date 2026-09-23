@@ -1,0 +1,6245 @@
+{
+ "total_words": 1245,
+ "units": [
+  {
+   "unit_index": 0,
+   "words": [
+    {
+     "id": "s0001",
+     "word": "honest",
+     "meaning": "诚实的，正直的"
+    },
+    {
+     "id": "s0002",
+     "word": "brave",
+     "meaning": "勇敢的"
+    },
+    {
+     "id": "s0003",
+     "word": "loyal",
+     "meaning": "忠诚的，忠心的"
+    },
+    {
+     "id": "s0004",
+     "word": "wise",
+     "meaning": "英明的，明智的"
+    },
+    {
+     "id": "s0005",
+     "word": "handsome",
+     "meaning": "英俊的，大方的"
+    },
+    {
+     "id": "s0006",
+     "word": "smart",
+     "meaning": "聪明的，漂亮的"
+    },
+    {
+     "id": "s0007",
+     "word": "argue",
+     "meaning": "争论，辩论"
+    },
+    {
+     "id": "s0008",
+     "word": "solution",
+     "meaning": "解答，解决办法"
+    },
+    {
+     "id": "s0009",
+     "word": "classical",
+     "meaning": "古典的，古典文学的"
+    },
+    {
+     "id": "s0011",
+     "word": "match",
+     "meaning": "比赛，火柴"
+    },
+    {
+     "id": "s0012",
+     "word": "mirror",
+     "meaning": "镜子"
+    },
+    {
+     "id": "s0013",
+     "word": "gun",
+     "meaning": "炮，枪"
+    },
+    {
+     "id": "s0014",
+     "word": "hammer",
+     "meaning": "锤子，槌"
+    },
+    {
+     "id": "s0015",
+     "word": "saw",
+     "meaning": "锯"
+    },
+    {
+     "id": "s0016",
+     "word": "rope",
+     "meaning": "绳，索"
+    },
+    {
+     "id": "s0017",
+     "word": "compass",
+     "meaning": "罗盘，指南针"
+    },
+    {
+     "id": "s0018",
+     "word": "cast",
+     "meaning": "投掷，投射"
+    },
+    {
+     "id": "s0019",
+     "word": "survive",
+     "meaning": "幸免于，从中生还"
+    },
+    {
+     "id": "s0020",
+     "word": "deserted",
+     "meaning": "荒芜的，荒废的"
+    },
+    {
+     "id": "s0022",
+     "word": "share",
+     "meaning": "分享，共有"
+    },
+    {
+     "id": "s0023",
+     "word": "sorrow",
+     "meaning": "悲哀，悲痛"
+    },
+    {
+     "id": "s0025",
+     "word": "feeling",
+     "meaning": "触觉，知觉"
+    },
+    {
+     "id": "s0026",
+     "word": "airplane",
+     "meaning": "飞机"
+    },
+    {
+     "id": "s0027",
+     "word": "speech",
+     "meaning": "演说，讲话"
+    },
+    {
+     "id": "s0028",
+     "word": "adventure",
+     "meaning": "冒险，冒险经历"
+    },
+    {
+     "id": "s0029",
+     "word": "notebook",
+     "meaning": "笔记本，笔记本式电脑"
+    },
+    {
+     "id": "s0030",
+     "word": "scared",
+     "meaning": "恐惧的"
+    },
+    {
+     "id": "s0031",
+     "word": "formal",
+     "meaning": "正式的，正规的"
+    },
+    {
+     "id": "s0032",
+     "word": "error",
+     "meaning": "错误，差错"
+    },
+    {
+     "id": "s0034",
+     "word": "landlady",
+     "meaning": "女房东，老板娘"
+    },
+    {
+     "id": "s0035",
+     "word": "pronounce",
+     "meaning": "发音，宣告"
+    },
+    {
+     "id": "s0036",
+     "word": "broad",
+     "meaning": "宽的"
+    },
+    {
+     "id": "s0037",
+     "word": "repeat",
+     "meaning": "重做，重复"
+    },
+    {
+     "id": "s0038",
+     "word": "majority",
+     "meaning": "多数，大半"
+    },
+    {
+     "id": "s0039",
+     "word": "native",
+     "meaning": "本国的，本地的"
+    },
+    {
+     "id": "s0040",
+     "word": "total",
+     "meaning": "总数，合计"
+    },
+    {
+     "id": "s0042",
+     "word": "tongue",
+     "meaning": "舌头，语言"
+    },
+    {
+     "id": "s0044",
+     "word": "equal",
+     "meaning": "相等的，胜任的"
+    },
+    {
+     "id": "s0045",
+     "word": "government",
+     "meaning": "政府，内阁"
+    },
+    {
+     "id": "s0046",
+     "word": "situation",
+     "meaning": "情形，境遇"
+    },
+    {
+     "id": "s0049",
+     "word": "international",
+     "meaning": "国际的，世界的"
+    },
+    {
+     "id": "s0050",
+     "word": "organization",
+     "meaning": "组织，机构"
+    },
+    {
+     "id": "s0051",
+     "word": "trade",
+     "meaning": "贸易，商业"
+    },
+    {
+     "id": "s0052",
+     "word": "tourism",
+     "meaning": "旅游，观光"
+    },
+    {
+     "id": "s0053",
+     "word": "global",
+     "meaning": "全球的，球形的"
+    },
+    {
+     "id": "s0054",
+     "word": "communicate",
+     "meaning": "交际，沟通"
+    },
+    {
+     "id": "s0055",
+     "word": "communication",
+     "meaning": "交流，通讯"
+    },
+    {
+     "id": "s0056",
+     "word": "exchange",
+     "meaning": "交换，交流"
+    },
+    {
+     "id": "s0057",
+     "word": "service",
+     "meaning": "服务，服务性工作"
+    },
+    {
+     "id": "s0058",
+     "word": "signal",
+     "meaning": "信号"
+    },
+    {
+     "id": "s0059",
+     "word": "movement",
+     "meaning": "运动，动作"
+    },
+    {
+     "id": "s0060",
+     "word": "commander",
+     "meaning": "司令官，指挥官"
+    },
+    {
+     "id": "s0061",
+     "word": "tidy",
+     "meaning": "整理，收拾"
+    },
+    {
+     "id": "s0063",
+     "word": "independent",
+     "meaning": "独立自主的"
+    },
+    {
+     "id": "s0064",
+     "word": "fall",
+     "meaning": "秋天，瀑布"
+    },
+    {
+     "id": "s0065",
+     "word": "expression",
+     "meaning": "短语，表情"
+    },
+    {
+     "id": "s0067",
+     "word": "typhoon",
+     "meaning": "台风"
+    },
+    {
+     "id": "s0068",
+     "word": "publish",
+     "meaning": "发表，出版"
+    },
+    {
+     "id": "s0069",
+     "word": "southern",
+     "meaning": "南方的，南部的"
+    },
+    {
+     "id": "s0070",
+     "word": "statement",
+     "meaning": "陈述，声明"
+    },
+    {
+     "id": "s0071",
+     "word": "president",
+     "meaning": "总统，校长"
+    },
+    {
+     "id": "s0072",
+     "word": "European",
+     "meaning": "欧洲的，欧洲人的"
+    },
+    {
+     "id": "s0074",
+     "word": "compare",
+     "meaning": "比较"
+    },
+    {
+     "id": "s0075",
+     "word": "replace",
+     "meaning": "替换"
+    },
+    {
+     "id": "s0076",
+     "word": "consider",
+     "meaning": "考虑，照顾"
+    },
+    {
+     "id": "s0077",
+     "word": "means",
+     "meaning": "手段，方法"
+    },
+    {
+     "id": "s0078",
+     "word": "transportation",
+     "meaning": "运输，运送"
+    },
+    {
+     "id": "s0079",
+     "word": "destination",
+     "meaning": "目的地"
+    },
+    {
+     "id": "s0080",
+     "word": "experience",
+     "meaning": "体验，经历"
+    },
+    {
+     "id": "s0081",
+     "word": "simply",
+     "meaning": "仅仅，只不过"
+    },
+    {
+     "id": "s0083",
+     "word": "raft",
+     "meaning": "乘筏，木筏"
+    },
+    {
+     "id": "s0084",
+     "word": "vacation",
+     "meaning": "假期，休假"
+    },
+    {
+     "id": "s0085",
+     "word": "nature",
+     "meaning": "自然，自然界"
+    },
+    {
+     "id": "s0086",
+     "word": "basic",
+     "meaning": "基本的，基本"
+    },
+    {
+     "id": "s0087",
+     "word": "equipment",
+     "meaning": "装备，设备"
+    },
+    {
+     "id": "s0088",
+     "word": "simple",
+     "meaning": "简单的"
+    },
+    {
+     "id": "s0089",
+     "word": "backpack",
+     "meaning": "背包"
+    },
+    {
+     "id": "s0090",
+     "word": "tip",
+     "meaning": "指点，忠告"
+    },
+    {
+     "id": "s0092",
+     "word": "spider",
+     "meaning": "蜘蛛"
+    },
+    {
+     "id": "s0093",
+     "word": "poisonous",
+     "meaning": "有毒的，有害的"
+    },
+    {
+     "id": "s0095",
+     "word": "cellphone",
+     "meaning": "手机"
+    },
+    {
+     "id": "s0096",
+     "word": "stream",
+     "meaning": "溪，川"
+    },
+    {
+     "id": "s0097",
+     "word": "normal",
+     "meaning": "正常的，正规的"
+    },
+    {
+     "id": "s0098",
+     "word": "excitement",
+     "meaning": "刺激，兴奋"
+    },
+    {
+     "id": "s0099",
+     "word": "adventurous",
+     "meaning": "喜欢冒险的，充"
+    },
+    {
+     "id": "s0100",
+     "word": "handle",
+     "meaning": "操作，处理"
+    },
+    {
+     "id": "s0101",
+     "word": "similarity",
+     "meaning": "类似，类似处"
+    },
+    {
+     "id": "s0102",
+     "word": "particular",
+     "meaning": "特别的，特殊的"
+    },
+    {
+     "id": "s0103",
+     "word": "poison",
+     "meaning": "毒药，毒害"
+    },
+    {
+     "id": "s0104",
+     "word": "separate",
+     "meaning": "单独的，分开的"
+    },
+    {
+     "id": "s0106",
+     "word": "combine",
+     "meaning": "使联合，结合"
+    },
+    {
+     "id": "s0107",
+     "word": "responsibly",
+     "meaning": "负责地"
+    },
+    {
+     "id": "s0108",
+     "word": "task",
+     "meaning": "任务，作业"
+    },
+    {
+     "id": "s0109",
+     "word": "unpack",
+     "meaning": "打开卸货"
+    },
+    {
+     "id": "s0110",
+     "word": "unforgettable",
+     "meaning": "难忘的"
+    },
+    {
+     "id": "s0111",
+     "word": "host",
+     "meaning": "主人，主办"
+    },
+    {
+     "id": "s0113",
+     "word": "scare",
+     "meaning": "恐吓，受惊吓"
+    },
+    {
+     "id": "s0114",
+     "word": "disaster",
+     "meaning": "灾难，灾祸"
+    },
+    {
+     "id": "s0115",
+     "word": "finally",
+     "meaning": "最后，终于"
+    },
+    {
+     "id": "s0116",
+     "word": "rescue",
+     "meaning": "援救，营救"
+    },
+    {
+     "id": "s0117",
+     "word": "roar",
+     "meaning": "轰鸣，咆哮"
+    },
+    {
+     "id": "s0118",
+     "word": "advance",
+     "meaning": "前进提前，前进"
+    },
+    {
+     "id": "s0119",
+     "word": "seize",
+     "meaning": "抓住，逮住"
+    },
+    {
+     "id": "s0120",
+     "word": "drag",
+     "meaning": "拖，拖曳"
+    },
+    {
+     "id": "s0122",
+     "word": "struggle",
+     "meaning": "努力，挣扎"
+    },
+    {
+     "id": "s0124",
+     "word": "fight",
+     "meaning": "搏斗，斗争"
+    },
+    {
+     "id": "s0125",
+     "word": "strike",
+     "meaning": "击打"
+    },
+    {
+     "id": "s0126",
+     "word": "crack",
+     "meaning": "发破裂声，劈啪地响"
+    },
+    {
+     "id": "s0127",
+     "word": "destroy",
+     "meaning": "摧毁，毁坏"
+    },
+    {
+     "id": "s0128",
+     "word": "tower",
+     "meaning": "塔，城堡"
+    },
+    {
+     "id": "s0129",
+     "word": "national",
+     "meaning": "国家的，民族的"
+    },
+    {
+     "id": "s0130",
+     "word": "deadline",
+     "meaning": "截止时间，最终期限"
+    },
+    {
+     "id": "s0131",
+     "word": "fear",
+     "meaning": "害怕，担心"
+    },
+    {
+     "id": "s0132",
+     "word": "opportunity",
+     "meaning": "机会，时机"
+    },
+    {
+     "id": "s0133",
+     "word": "article",
+     "meaning": "文章，论文"
+    },
+    {
+     "id": "s0134",
+     "word": "agent",
+     "meaning": "代理，经纪人"
+    },
+    {
+     "id": "s0136",
+     "word": "temple",
+     "meaning": "庙，寺"
+    },
+    {
+     "id": "s0137",
+     "word": "touch",
+     "meaning": "触摸，接触"
+    },
+    {
+     "id": "s0138",
+     "word": "naughty",
+     "meaning": "顽皮的，淘气的"
+    },
+    {
+     "id": "s0139",
+     "word": "note",
+     "meaning": "笔记，注释"
+    },
+    {
+     "id": "s0140",
+     "word": "silver",
+     "meaning": "银，银子"
+    },
+    {
+     "id": "s0141",
+     "word": "hero",
+     "meaning": "英雄，男主角"
+    },
+    {
+     "id": "s0142",
+     "word": "scene",
+     "meaning": "场面，情景"
+    },
+    {
+     "id": "s0143",
+     "word": "law",
+     "meaning": "法律，法学"
+    },
+    {
+     "id": "s0144",
+     "word": "career",
+     "meaning": "事业，生涯"
+    },
+    {
+     "id": "s0145",
+     "word": "drama",
+     "meaning": "戏剧，戏剧艺术"
+    },
+    {
+     "id": "s0146",
+     "word": "role",
+     "meaning": "角色"
+    },
+    {
+     "id": "s0147",
+     "word": "actress",
+     "meaning": "女演员"
+    },
+    {
+     "id": "s0148",
+     "word": "award",
+     "meaning": "奖，奖品"
+    },
+    {
+     "id": "s0149",
+     "word": "prize",
+     "meaning": "奖赏，奖金"
+    },
+    {
+     "id": "s0150",
+     "word": "choice",
+     "meaning": "选择，抉择"
+    },
+    {
+     "id": "s0151",
+     "word": "degree",
+     "meaning": "学位，度数"
+    },
+    {
+     "id": "s0152",
+     "word": "stepfather",
+     "meaning": "继父"
+    },
+    {
+     "id": "s0153",
+     "word": "director",
+     "meaning": "导演，主任"
+    },
+    {
+     "id": "s0154",
+     "word": "speed",
+     "meaning": "加快，速飞"
+    },
+    {
+     "id": "s0155",
+     "word": "script",
+     "meaning": "剧本，手稿"
+    },
+    {
+     "id": "s0156",
+     "word": "actor",
+     "meaning": "男演员，行动者"
+    },
+    {
+     "id": "s0157",
+     "word": "academy",
+     "meaning": "学院，研究院"
+    },
+    {
+     "id": "s0159",
+     "word": "creature",
+     "meaning": "生物，动物"
+    },
+    {
+     "id": "s0160",
+     "word": "adult",
+     "meaning": "成人，成年人"
+    },
+    {
+     "id": "s0161",
+     "word": "cruelty",
+     "meaning": "残忍，残酷"
+    },
+    {
+     "id": "s0162",
+     "word": "peace",
+     "meaning": "和平，和睦"
+    },
+    {
+     "id": "s0163",
+     "word": "industry",
+     "meaning": "工业，行业"
+    },
+    {
+     "id": "s0165",
+     "word": "happiness",
+     "meaning": "幸福，快乐"
+    },
+    {
+     "id": "s0167",
+     "word": "accept",
+     "meaning": "接受，认可"
+    },
+    {
+     "id": "s0168",
+     "word": "primary",
+     "meaning": "初等的，首要的"
+    },
+    {
+     "id": "s0169",
+     "word": "leader",
+     "meaning": "领导者，指挥者"
+    },
+    {
+     "id": "s0171",
+     "word": "determine",
+     "meaning": "决定，决心"
+    },
+    {
+     "id": "s0173",
+     "word": "boss",
+     "meaning": "老板，上司"
+    },
+    {
+     "id": "s0174",
+     "word": "comment",
+     "meaning": "评论，注释"
+    },
+    {
+     "id": "s0175",
+     "word": "action",
+     "meaning": "动作，情节"
+    },
+    {
+     "id": "s0177",
+     "word": "interrupt",
+     "meaning": "打断，中断"
+    },
+    {
+     "id": "s0178",
+     "word": "fault",
+     "meaning": "过错缺点故障毛病"
+    },
+    {
+     "id": "s0179",
+     "word": "introduce",
+     "meaning": "介绍，引进"
+    },
+    {
+     "id": "s0180",
+     "word": "apology",
+     "meaning": "道歉"
+    },
+    {
+     "id": "s0181",
+     "word": "forgive",
+     "meaning": "原谅，饶恕"
+    },
+    {
+     "id": "s0182",
+     "word": "culture",
+     "meaning": "文化，文明"
+    },
+    {
+     "id": "s0183",
+     "word": "manner",
+     "meaning": "方式，样式"
+    },
+    {
+     "id": "s0184",
+     "word": "manners",
+     "meaning": "礼貌，规矩"
+    },
+    {
+     "id": "s0185",
+     "word": "impression",
+     "meaning": "印象，感想"
+    },
+    {
+     "id": "s0186",
+     "word": "behave",
+     "meaning": "举动，举止"
+    },
+    {
+     "id": "s0187",
+     "word": "napkin",
+     "meaning": "餐巾，餐巾纸"
+    },
+    {
+     "id": "s0188",
+     "word": "roll",
+     "meaning": "面包圈，卷形物"
+    },
+    {
+     "id": "s0189",
+     "word": "dessert",
+     "meaning": "甜点"
+    },
+    {
+     "id": "s0190",
+     "word": "unfold",
+     "meaning": "打开，显露"
+    },
+    {
+     "id": "s0191",
+     "word": "lap",
+     "meaning": "坐时的大腿前部，膝盖"
+    },
+    {
+     "id": "s0192",
+     "word": "custom",
+     "meaning": "习惯，风俗"
+    },
+    {
+     "id": "s0193",
+     "word": "pray",
+     "meaning": "祈祷，恳求"
+    },
+    {
+     "id": "s0194",
+     "word": "course",
+     "meaning": "一道菜，过程"
+    },
+    {
+     "id": "s0195",
+     "word": "bone",
+     "meaning": "骨，骨头"
+    },
+    {
+     "id": "s0196",
+     "word": "raise",
+     "meaning": "举起，提高"
+    },
+    {
+     "id": "s0197",
+     "word": "advice",
+     "meaning": "忠告，建议"
+    },
+    {
+     "id": "s0198",
+     "word": "fashion",
+     "meaning": "流行，时尚"
+    },
+    {
+     "id": "s0199",
+     "word": "formal",
+     "meaning": "正式的，正规的"
+    },
+    {
+     "id": "s0200",
+     "word": "spirit",
+     "meaning": "烈酒，精神"
+    },
+    {
+     "id": "s0201",
+     "word": "impolite",
+     "meaning": "无礼的，粗鲁的"
+    },
+    {
+     "id": "s0202",
+     "word": "mix",
+     "meaning": "使混和，混淆"
+    },
+    {
+     "id": "s0203",
+     "word": "wing",
+     "meaning": "翅膀，机翼"
+    },
+    {
+     "id": "s0204",
+     "word": "extra",
+     "meaning": "额外的，外加的"
+    },
+    {
+     "id": "s0205",
+     "word": "childhood",
+     "meaning": "孩童时期，童年时代"
+    },
+    {
+     "id": "s0207",
+     "word": "disabled",
+     "meaning": "伤残的，残疾的"
+    },
+    {
+     "id": "s0208",
+     "word": "statue",
+     "meaning": "雕像"
+    },
+    {
+     "id": "s0209",
+     "word": "represent",
+     "meaning": "代表，表现"
+    },
+    {
+     "id": "s0210",
+     "word": "include",
+     "meaning": "包括，包含"
+    },
+    {
+     "id": "s0212",
+     "word": "ruin",
+     "meaning": "废墟，遗迹"
+    },
+    {
+     "id": "s0214",
+     "word": "burn",
+     "meaning": "焚烧，烧焦"
+    },
+    {
+     "id": "s0215",
+     "word": "restore",
+     "meaning": "修复，重建"
+    },
+    {
+     "id": "s0216",
+     "word": "rebuild",
+     "meaning": "重建，复原"
+    },
+    {
+     "id": "s0217",
+     "word": "beauty",
+     "meaning": "美，美景"
+    },
+    {
+     "id": "s0218",
+     "word": "photograph",
+     "meaning": "照片"
+    },
+    {
+     "id": "s0219",
+     "word": "recreate",
+     "meaning": "再创造，再创作"
+    },
+    {
+     "id": "s0220",
+     "word": "unite",
+     "meaning": "联合，团结"
+    },
+    {
+     "id": "s0221",
+     "word": "artist",
+     "meaning": "艺术家"
+    },
+    {
+     "id": "s0222",
+     "word": "period",
+     "meaning": "一段时间，时期"
+    },
+    {
+     "id": "s0224",
+     "word": "stone",
+     "meaning": "石，石头"
+    },
+    {
+     "id": "s0225",
+     "word": "damage",
+     "meaning": "损害，伤害"
+    },
+    {
+     "id": "s0227",
+     "word": "website",
+     "meaning": "站点，网址"
+    },
+    {
+     "id": "s0228",
+     "word": "ancient",
+     "meaning": "古代的，古老的"
+    },
+    {
+     "id": "s0229",
+     "word": "project",
+     "meaning": "计划，方案"
+    },
+    {
+     "id": "s0230",
+     "word": "dynasty",
+     "meaning": "朝代，王朝"
+    },
+    {
+     "id": "s0231",
+     "word": "official",
+     "meaning": "官员，公务员"
+    },
+    {
+     "id": "s0232",
+     "word": "cave",
+     "meaning": "洞穴，窑洞"
+    },
+    {
+     "id": "s0233",
+     "word": "pollution",
+     "meaning": "污染，玷污"
+    },
+    {
+     "id": "s0234",
+     "word": "breath",
+     "meaning": "呼吸，气息"
+    },
+    {
+     "id": "s0235",
+     "word": "limit",
+     "meaning": "限制，限定"
+    },
+    {
+     "id": "s0236",
+     "word": "sincerely",
+     "meaning": "真诚地"
+    },
+    {
+     "id": "s0238",
+     "word": "continent",
+     "meaning": "大陆，陆地"
+    },
+    {
+     "id": "s0240",
+     "word": "well-known",
+     "meaning": "众所周知的有名的"
+    },
+    {
+     "id": "s0241",
+     "word": "gold",
+     "meaning": "金的，金制的"
+    },
+    {
+     "id": "s0242",
+     "word": "medal",
+     "meaning": "奖章，勋章"
+    },
+    {
+     "id": "s0243",
+     "word": "torch",
+     "meaning": "火炬"
+    },
+    {
+     "id": "s0244",
+     "word": "badminton",
+     "meaning": "羽毛球"
+    },
+    {
+     "id": "s0247",
+     "word": "final",
+     "meaning": "最终的，最后的"
+    },
+    {
+     "id": "s0248",
+     "word": "shooting",
+     "meaning": "射击"
+    },
+    {
+     "id": "s0250",
+     "word": "Greece",
+     "meaning": "希腊"
+    },
+    {
+     "id": "s0251",
+     "word": "competitor",
+     "meaning": "竞争者，对手"
+    },
+    {
+     "id": "s0252",
+     "word": "further",
+     "meaning": "距离更大地，更远地"
+    },
+    {
+     "id": "s0253",
+     "word": "rank",
+     "meaning": "分等级，排名"
+    },
+    {
+     "id": "s0254",
+     "word": "prepare",
+     "meaning": "准备，预备"
+    },
+    {
+     "id": "s0255",
+     "word": "preparation",
+     "meaning": "准备，预备"
+    },
+    {
+     "id": "s0256",
+     "word": "effect",
+     "meaning": "结果，后果"
+    },
+    {
+     "id": "s0257",
+     "word": "flame",
+     "meaning": "火焰"
+    },
+    {
+     "id": "s0258",
+     "word": "compete",
+     "meaning": "竞争，比赛"
+    },
+    {
+     "id": "s0259",
+     "word": "flag",
+     "meaning": "旗，标记"
+    },
+    {
+     "id": "s0260",
+     "word": "weight",
+     "meaning": "重力，重量"
+    },
+    {
+     "id": "s0261",
+     "word": "position",
+     "meaning": "位置，职位"
+    },
+    {
+     "id": "s0262",
+     "word": "point",
+     "meaning": "得分，点"
+    },
+    {
+     "id": "s0263",
+     "word": "skill",
+     "meaning": "技能，技巧"
+    },
+    {
+     "id": "s0264",
+     "word": "professional",
+     "meaning": "专业的，职业的"
+    },
+    {
+     "id": "s0265",
+     "word": "title",
+     "meaning": "题目，标题"
+    },
+    {
+     "id": "s0266",
+     "word": "gesture",
+     "meaning": "手势，姿态"
+    },
+    {
+     "id": "s0267",
+     "word": "facial",
+     "meaning": "面部的"
+    },
+    {
+     "id": "s0268",
+     "word": "item",
+     "meaning": "项目条款一条"
+    },
+    {
+     "id": "s0269",
+     "word": "automobile",
+     "meaning": "汽车"
+    },
+    {
+     "id": "s0270",
+     "word": "agreement",
+     "meaning": "一致，协定"
+    },
+    {
+     "id": "s0271",
+     "word": "disagreement",
+     "meaning": "不一致，分歧"
+    },
+    {
+     "id": "s0272",
+     "word": "disagree",
+     "meaning": "不同意，不一致"
+    },
+    {
+     "id": "s0273",
+     "word": "absolutely",
+     "meaning": "绝对地，完全地"
+    },
+    {
+     "id": "s0274",
+     "word": "depend",
+     "meaning": "依靠，依赖"
+    },
+    {
+     "id": "s0275",
+     "word": "press",
+     "meaning": "按，压"
+    },
+    {
+     "id": "s0276",
+     "word": "image",
+     "meaning": "图象，肖像"
+    },
+    {
+     "id": "s0277",
+     "word": "throughout",
+     "meaning": "遍及，贯穿"
+    },
+    {
+     "id": "s0278",
+     "word": "function",
+     "meaning": "功能，作用"
+    },
+    {
+     "id": "s0279",
+     "word": "add",
+     "meaning": "增加，添加"
+    },
+    {
+     "id": "s0280",
+     "word": "latest",
+     "meaning": "最近的"
+    },
+    {
+     "id": "s0281",
+     "word": "feature",
+     "meaning": "特征，特色"
+    },
+    {
+     "id": "s0282",
+     "word": "calendar",
+     "meaning": "日历"
+    },
+    {
+     "id": "s0283",
+     "word": "remind",
+     "meaning": "提醒，使想起"
+    },
+    {
+     "id": "s0284",
+     "word": "appointment",
+     "meaning": "约会，指定"
+    },
+    {
+     "id": "s0285",
+     "word": "obey",
+     "meaning": "服从，顺从"
+    },
+    {
+     "id": "s0286",
+     "word": "case",
+     "meaning": "事，病例"
+    },
+    {
+     "id": "s0287",
+     "word": "emergency",
+     "meaning": "紧急情况，突发事件"
+    },
+    {
+     "id": "s0288",
+     "word": "according",
+     "meaning": "依照"
+    },
+    {
+     "id": "s0290",
+     "word": "unexpected",
+     "meaning": "想不到的，意外的"
+    },
+    {
+     "id": "s0291",
+     "word": "particular",
+     "meaning": "个别的，特别的"
+    },
+    {
+     "id": "s0292",
+     "word": "negative",
+     "meaning": "负面的，消极的"
+    },
+    {
+     "id": "s0293",
+     "word": "revise",
+     "meaning": "修订，校订"
+    },
+    {
+     "id": "s0294",
+     "word": "interview",
+     "meaning": "接见，会见"
+    },
+    {
+     "id": "s0295",
+     "word": "resource",
+     "meaning": "资源，财力"
+    },
+    {
+     "id": "s0296",
+     "word": "department",
+     "meaning": "部门"
+    },
+    {
+     "id": "s0297",
+     "word": "planet",
+     "meaning": "行星"
+    },
+    {
+     "id": "s0298",
+     "word": "wonder",
+     "meaning": "奇迹，惊奇"
+    },
+    {
+     "id": "s0299",
+     "word": "defeat",
+     "meaning": "击败，战胜"
+    },
+    {
+     "id": "s0300",
+     "word": "force",
+     "meaning": "力量，暴力"
+    },
+    {
+     "id": "s0301",
+     "word": "peaceful",
+     "meaning": "和平的，平静的"
+    },
+    {
+     "id": "s0302",
+     "word": "succeed",
+     "meaning": "成功，取得成功"
+    },
+    {
+     "id": "s0303",
+     "word": "lead",
+     "meaning": "领导，致使"
+    },
+    {
+     "id": "s0304",
+     "word": "environmental",
+     "meaning": "环境的"
+    },
+    {
+     "id": "s0305",
+     "word": "tour",
+     "meaning": "旅行，游历"
+    },
+    {
+     "id": "s0306",
+     "word": "species",
+     "meaning": "种类"
+    },
+    {
+     "id": "s0307",
+     "word": "act",
+     "meaning": "扮演，担当"
+    },
+    {
+     "id": "s0308",
+     "word": "measure",
+     "meaning": "尺寸，措施"
+    },
+    {
+     "id": "s0309",
+     "word": "adapt",
+     "meaning": "使适应，改编"
+    },
+    {
+     "id": "s0310",
+     "word": "original",
+     "meaning": "最初的，原始的"
+    },
+    {
+     "id": "s0311",
+     "word": "battery",
+     "meaning": "电池"
+    },
+    {
+     "id": "s0312",
+     "word": "devote",
+     "meaning": "投身于，献身"
+    },
+    {
+     "id": "s0314",
+     "word": "common",
+     "meaning": "共同的，普遍的"
+    },
+    {
+     "id": "s0315",
+     "word": "valuable",
+     "meaning": "贵重的，有价值的"
+    },
+    {
+     "id": "s0316",
+     "word": "reduce",
+     "meaning": "减少，缩减"
+    },
+    {
+     "id": "s0317",
+     "word": "package",
+     "meaning": "包裹，包"
+    },
+    {
+     "id": "s0318",
+     "word": "harmful",
+     "meaning": "有害的，伤害的"
+    },
+    {
+     "id": "s0319",
+     "word": "material",
+     "meaning": "材料，原料"
+    },
+    {
+     "id": "s0320",
+     "word": "poster",
+     "meaning": "海报，招贴"
+    },
+    {
+     "id": "s0321",
+     "word": "attractive",
+     "meaning": "吸引人的，有魅力的"
+    },
+    {
+     "id": "s0322",
+     "word": "topic",
+     "meaning": "话题，主题"
+    },
+    {
+     "id": "s0323",
+     "word": "organize",
+     "meaning": "组织，组织起来"
+    },
+    {
+     "id": "s0324",
+     "word": "brief",
+     "meaning": "简洁的，扼要的"
+    },
+    {
+     "id": "s0325",
+     "word": "musical",
+     "meaning": "音乐的"
+    },
+    {
+     "id": "s0326",
+     "word": "instrument",
+     "meaning": "工具，器械"
+    },
+    {
+     "id": "s0327",
+     "word": "perform",
+     "meaning": "表演，履行"
+    },
+    {
+     "id": "s0328",
+     "word": "characteristic",
+     "meaning": "特征，特点"
+    },
+    {
+     "id": "s0329",
+     "word": "slave",
+     "meaning": "奴隶"
+    },
+    {
+     "id": "s0330",
+     "word": "jazz",
+     "meaning": "爵士音乐"
+    },
+    {
+     "id": "s0331",
+     "word": "contain",
+     "meaning": "包含，容纳"
+    },
+    {
+     "id": "s0333",
+     "word": "traditional",
+     "meaning": "传统的"
+    },
+    {
+     "id": "s0334",
+     "word": "spread",
+     "meaning": "传播，伸展"
+    },
+    {
+     "id": "s0335",
+     "word": "variety",
+     "meaning": "多样性，种类"
+    },
+    {
+     "id": "s0336",
+     "word": "universal",
+     "meaning": "通用的，普遍的"
+    },
+    {
+     "id": "s0337",
+     "word": "folk",
+     "meaning": "民间的，人们"
+    },
+    {
+     "id": "s0338",
+     "word": "guitar",
+     "meaning": "吉他，六弦琴"
+    },
+    {
+     "id": "s0339",
+     "word": "record",
+     "meaning": "记录，录音"
+    },
+    {
+     "id": "s0340",
+     "word": "satisfy",
+     "meaning": "满足，使满意"
+    },
+    {
+     "id": "s0341",
+     "word": "desire",
+     "meaning": "愿望，心愿"
+    },
+    {
+     "id": "s0342",
+     "word": "emotion",
+     "meaning": "情感，感情"
+    },
+    {
+     "id": "s0343",
+     "word": "process",
+     "meaning": "过程，程序"
+    },
+    {
+     "id": "s0344",
+     "word": "musician",
+     "meaning": "音乐家"
+    },
+    {
+     "id": "s0345",
+     "word": "totally",
+     "meaning": "完全地，整个地"
+    },
+    {
+     "id": "s0346",
+     "word": "intelligence",
+     "meaning": "智力，聪明"
+    },
+    {
+     "id": "s0347",
+     "word": "literature",
+     "meaning": "文学，文艺"
+    },
+    {
+     "id": "s0348",
+     "word": "romantic",
+     "meaning": "浪漫的"
+    },
+    {
+     "id": "s0349",
+     "word": "local",
+     "meaning": "当地的，地方的"
+    },
+    {
+     "id": "s0350",
+     "word": "power",
+     "meaning": "能力，力量"
+    },
+    {
+     "id": "s0351",
+     "word": "magic",
+     "meaning": "魔法，魔术"
+    },
+    {
+     "id": "s0352",
+     "word": "trick",
+     "meaning": "诡计，恶作剧"
+    },
+    {
+     "id": "s0353",
+     "word": "treat",
+     "meaning": "对待，视为"
+    },
+    {
+     "id": "s0354",
+     "word": "unhappy",
+     "meaning": "不幸的，不快乐的"
+    },
+    {
+     "id": "s0356",
+     "word": "habit",
+     "meaning": "习惯"
+    },
+    {
+     "id": "s0357",
+     "word": "villager",
+     "meaning": "村民"
+    },
+    {
+     "id": "s0358",
+     "word": "shoulder",
+     "meaning": "肩，肩部"
+    },
+    {
+     "id": "s0359",
+     "word": "whisper",
+     "meaning": "耳语，私语"
+    },
+    {
+     "id": "s0360",
+     "word": "stupid",
+     "meaning": "愚蠢的"
+    },
+    {
+     "id": "s0361",
+     "word": "character",
+     "meaning": "品格，特性"
+    },
+    {
+     "id": "s0362",
+     "word": "vitamin",
+     "meaning": "维他命，维生素"
+    },
+    {
+     "id": "s0363",
+     "word": "stomach",
+     "meaning": "胃，肚子"
+    },
+    {
+     "id": "s0364",
+     "word": "fever",
+     "meaning": "发烧，狂热"
+    },
+    {
+     "id": "s0366",
+     "word": "examine",
+     "meaning": "检查"
+    },
+    {
+     "id": "s0367",
+     "word": "energy",
+     "meaning": "精力，能量"
+    },
+    {
+     "id": "s0368",
+     "word": "bar",
+     "meaning": "条，棒"
+    },
+    {
+     "id": "s0369",
+     "word": "fuel",
+     "meaning": "燃料，营养物"
+    },
+    {
+     "id": "s0370",
+     "word": "diet",
+     "meaning": "日常饮食"
+    },
+    {
+     "id": "s0372",
+     "word": "pace",
+     "meaning": "一步，节奏"
+    },
+    {
+     "id": "s0373",
+     "word": "nutrition",
+     "meaning": "营养，营养学"
+    },
+    {
+     "id": "s0374",
+     "word": "nutritious",
+     "meaning": "有营养的，滋养的"
+    },
+    {
+     "id": "s0375",
+     "word": "bean",
+     "meaning": "豆，豆科植物"
+    },
+    {
+     "id": "s0376",
+     "word": "product",
+     "meaning": "产品，产物"
+    },
+    {
+     "id": "s0377",
+     "word": "function",
+     "meaning": "功能，作用运转"
+    },
+    {
+     "id": "s0378",
+     "word": "chemical",
+     "meaning": "化学制品，化学药品"
+    },
+    {
+     "id": "s0379",
+     "word": "balance",
+     "meaning": "平衡"
+    },
+    {
+     "id": "s0380",
+     "word": "fit",
+     "meaning": "健康的，适合的"
+    },
+    {
+     "id": "s0381",
+     "word": "sleepy",
+     "meaning": "瞌睡的，困乏的"
+    },
+    {
+     "id": "s0382",
+     "word": "brain",
+     "meaning": "脑，头脑"
+    },
+    {
+     "id": "s0383",
+     "word": "recipe",
+     "meaning": "食谱，烹饪法"
+    },
+    {
+     "id": "s0384",
+     "word": "tasty",
+     "meaning": "好吃的，可口的"
+    },
+    {
+     "id": "s0385",
+     "word": "ingredient",
+     "meaning": "烹任原料，成分"
+    },
+    {
+     "id": "s0386",
+     "word": "steam",
+     "meaning": "蒸，蒸发"
+    },
+    {
+     "id": "s0388",
+     "word": "mixture",
+     "meaning": "混合，混合物"
+    },
+    {
+     "id": "s0389",
+     "word": "spoonful",
+     "meaning": "一匙的量"
+    },
+    {
+     "id": "s0390",
+     "word": "slice",
+     "meaning": "将某物切成薄片，薄片"
+    },
+    {
+     "id": "s0391",
+     "word": "theme",
+     "meaning": "主题"
+    },
+    {
+     "id": "s0392",
+     "word": "holy",
+     "meaning": "神圣的，神的"
+    },
+    {
+     "id": "s0393",
+     "word": "symbol",
+     "meaning": "象征，符号"
+    },
+    {
+     "id": "s0394",
+     "word": "fighting",
+     "meaning": "战斗，打仗"
+    },
+    {
+     "id": "s0395",
+     "word": "conflict",
+     "meaning": "斗争，战斗"
+    },
+    {
+     "id": "s0396",
+     "word": "argument",
+     "meaning": "争论，辩论"
+    },
+    {
+     "id": "s0397",
+     "word": "destruction",
+     "meaning": "破坏，毁灭"
+    },
+    {
+     "id": "s0398",
+     "word": "major",
+     "meaning": "重大的，主要的"
+    },
+    {
+     "id": "s0399",
+     "word": "probably",
+     "meaning": "大概，很可能"
+    },
+    {
+     "id": "s0400",
+     "word": "honour",
+     "meaning": "尊敬：给以荣誉"
+    },
+    {
+     "id": "s0401",
+     "word": "ancestor",
+     "meaning": "祖先，祖宗"
+    },
+    {
+     "id": "s0402",
+     "word": "principle",
+     "meaning": "法则，原则"
+    },
+    {
+     "id": "s0403",
+     "word": "unity",
+     "meaning": "团结，联合"
+    },
+    {
+     "id": "s0404",
+     "word": "community",
+     "meaning": "团体，社会"
+    },
+    {
+     "id": "s0405",
+     "word": "nation",
+     "meaning": "国家，民族"
+    },
+    {
+     "id": "s0406",
+     "word": "purpose",
+     "meaning": "目的，意图"
+    },
+    {
+     "id": "s0407",
+     "word": "creativity",
+     "meaning": "创造性"
+    },
+    {
+     "id": "s0408",
+     "word": "faith",
+     "meaning": "信任，信念"
+    },
+    {
+     "id": "s0409",
+     "word": "commercial",
+     "meaning": "商业的，贸易的"
+    },
+    {
+     "id": "s0410",
+     "word": "joy",
+     "meaning": "欢乐，喜悦：乐趣"
+    },
+    {
+     "id": "s0411",
+     "word": "similar",
+     "meaning": "相似的"
+    },
+    {
+     "id": "s0412",
+     "word": "generation",
+     "meaning": "一代"
+    },
+    {
+     "id": "s0413",
+     "word": "cheek",
+     "meaning": "面颊，脸蛋"
+    },
+    {
+     "id": "s0414",
+     "word": "celebration",
+     "meaning": "庆祝，庆典"
+    },
+    {
+     "id": "s0415",
+     "word": "reminder",
+     "meaning": "提醒的人，暗示"
+    },
+    {
+     "id": "s0416",
+     "word": "respect",
+     "meaning": "尊敬，尊重"
+    },
+    {
+     "id": "s0417",
+     "word": "gift",
+     "meaning": "礼物，天赋"
+    },
+    {
+     "id": "s0418",
+     "word": "cycle",
+     "meaning": "周期，循环"
+    },
+    {
+     "id": "s0419",
+     "word": "invitation",
+     "meaning": "邀请，邀请信"
+    },
+    {
+     "id": "s0420",
+     "word": "occasion",
+     "meaning": "场合，时机"
+    },
+    {
+     "id": "s0421",
+     "word": "mystery",
+     "meaning": "谜，神秘的事物"
+    },
+    {
+     "id": "s0422",
+     "word": "footprint",
+     "meaning": "足迹，脚印"
+    },
+    {
+     "id": "s0423",
+     "word": "recognize",
+     "meaning": "识别，认出"
+    },
+    {
+     "id": "s0424",
+     "word": "surely",
+     "meaning": "想必，确实"
+    },
+    {
+     "id": "s0425",
+     "word": "diamond",
+     "meaning": "钻石"
+    },
+    {
+     "id": "s0426",
+     "word": "explain",
+     "meaning": "解释，说明"
+    },
+    {
+     "id": "s0427",
+     "word": "ball",
+     "meaning": "舞会"
+    },
+    {
+     "id": "s0428",
+     "word": "continue",
+     "meaning": "继续"
+    },
+    {
+     "id": "s0429",
+     "word": "debt",
+     "meaning": "债务，欠款"
+    },
+    {
+     "id": "s0430",
+     "word": "precious",
+     "meaning": "宝贵的，贵重的"
+    },
+    {
+     "id": "s0431",
+     "word": "positive",
+     "meaning": "肯定的，积极的"
+    },
+    {
+     "id": "s0432",
+     "word": "attend",
+     "meaning": "出席，参加"
+    },
+    {
+     "id": "s0433",
+     "word": "earn",
+     "meaning": "赚得，挣得"
+    },
+    {
+     "id": "s0434",
+     "word": "lecture",
+     "meaning": "演讲，讲课"
+    },
+    {
+     "id": "s0435",
+     "word": "bat",
+     "meaning": "蝙蝠，球拍"
+    },
+    {
+     "id": "s0436",
+     "word": "author",
+     "meaning": "作者，作家"
+    },
+    {
+     "id": "s0437",
+     "word": "besides",
+     "meaning": "此外"
+    },
+    {
+     "id": "s0438",
+     "word": "plot",
+     "meaning": "小说的情节，结构"
+    },
+    {
+     "id": "s0439",
+     "word": "quality",
+     "meaning": "品质，质量"
+    },
+    {
+     "id": "s0440",
+     "word": "experiment",
+     "meaning": "实验，试验"
+    },
+    {
+     "id": "s0441",
+     "word": "glove",
+     "meaning": "手套"
+    },
+    {
+     "id": "s0442",
+     "word": "gas",
+     "meaning": "气体"
+    },
+    {
+     "id": "s0443",
+     "word": "liquid",
+     "meaning": "液体，液态物"
+    },
+    {
+     "id": "s0444",
+     "word": "advantage",
+     "meaning": "有利条件，优点"
+    },
+    {
+     "id": "s0445",
+     "word": "disadvantage",
+     "meaning": "不利，不利条件"
+    },
+    {
+     "id": "s0446",
+     "word": "application",
+     "meaning": "应用，实施"
+    },
+    {
+     "id": "s0447",
+     "word": "engine",
+     "meaning": "发动机"
+    },
+    {
+     "id": "s0448",
+     "word": "nuclear",
+     "meaning": "核子的，原子能的"
+    },
+    {
+     "id": "s0449",
+     "word": "economy",
+     "meaning": "经济，节约"
+    },
+    {
+     "id": "s0450",
+     "word": "comfort",
+     "meaning": "舒适，安慰"
+    },
+    {
+     "id": "s0451",
+     "word": "unnecessary",
+     "meaning": "不必要的，多余的"
+    },
+    {
+     "id": "s0452",
+     "word": "successful",
+     "meaning": "成功的，胜利的"
+    },
+    {
+     "id": "s0453",
+     "word": "conduct",
+     "meaning": "实施，指挥"
+    },
+    {
+     "id": "s0455",
+     "word": "charge",
+     "meaning": "使充电，要价"
+    },
+    {
+     "id": "s0456",
+     "word": "electric",
+     "meaning": "电的，导电的"
+    },
+    {
+     "id": "s0457",
+     "word": "prove",
+     "meaning": "证明，证实"
+    },
+    {
+     "id": "s0458",
+     "word": "control",
+     "meaning": "控制，支配"
+    }
+   ]
+  },
+  {
+   "unit_index": 1,
+   "words": [
+    {
+     "id": "s0459",
+     "word": "fasten",
+     "meaning": "扎牢，拴紧"
+    },
+    {
+     "id": "s0460",
+     "word": "sense",
+     "meaning": "感觉，感官"
+    },
+    {
+     "id": "s0461",
+     "word": "doubt",
+     "meaning": "怀疑，疑惑"
+    },
+    {
+     "id": "s0462",
+     "word": "cruel",
+     "meaning": "残酷的，令人痛苦的"
+    },
+    {
+     "id": "s0463",
+     "word": "conclusion",
+     "meaning": "结束，结论"
+    },
+    {
+     "id": "s0464",
+     "word": "inspire",
+     "meaning": "鼓舞，感动"
+    },
+    {
+     "id": "s0465",
+     "word": "admire",
+     "meaning": "钦佩，赞赏"
+    },
+    {
+     "id": "s0466",
+     "word": "generous",
+     "meaning": "慷慨的，大方的"
+    },
+    {
+     "id": "s0467",
+     "word": "cheerful",
+     "meaning": "愉快的高兴的"
+    },
+    {
+     "id": "s0468",
+     "word": "mean",
+     "meaning": "卑鄙的，吝啬的"
+    },
+    {
+     "id": "s0469",
+     "word": "dull",
+     "meaning": "迟钝的，无趣的"
+    },
+    {
+     "id": "s0470",
+     "word": "dishonest",
+     "meaning": "不诚实的"
+    },
+    {
+     "id": "s0471",
+     "word": "champion",
+     "meaning": "冠军，得胜者"
+    },
+    {
+     "id": "s0472",
+     "word": "stormy",
+     "meaning": "暴风雨的，激烈的"
+    },
+    {
+     "id": "s0473",
+     "word": "threaten",
+     "meaning": "恐吓，威胁"
+    },
+    {
+     "id": "s0474",
+     "word": "bottom",
+     "meaning": "底部，尽头"
+    },
+    {
+     "id": "s0475",
+     "word": "optimistic",
+     "meaning": "乐观的"
+    },
+    {
+     "id": "s0476",
+     "word": "somehow",
+     "meaning": "某种方式，莫明其妙地"
+    },
+    {
+     "id": "s0477",
+     "word": "shelter",
+     "meaning": "掩蔽，掩蔽处"
+    },
+    {
+     "id": "s0478",
+     "word": "regret",
+     "meaning": "遗憾，悔恨"
+    },
+    {
+     "id": "s0479",
+     "word": "extreme",
+     "meaning": "极端的，极度的"
+    },
+    {
+     "id": "s0480",
+     "word": "extremely",
+     "meaning": "非常地，极其地"
+    },
+    {
+     "id": "s0481",
+     "word": "climate",
+     "meaning": "气候"
+    },
+    {
+     "id": "s0482",
+     "word": "value",
+     "meaning": "重视，估价"
+    },
+    {
+     "id": "s0483",
+     "word": "pianist",
+     "meaning": "钢琴家，钢琴演奏者"
+    },
+    {
+     "id": "s0484",
+     "word": "bother",
+     "meaning": "烦扰，打扰"
+    },
+    {
+     "id": "s0485",
+     "word": "fame",
+     "meaning": "名声，名望"
+    },
+    {
+     "id": "s0486",
+     "word": "hardship",
+     "meaning": "困苦，艰难"
+    },
+    {
+     "id": "s0487",
+     "word": "bear",
+     "meaning": "忍受，承受"
+    },
+    {
+     "id": "s0488",
+     "word": "self-improvement",
+     "meaning": "自我改善，自我修养"
+    },
+    {
+     "id": "s0489",
+     "word": "scholarship",
+     "meaning": "奖学金"
+    },
+    {
+     "id": "s0490",
+     "word": "graduation",
+     "meaning": "毕业，毕业典礼"
+    },
+    {
+     "id": "s0491",
+     "word": "coast",
+     "meaning": "海岸"
+    },
+    {
+     "id": "s0492",
+     "word": "surround",
+     "meaning": "包围，围绕"
+    },
+    {
+     "id": "s0493",
+     "word": "landscape",
+     "meaning": "风景，山水画"
+    },
+    {
+     "id": "s0494",
+     "word": "volcano",
+     "meaning": "火山"
+    },
+    {
+     "id": "s0495",
+     "word": "surface",
+     "meaning": "表面，外表"
+    },
+    {
+     "id": "s0496",
+     "word": "settler",
+     "meaning": "移民者，定居者"
+    },
+    {
+     "id": "s0497",
+     "word": "mainly",
+     "meaning": "大体上，主要地"
+    },
+    {
+     "id": "s0498",
+     "word": "voyage",
+     "meaning": "航行，航海"
+    },
+    {
+     "id": "s0499",
+     "word": "location",
+     "meaning": "地方，位置"
+    },
+    {
+     "id": "s0500",
+     "word": "grassland",
+     "meaning": "草原，草地"
+    },
+    {
+     "id": "s0501",
+     "word": "surprising",
+     "meaning": "令人惊奇的"
+    },
+    {
+     "id": "s0502",
+     "word": "secretary",
+     "meaning": "秘书，书记"
+    },
+    {
+     "id": "s0503",
+     "word": "wedding",
+     "meaning": "婚礼，婚宴"
+    },
+    {
+     "id": "s0504",
+     "word": "conference",
+     "meaning": "会议，讨论会"
+    },
+    {
+     "id": "s0505",
+     "word": "relation",
+     "meaning": "亲属，亲戚"
+    },
+    {
+     "id": "s0506",
+     "word": "agricultural",
+     "meaning": "农业的，农艺的"
+    },
+    {
+     "id": "s0507",
+     "word": "cattle",
+     "meaning": "牛，家养牲畜"
+    },
+    {
+     "id": "s0508",
+     "word": "ship",
+     "meaning": "用船运，装运"
+    },
+    {
+     "id": "s0509",
+     "word": "seaside",
+     "meaning": "海滨，海边"
+    },
+    {
+     "id": "s0510",
+     "word": "region",
+     "meaning": "区域，地方"
+    },
+    {
+     "id": "s0511",
+     "word": "produce",
+     "meaning": "产量，产物"
+    },
+    {
+     "id": "s0512",
+     "word": "protection",
+     "meaning": "保护，防卫"
+    },
+    {
+     "id": "s0513",
+     "word": "technique",
+     "meaning": "技术，技巧"
+    },
+    {
+     "id": "s0514",
+     "word": "seed",
+     "meaning": "种子，萌芽"
+    },
+    {
+     "id": "s0515",
+     "word": "technical",
+     "meaning": "技术的，技术上的"
+    },
+    {
+     "id": "s0516",
+     "word": "import",
+     "meaning": "进口，引入"
+    },
+    {
+     "id": "s0517",
+     "word": "delegation",
+     "meaning": "代表团，授权"
+    },
+    {
+     "id": "s0518",
+     "word": "production",
+     "meaning": "总产量，产品"
+    },
+    {
+     "id": "s0520",
+     "word": "method",
+     "meaning": "方法，办法"
+    },
+    {
+     "id": "s0521",
+     "word": "shortage",
+     "meaning": "不足，缺少"
+    },
+    {
+     "id": "s0522",
+     "word": "greenhouse",
+     "meaning": "温室，花房"
+    },
+    {
+     "id": "s0523",
+     "word": "root",
+     "meaning": "根，根部"
+    },
+    {
+     "id": "s0524",
+     "word": "insect",
+     "meaning": "昆虫"
+    },
+    {
+     "id": "s0525",
+     "word": "golden",
+     "meaning": "金色的，黄金的"
+    },
+    {
+     "id": "s0526",
+     "word": "tie",
+     "meaning": "领带，领巾"
+    },
+    {
+     "id": "s0527",
+     "word": "discovery",
+     "meaning": "发现，被发现的事物"
+    },
+    {
+     "id": "s0528",
+     "word": "wisdom",
+     "meaning": "智慧，学识"
+    },
+    {
+     "id": "s0529",
+     "word": "practical",
+     "meaning": "实际的，实践的"
+    },
+    {
+     "id": "s0530",
+     "word": "guide",
+     "meaning": "向导，指导"
+    },
+    {
+     "id": "s0531",
+     "word": "condition",
+     "meaning": "条件，状况"
+    },
+    {
+     "id": "s0532",
+     "word": "soil",
+     "meaning": "土壤，土地"
+    },
+    {
+     "id": "s0533",
+     "word": "remove",
+     "meaning": "移动，搬开"
+    },
+    {
+     "id": "s0534",
+     "word": "sunflower",
+     "meaning": "向日葵"
+    },
+    {
+     "id": "s0535",
+     "word": "sunset",
+     "meaning": "日落，衰落时期"
+    },
+    {
+     "id": "s0536",
+     "word": "humour",
+     "meaning": "幽默，诙谐"
+    },
+    {
+     "id": "s0537",
+     "word": "humorous",
+     "meaning": "富于幽默感的，滑稽的"
+    },
+    {
+     "id": "s0538",
+     "word": "bitter",
+     "meaning": "苦的，痛苦的"
+    },
+    {
+     "id": "s0539",
+     "word": "couple",
+     "meaning": "对，双"
+    },
+    {
+     "id": "s0540",
+     "word": "minister",
+     "meaning": "部长，大臣"
+    },
+    {
+     "id": "s0541",
+     "word": "intend",
+     "meaning": "想要，打算"
+    },
+    {
+     "id": "s0542",
+     "word": "stage",
+     "meaning": "舞台，阶段"
+    },
+    {
+     "id": "s0543",
+     "word": "amuse",
+     "meaning": "使发笑，使愉快"
+    },
+    {
+     "id": "s0544",
+     "word": "laughter",
+     "meaning": "笑，笑声"
+    },
+    {
+     "id": "s0545",
+     "word": "accent",
+     "meaning": "口音，腔调"
+    },
+    {
+     "id": "s0546",
+     "word": "actually",
+     "meaning": "实际上，事实上"
+    },
+    {
+     "id": "s0547",
+     "word": "typical",
+     "meaning": "典型的，象征性的"
+    },
+    {
+     "id": "s0548",
+     "word": "tradition",
+     "meaning": "传统"
+    },
+    {
+     "id": "s0549",
+     "word": "rapid",
+     "meaning": "迅速的，快的"
+    },
+    {
+     "id": "s0550",
+     "word": "appreciate",
+     "meaning": "赏识，鉴赏"
+    },
+    {
+     "id": "s0551",
+     "word": "fluent",
+     "meaning": "流利的，流畅的"
+    },
+    {
+     "id": "s0552",
+     "word": "exist",
+     "meaning": "存在，生存"
+    },
+    {
+     "id": "s0553",
+     "word": "suffer",
+     "meaning": "经历或遭受，忍受"
+    },
+    {
+     "id": "s0555",
+     "word": "direction",
+     "meaning": "方向"
+    },
+    {
+     "id": "s0556",
+     "word": "brake",
+     "meaning": "刹车，闸"
+    },
+    {
+     "id": "s0557",
+     "word": "fortunately",
+     "meaning": "幸运地"
+    },
+    {
+     "id": "s0558",
+     "word": "silence",
+     "meaning": "寂静，沉默"
+    },
+    {
+     "id": "s0559",
+     "word": "rude",
+     "meaning": "粗鲁无礼的，残暴的"
+    },
+    {
+     "id": "s0560",
+     "word": "unfair",
+     "meaning": "不公正的，不公平的"
+    },
+    {
+     "id": "s0561",
+     "word": "customer",
+     "meaning": "顾客，主顾"
+    },
+    {
+     "id": "s0562",
+     "word": "avoid",
+     "meaning": "避免，消除"
+    },
+    {
+     "id": "s0563",
+     "word": "contact",
+     "meaning": "接触，联系"
+    },
+    {
+     "id": "s0564",
+     "word": "suitcase",
+     "meaning": "手提箱，小提箱"
+    },
+    {
+     "id": "s0565",
+     "word": "manage",
+     "meaning": "做成，管理"
+    },
+    {
+     "id": "s0567",
+     "word": "vary",
+     "meaning": "改变，使多样化"
+    },
+    {
+     "id": "s0568",
+     "word": "crazy",
+     "meaning": "疯狂的，狂热的"
+    },
+    {
+     "id": "s0570",
+     "word": "firm",
+     "meaning": "稳固的，牢固的"
+    },
+    {
+     "id": "s0571",
+     "word": "bow",
+     "meaning": "鞠躬，弯腰"
+    },
+    {
+     "id": "s0572",
+     "word": "pat",
+     "meaning": "轻拍"
+    },
+    {
+     "id": "s0573",
+     "word": "incredible",
+     "meaning": "难以置信的"
+    },
+    {
+     "id": "s0574",
+     "word": "anger",
+     "meaning": "怒，愤怒"
+    },
+    {
+     "id": "s0575",
+     "word": "useless",
+     "meaning": "无用的，无效的"
+    },
+    {
+     "id": "s0576",
+     "word": "detail",
+     "meaning": "细节，详情详述"
+    },
+    {
+     "id": "s0577",
+     "word": "occur",
+     "meaning": "发生，出现"
+    },
+    {
+     "id": "s0578",
+     "word": "focus",
+     "meaning": "中心，焦点"
+    },
+    {
+     "id": "s0579",
+     "word": "specific",
+     "meaning": "具体的，特有的"
+    },
+    {
+     "id": "s0580",
+     "word": "attraction",
+     "meaning": "吸引人的事物，吸引"
+    },
+    {
+     "id": "s0581",
+     "word": "collection",
+     "meaning": "收集，搜集"
+    },
+    {
+     "id": "s0582",
+     "word": "thrill",
+     "meaning": "兴奋，激动"
+    },
+    {
+     "id": "s0583",
+     "word": "educate",
+     "meaning": "教育，培养"
+    },
+    {
+     "id": "s0584",
+     "word": "marine",
+     "meaning": "海的，海产的"
+    },
+    {
+     "id": "s0585",
+     "word": "coastal",
+     "meaning": "海岸的，沿海的"
+    },
+    {
+     "id": "s0587",
+     "word": "section",
+     "meaning": "部分，区域"
+    },
+    {
+     "id": "s0588",
+     "word": "risk",
+     "meaning": "冒……的危险，冒险"
+    },
+    {
+     "id": "s0589",
+     "word": "injury",
+     "meaning": "伤害，受伤处"
+    },
+    {
+     "id": "s0590",
+     "word": "rocket",
+     "meaning": "火箭，火箭式投射器"
+    },
+    {
+     "id": "s0591",
+     "word": "achievement",
+     "meaning": "成就，功绩"
+    },
+    {
+     "id": "s0592",
+     "word": "prevent",
+     "meaning": "防止，妨碍"
+    },
+    {
+     "id": "s0593",
+     "word": "darkness",
+     "meaning": "黑暗，漆黑"
+    },
+    {
+     "id": "s0594",
+     "word": "imagination",
+     "meaning": "想像，空想"
+    },
+    {
+     "id": "s0595",
+     "word": "designer",
+     "meaning": "设计家，制图师"
+    },
+    {
+     "id": "s0596",
+     "word": "endless",
+     "meaning": "无止境的，无穷的"
+    },
+    {
+     "id": "s0597",
+     "word": "obvious",
+     "meaning": "显然的，明显的"
+    },
+    {
+     "id": "s0598",
+     "word": "within",
+     "meaning": "在……里面"
+    },
+    {
+     "id": "s0599",
+     "word": "agriculture",
+     "meaning": "农学，农业"
+    },
+    {
+     "id": "s0600",
+     "word": "curious",
+     "meaning": "好奇的，好求知的"
+    },
+    {
+     "id": "s0601",
+     "word": "debate",
+     "meaning": "辩论，争论"
+    },
+    {
+     "id": "s0602",
+     "word": "biologist",
+     "meaning": "生物学家"
+    },
+    {
+     "id": "s0603",
+     "word": "promising",
+     "meaning": "有前途的，有希望的"
+    },
+    {
+     "id": "s0604",
+     "word": "graduate",
+     "meaning": "大学毕业生，毕业生"
+    },
+    {
+     "id": "s0605",
+     "word": "engage",
+     "meaning": "使订婚，约定"
+    },
+    {
+     "id": "s0606",
+     "word": "research",
+     "meaning": "探索，调查"
+    },
+    {
+     "id": "s0607",
+     "word": "exploration",
+     "meaning": "探究，考察"
+    },
+    {
+     "id": "s0608",
+     "word": "theory",
+     "meaning": "理论，原理"
+    },
+    {
+     "id": "s0610",
+     "word": "scientific",
+     "meaning": "科学的"
+    },
+    {
+     "id": "s0611",
+     "word": "observe",
+     "meaning": "观察，遵守"
+    },
+    {
+     "id": "s0612",
+     "word": "observation",
+     "meaning": "注意，观察"
+    },
+    {
+     "id": "s0613",
+     "word": "unhappiness",
+     "meaning": "悲伤，不幸"
+    },
+    {
+     "id": "s0614",
+     "word": "crime",
+     "meaning": "罪，犯罪活动"
+    },
+    {
+     "id": "s0616",
+     "word": "astronomer",
+     "meaning": "天文学家"
+    },
+    {
+     "id": "s0617",
+     "word": "geographer",
+     "meaning": "地理学家"
+    },
+    {
+     "id": "s0618",
+     "word": "patient",
+     "meaning": "忍耐的，容忍的"
+    },
+    {
+     "id": "s0619",
+     "word": "reliable",
+     "meaning": "可靠的，可信赖的"
+    },
+    {
+     "id": "s0620",
+     "word": "fire",
+     "meaning": "解雇，开除，开枪"
+    },
+    {
+     "id": "s0621",
+     "word": "difficulty",
+     "meaning": "困难，难事"
+    },
+    {
+     "id": "s0622",
+     "word": "editor",
+     "meaning": "编辑，编者"
+    },
+    {
+     "id": "s0623",
+     "word": "injure",
+     "meaning": "损害，伤害"
+    },
+    {
+     "id": "s0624",
+     "word": "inform",
+     "meaning": "通知，告诉"
+    },
+    {
+     "id": "s0625",
+     "word": "talented",
+     "meaning": "有才能的，天资高的"
+    },
+    {
+     "id": "s0626",
+     "word": "switch",
+     "meaning": "转变，改变，开关"
+    },
+    {
+     "id": "s0627",
+     "word": "interviewee",
+     "meaning": "被接见者，被面试者"
+    },
+    {
+     "id": "s0628",
+     "word": "interviewer",
+     "meaning": "接见者，采访者"
+    },
+    {
+     "id": "s0629",
+     "word": "present",
+     "meaning": "呈现，描述"
+    },
+    {
+     "id": "s0630",
+     "word": "reflect",
+     "meaning": "反映，表现"
+    },
+    {
+     "id": "s0631",
+     "word": "effort",
+     "meaning": "努力，艰难的尝试"
+    },
+    {
+     "id": "s0632",
+     "word": "spiritual",
+     "meaning": "精神的，心灵的"
+    },
+    {
+     "id": "s0633",
+     "word": "seldom",
+     "meaning": "很少，不常"
+    },
+    {
+     "id": "s0634",
+     "word": "addict",
+     "meaning": "使沉溺，使入迷"
+    },
+    {
+     "id": "s0636",
+     "word": "social",
+     "meaning": "社会的，社交的"
+    },
+    {
+     "id": "s0637",
+     "word": "ignore",
+     "meaning": "不顾，不理"
+    },
+    {
+     "id": "s0638",
+     "word": "attention",
+     "meaning": "注意，专心"
+    },
+    {
+     "id": "s0639",
+     "word": "tolerate",
+     "meaning": "忍受，容忍"
+    },
+    {
+     "id": "s0640",
+     "word": "critical",
+     "meaning": "批评的，评论的"
+    },
+    {
+     "id": "s0641",
+     "word": "source",
+     "meaning": "根源，来源"
+    },
+    {
+     "id": "s0642",
+     "word": "current",
+     "meaning": "当前的，现行的"
+    },
+    {
+     "id": "s0643",
+     "word": "affair",
+     "meaning": "事，事情"
+    },
+    {
+     "id": "s0644",
+     "word": "neutral",
+     "meaning": "中立的，公平的"
+    },
+    {
+     "id": "s0645",
+     "word": "locate",
+     "meaning": "使坐落于"
+    },
+    {
+     "id": "s0646",
+     "word": "retire",
+     "meaning": "退休，退职"
+    },
+    {
+     "id": "s0647",
+     "word": "complete",
+     "meaning": "完成，结束，完整的"
+    },
+    {
+     "id": "s0648",
+     "word": "attitude",
+     "meaning": "态度，看法"
+    },
+    {
+     "id": "s0649",
+     "word": "disappoint",
+     "meaning": "使失望，使受挫折"
+    },
+    {
+     "id": "s0650",
+     "word": "guard",
+     "meaning": "守卫，警戒"
+    },
+    {
+     "id": "s0651",
+     "word": "responsible",
+     "meaning": "有责任的，可靠的"
+    },
+    {
+     "id": "s0652",
+     "word": "citizen",
+     "meaning": "公民，市民"
+    },
+    {
+     "id": "s0653",
+     "word": "comparison",
+     "meaning": "比较，对照"
+    },
+    {
+     "id": "s0654",
+     "word": "preference",
+     "meaning": "偏爱，喜好"
+    },
+    {
+     "id": "s0655",
+     "word": "furniture",
+     "meaning": "家具"
+    },
+    {
+     "id": "s0656",
+     "word": "taste",
+     "meaning": "爱好，鉴赏力"
+    },
+    {
+     "id": "s0657",
+     "word": "honey",
+     "meaning": "蜂蜜，花蜜"
+    },
+    {
+     "id": "s0658",
+     "word": "modern",
+     "meaning": "现代的，时髦的"
+    },
+    {
+     "id": "s0659",
+     "word": "convenient",
+     "meaning": "方便的，近便的"
+    },
+    {
+     "id": "s0660",
+     "word": "ugly",
+     "meaning": "丑陋的，难看的"
+    },
+    {
+     "id": "s0661",
+     "word": "construction",
+     "meaning": "建造，建设"
+    },
+    {
+     "id": "s0662",
+     "word": "steel",
+     "meaning": "钢"
+    },
+    {
+     "id": "s0663",
+     "word": "roof",
+     "meaning": "屋顶，顶部"
+    },
+    {
+     "id": "s0664",
+     "word": "despite",
+     "meaning": "不管，不顾"
+    },
+    {
+     "id": "s0665",
+     "word": "sail",
+     "meaning": "帆，蓬"
+    },
+    {
+     "id": "s0666",
+     "word": "rent",
+     "meaning": "租用，出租，租金"
+    },
+    {
+     "id": "s0667",
+     "word": "development",
+     "meaning": "发展，生长"
+    },
+    {
+     "id": "s0668",
+     "word": "poem",
+     "meaning": "诗，韵文"
+    },
+    {
+     "id": "s0669",
+     "word": "poet",
+     "meaning": "诗人"
+    },
+    {
+     "id": "s0670",
+     "word": "intention",
+     "meaning": "意图，目的"
+    },
+    {
+     "id": "s0671",
+     "word": "recite",
+     "meaning": "背诵，朗诵"
+    },
+    {
+     "id": "s0672",
+     "word": "mad",
+     "meaning": "疯狂的，精神错乱的"
+    },
+    {
+     "id": "s0673",
+     "word": "pattern",
+     "meaning": "型，模式"
+    },
+    {
+     "id": "s0674",
+     "word": "grammar",
+     "meaning": "语法，语法学"
+    },
+    {
+     "id": "s0675",
+     "word": "absence",
+     "meaning": "不在，缺席"
+    },
+    {
+     "id": "s0676",
+     "word": "district",
+     "meaning": "地区，区域"
+    },
+    {
+     "id": "s0677",
+     "word": "atmosphere",
+     "meaning": "气氛，情绪"
+    },
+    {
+     "id": "s0678",
+     "word": "introduction",
+     "meaning": "序言，介绍"
+    },
+    {
+     "id": "s0679",
+     "word": "translate",
+     "meaning": "翻译"
+    },
+    {
+     "id": "s0680",
+     "word": "translation",
+     "meaning": "翻译，译文"
+    },
+    {
+     "id": "s0681",
+     "word": "tale",
+     "meaning": "故事，传闻"
+    },
+    {
+     "id": "s0682",
+     "word": "extra",
+     "meaning": "特别的，不平常的"
+    },
+    {
+     "id": "s0683",
+     "word": "idiom",
+     "meaning": "习语，成语"
+    },
+    {
+     "id": "s0684",
+     "word": "dust",
+     "meaning": "灰尘，尘土"
+    },
+    {
+     "id": "s0685",
+     "word": "mood",
+     "meaning": "心境，情绪"
+    },
+    {
+     "id": "s0686",
+     "word": "powerful",
+     "meaning": "强有力的，强大的"
+    },
+    {
+     "id": "s0687",
+     "word": "mistaken",
+     "meaning": "错误的，弄错的"
+    },
+    {
+     "id": "s0688",
+     "word": "narrow",
+     "meaning": "狭的，狭窄的"
+    },
+    {
+     "id": "s0689",
+     "word": "Europe",
+     "meaning": "欧洲"
+    },
+    {
+     "id": "s0690",
+     "word": "form",
+     "meaning": "形成，构成"
+    },
+    {
+     "id": "s0691",
+     "word": "Atlantic",
+     "meaning": "大西洋的，大西洋"
+    },
+    {
+     "id": "s0693",
+     "word": "general",
+     "meaning": "一般的，普通的"
+    },
+    {
+     "id": "s0694",
+     "word": "influence",
+     "meaning": "影响，作用"
+    },
+    {
+     "id": "s0695",
+     "word": "inland",
+     "meaning": "内地的，内陆的"
+    },
+    {
+     "id": "s0696",
+     "word": "cigarette",
+     "meaning": "纸烟，香烟"
+    },
+    {
+     "id": "s0697",
+     "word": "proof",
+     "meaning": "证据，证物"
+    },
+    {
+     "id": "s0698",
+     "word": "employ",
+     "meaning": "雇用，利用"
+    },
+    {
+     "id": "s0699",
+     "word": "grain",
+     "meaning": "谷物，谷类植物"
+    },
+    {
+     "id": "s0700",
+     "word": "approach",
+     "meaning": "向……靠近，接近"
+    },
+    {
+     "id": "s0701",
+     "word": "prediction",
+     "meaning": "预言，预报"
+    },
+    {
+     "id": "s0702",
+     "word": "exact",
+     "meaning": "正确的，精确的"
+    },
+    {
+     "id": "s0703",
+     "word": "glimpse",
+     "meaning": "一瞥，一看"
+    },
+    {
+     "id": "s0704",
+     "word": "indicate",
+     "meaning": "表明，象征"
+    },
+    {
+     "id": "s0705",
+     "word": "urban",
+     "meaning": "城市的，都市的"
+    },
+    {
+     "id": "s0706",
+     "word": "ensure",
+     "meaning": "保证，担保"
+    },
+    {
+     "id": "s0707",
+     "word": "system",
+     "meaning": "系统，网"
+    },
+    {
+     "id": "s0708",
+     "word": "consumer",
+     "meaning": "消费者，用户"
+    },
+    {
+     "id": "s0709",
+     "word": "crowded",
+     "meaning": "拥挤的，装满的"
+    },
+    {
+     "id": "s0710",
+     "word": "goods",
+     "meaning": "商品，货物"
+    },
+    {
+     "id": "s0711",
+     "word": "purchase",
+     "meaning": "购买，购置物，购买"
+    },
+    {
+     "id": "s0712",
+     "word": "tiny",
+     "meaning": "极小的，微小的"
+    },
+    {
+     "id": "s0713",
+     "word": "cash",
+     "meaning": "现金，现款"
+    },
+    {
+     "id": "s0714",
+     "word": "importance",
+     "meaning": "重要，重大"
+    },
+    {
+     "id": "s0715",
+     "word": "regular",
+     "meaning": "有规律的，定期的"
+    },
+    {
+     "id": "s0716",
+     "word": "medical",
+     "meaning": "医学的，医疗的"
+    },
+    {
+     "id": "s0717",
+     "word": "educator",
+     "meaning": "教育家，教育工作者"
+    },
+    {
+     "id": "s0718",
+     "word": "distance",
+     "meaning": "远处，远方"
+    },
+    {
+     "id": "s0719",
+     "word": "lifelong",
+     "meaning": "毕生的，终身的"
+    },
+    {
+     "id": "s0720",
+     "word": "hopeful",
+     "meaning": "有希望的，怀有希望的"
+    },
+    {
+     "id": "s0721",
+     "word": "reality",
+     "meaning": "现实，实际存在的事物"
+    },
+    {
+     "id": "s0722",
+     "word": "imitate",
+     "meaning": "模仿，仿效"
+    },
+    {
+     "id": "s0723",
+     "word": "false",
+     "meaning": "错误的，假的"
+    },
+    {
+     "id": "s0724",
+     "word": "infect",
+     "meaning": "传染，感染"
+    },
+    {
+     "id": "s0725",
+     "word": "inject",
+     "meaning": "注射，注入"
+    },
+    {
+     "id": "s0726",
+     "word": "virus",
+     "meaning": "病毒"
+    },
+    {
+     "id": "s0727",
+     "word": "route",
+     "meaning": "途径，道路"
+    },
+    {
+     "id": "s0728",
+     "word": "blood",
+     "meaning": "血液，流血"
+    },
+    {
+     "id": "s0729",
+     "word": "prevention",
+     "meaning": "预防，阻止"
+    },
+    {
+     "id": "s0730",
+     "word": "persuade",
+     "meaning": "说服，劝服"
+    },
+    {
+     "id": "s0731",
+     "word": "heroin",
+     "meaning": "海洛因"
+    },
+    {
+     "id": "s0732",
+     "word": "immune",
+     "meaning": "免疫的，有免疫力的"
+    },
+    {
+     "id": "s0733",
+     "word": "defenceless",
+     "meaning": "无防备的"
+    },
+    {
+     "id": "s0734",
+     "word": "illness",
+     "meaning": "病，疾病"
+    },
+    {
+     "id": "s0735",
+     "word": "treatment",
+     "meaning": "治疗，疗法"
+    },
+    {
+     "id": "s0736",
+     "word": "lack",
+     "meaning": "缺乏，没有"
+    },
+    {
+     "id": "s0737",
+     "word": "proper",
+     "meaning": "合适的，适当的"
+    },
+    {
+     "id": "s0738",
+     "word": "available",
+     "meaning": "可利用的，可达到的"
+    },
+    {
+     "id": "s0739",
+     "word": "discourage",
+     "meaning": "使泄气，使失去信心"
+    },
+    {
+     "id": "s0741",
+     "word": "specialist",
+     "meaning": "专家，专科医生"
+    },
+    {
+     "id": "s0742",
+     "word": "meaningful",
+     "meaning": "意味深长的"
+    },
+    {
+     "id": "s0743",
+     "word": "defensive",
+     "meaning": "防御的，防卫的"
+    },
+    {
+     "id": "s0744",
+     "word": "fierce",
+     "meaning": "激烈的，凶猛的"
+    },
+    {
+     "id": "s0745",
+     "word": "radiation",
+     "meaning": "放射，发射"
+    },
+    {
+     "id": "s0746",
+     "word": "strength",
+     "meaning": "力量，力气"
+    },
+    {
+     "id": "s0747",
+     "word": "contrary",
+     "meaning": "相反的，相对的"
+    },
+    {
+     "id": "s0748",
+     "word": "aid",
+     "meaning": "援助，救助"
+    },
+    {
+     "id": "s0750",
+     "word": "drown",
+     "meaning": "溺死，使淹死，淹没"
+    },
+    {
+     "id": "s0751",
+     "word": "container",
+     "meaning": "容器，集装箱"
+    },
+    {
+     "id": "s0752",
+     "word": "scream",
+     "meaning": "尖叫"
+    },
+    {
+     "id": "s0753",
+     "word": "witness",
+     "meaning": "目睹，目击"
+    },
+    {
+     "id": "s0754",
+     "word": "calm",
+     "meaning": "宁静的，镇静的，平静"
+    },
+    {
+     "id": "s0755",
+     "word": "panic",
+     "meaning": "十分惊慌，惊慌，恐慌"
+    },
+    {
+     "id": "s0756",
+     "word": "ambulance",
+     "meaning": "救护车"
+    },
+    {
+     "id": "s0757",
+     "word": "conscious",
+     "meaning": "神志清醒的，意识到的"
+    },
+    {
+     "id": "s0758",
+     "word": "unconscious",
+     "meaning": "失去知觉的，无意识的"
+    },
+    {
+     "id": "s0759",
+     "word": "slight",
+     "meaning": "轻微的，少量的"
+    },
+    {
+     "id": "s0760",
+     "word": "wound",
+     "meaning": "创伤，伤口"
+    },
+    {
+     "id": "s0761",
+     "word": "recovery",
+     "meaning": "复原，痊愈"
+    },
+    {
+     "id": "s0762",
+     "word": "blanket",
+     "meaning": "毛毯，毡子"
+    },
+    {
+     "id": "s0763",
+     "word": "explanation",
+     "meaning": "解释，说明"
+    },
+    {
+     "id": "s0764",
+     "word": "coal",
+     "meaning": "煤"
+    },
+    {
+     "id": "s0765",
+     "word": "issue",
+     "meaning": "问题，争议"
+    },
+    {
+     "id": "s0766",
+     "word": "content",
+     "meaning": "内容，目录"
+    },
+    {
+     "id": "s0767",
+     "word": "content",
+     "meaning": "满足的，满意的"
+    },
+    {
+     "id": "s0768",
+     "word": "rural",
+     "meaning": "农村的，乡村的"
+    },
+    {
+     "id": "s0769",
+     "word": "poverty",
+     "meaning": "贫穷，贫困"
+    },
+    {
+     "id": "s0770",
+     "word": "violence",
+     "meaning": "暴力，侵犯"
+    },
+    {
+     "id": "s0771",
+     "word": "stress",
+     "meaning": "着重，强调"
+    },
+    {
+     "id": "s0772",
+     "word": "equality",
+     "meaning": "相等，平等"
+    },
+    {
+     "id": "s0773",
+     "word": "fairness",
+     "meaning": "公平，公正"
+    },
+    {
+     "id": "s0774",
+     "word": "responsibility",
+     "meaning": "责任，责任心"
+    },
+    {
+     "id": "s0775",
+     "word": "cooperation",
+     "meaning": "合作，配合"
+    },
+    {
+     "id": "s0776",
+     "word": "harmony",
+     "meaning": "协调，和谐"
+    },
+    {
+     "id": "s0777",
+     "word": "defend",
+     "meaning": "为……辩护，防卫"
+    },
+    {
+     "id": "s0778",
+     "word": "incorrect",
+     "meaning": "不正确的，不妥当的"
+    },
+    {
+     "id": "s0779",
+     "word": "affect",
+     "meaning": "影响，感动"
+    },
+    {
+     "id": "s0780",
+     "word": "frightening",
+     "meaning": "引起恐惧的，惊恐的"
+    },
+    {
+     "id": "s0781",
+     "word": "threat",
+     "meaning": "威胁，恐吓"
+    },
+    {
+     "id": "s0782",
+     "word": "terrify",
+     "meaning": "使恐惧，使惊恐"
+    },
+    {
+     "id": "s0783",
+     "word": "bury",
+     "meaning": "埋葬，掩藏"
+    },
+    {
+     "id": "s0784",
+     "word": "ash",
+     "meaning": "灰，灰烬"
+    },
+    {
+     "id": "s0785",
+     "word": "mud",
+     "meaning": "泥，烂泥"
+    },
+    {
+     "id": "s0786",
+     "word": "spot",
+     "meaning": "少量，点"
+    },
+    {
+     "id": "s0787",
+     "word": "courage",
+     "meaning": "勇气，胆量"
+    },
+    {
+     "id": "s0788",
+     "word": "arrival",
+     "meaning": "到达，抵达"
+    },
+    {
+     "id": "s0790",
+     "word": "daylight",
+     "meaning": "日光，白昼"
+    },
+    {
+     "id": "s0791",
+     "word": "immediately",
+     "meaning": "立刻，马上"
+    },
+    {
+     "id": "s0792",
+     "word": "fresh",
+     "meaning": "新的，刚经历的"
+    },
+    {
+     "id": "s0793",
+     "word": "unbelievable",
+     "meaning": "不可相信的"
+    },
+    {
+     "id": "s0794",
+     "word": "waterfall",
+     "meaning": "瀑布"
+    },
+    {
+     "id": "s0795",
+     "word": "uncomfortable",
+     "meaning": "不舒服的，不自在的"
+    },
+    {
+     "id": "s0796",
+     "word": "aloud",
+     "meaning": "大声地，高声地"
+    },
+    {
+     "id": "s0797",
+     "word": "solar",
+     "meaning": "太阳的，日光的"
+    },
+    {
+     "id": "s0798",
+     "word": "achieve",
+     "meaning": "获得，实现"
+    },
+    {
+     "id": "s0799",
+     "word": "zone",
+     "meaning": "区，区域"
+    },
+    {
+     "id": "s0800",
+     "word": "private",
+     "meaning": "私人的，私立的"
+    },
+    {
+     "id": "s0801",
+     "word": "grasp",
+     "meaning": "抓住，抓牢"
+    },
+    {
+     "id": "s0802",
+     "word": "master",
+     "meaning": "硕士，主人"
+    },
+    {
+     "id": "s0803",
+     "word": "perfect",
+     "meaning": "理想的，完美的"
+    },
+    {
+     "id": "s0804",
+     "word": "arrange",
+     "meaning": "安排，筹划"
+    },
+    {
+     "id": "s0805",
+     "word": "failure",
+     "meaning": "失败，失败的人"
+    },
+    {
+     "id": "s0806",
+     "word": "agency",
+     "meaning": "机构，代理"
+    },
+    {
+     "id": "s0807",
+     "word": "organ",
+     "meaning": "器官"
+    },
+    {
+     "id": "s0808",
+     "word": "announce",
+     "meaning": "宣布，宣告"
+    },
+    {
+     "id": "s0809",
+     "word": "battle",
+     "meaning": "战斗，战役，斗争"
+    },
+    {
+     "id": "s0810",
+     "word": "strategy",
+     "meaning": "策略，战略"
+    },
+    {
+     "id": "s0811",
+     "word": "fiction",
+     "meaning": "小说"
+    },
+    {
+     "id": "s0812",
+     "word": "belief",
+     "meaning": "信念，信心"
+    },
+    {
+     "id": "s0813",
+     "word": "balloon",
+     "meaning": "气球"
+    },
+    {
+     "id": "s0814",
+     "word": "apply",
+     "meaning": "应用，运用，申请"
+    },
+    {
+     "id": "s0815",
+     "word": "foundation",
+     "meaning": "基础，建立"
+    },
+    {
+     "id": "s0816",
+     "word": "servant",
+     "meaning": "仆人，公务员"
+    },
+    {
+     "id": "s0817",
+     "word": "whale",
+     "meaning": "鲸，巨大的人"
+    },
+    {
+     "id": "s0818",
+     "word": "hunter",
+     "meaning": "猎人，搜索者"
+    },
+    {
+     "id": "s0819",
+     "word": "collision",
+     "meaning": "碰撞，冲突"
+    },
+    {
+     "id": "s0820",
+     "word": "companion",
+     "meaning": "同伴，同伙"
+    },
+    {
+     "id": "s0821",
+     "word": "submarine",
+     "meaning": "潜水挺"
+    },
+    {
+     "id": "s0822",
+     "word": "permanent",
+     "meaning": "永久的，固定的"
+    },
+    {
+     "id": "s0823",
+     "word": "guest",
+     "meaning": "客人，旅客"
+    },
+    {
+     "id": "s0824",
+     "word": "voyage",
+     "meaning": "航海，航空"
+    },
+    {
+     "id": "s0825",
+     "word": "iron",
+     "meaning": "铁"
+    },
+    {
+     "id": "s0826",
+     "word": "dislike",
+     "meaning": "不喜欢，讨厌"
+    },
+    {
+     "id": "s0827",
+     "word": "prisoner",
+     "meaning": "俘虏，失去自由的人"
+    },
+    {
+     "id": "s0828",
+     "word": "brilliant",
+     "meaning": "聪明的，杰出的"
+    },
+    {
+     "id": "s0829",
+     "word": "labour",
+     "meaning": "努力，劳动"
+    },
+    {
+     "id": "s0830",
+     "word": "hesitate",
+     "meaning": "踌躇，犹豫"
+    },
+    {
+     "id": "s0831",
+     "word": "creation",
+     "meaning": "创造，产生"
+    },
+    {
+     "id": "s0832",
+     "word": "horror",
+     "meaning": "恐惧，恐怖"
+    },
+    {
+     "id": "s0833",
+     "word": "sailor",
+     "meaning": "海员，水手"
+    },
+    {
+     "id": "s0834",
+     "word": "benefit",
+     "meaning": "使……受益，得益"
+    },
+    {
+     "id": "s0835",
+     "word": "transport",
+     "meaning": "运输，运送"
+    },
+    {
+     "id": "s0836",
+     "word": "unique",
+     "meaning": "唯一的，独特的"
+    },
+    {
+     "id": "s0837",
+     "word": "solid",
+     "meaning": "固体"
+    },
+    {
+     "id": "s0838",
+     "word": "freezing",
+     "meaning": "冰冻的，极冷的"
+    },
+    {
+     "id": "s0839",
+     "word": "relationship",
+     "meaning": "关系，联系"
+    },
+    {
+     "id": "s0841",
+     "word": "decrease",
+     "meaning": "变小，减少"
+    },
+    {
+     "id": "s0842",
+     "word": "absorb",
+     "meaning": "吸收"
+    },
+    {
+     "id": "s0843",
+     "word": "stable",
+     "meaning": "稳定的，稳固的"
+    },
+    {
+     "id": "s0844",
+     "word": "sensitive",
+     "meaning": "敏感的，灵敏的"
+    },
+    {
+     "id": "s0845",
+     "word": "steady",
+     "meaning": "平稳的，牢固的"
+    },
+    {
+     "id": "s0846",
+     "word": "trust",
+     "meaning": "信任，相信"
+    },
+    {
+     "id": "s0847",
+     "word": "mammal",
+     "meaning": "哺乳动物"
+    },
+    {
+     "id": "s0848",
+     "word": "reproduce",
+     "meaning": "繁殖，生殖"
+    },
+    {
+     "id": "s0849",
+     "word": "recreation",
+     "meaning": "娱乐，消遣"
+    },
+    {
+     "id": "s0850",
+     "word": "freedom",
+     "meaning": "自由"
+    },
+    {
+     "id": "s0851",
+     "word": "civil",
+     "meaning": "公民的，国内的"
+    },
+    {
+     "id": "s0852",
+     "word": "prison",
+     "meaning": "监狱"
+    },
+    {
+     "id": "s0853",
+     "word": "revolution",
+     "meaning": "革命，彻底的改革"
+    },
+    {
+     "id": "s0854",
+     "word": "soul",
+     "meaning": "灵魂，心灵"
+    },
+    {
+     "id": "s0855",
+     "word": "lawyer",
+     "meaning": "律师"
+    },
+    {
+     "id": "s0856",
+     "word": "bill",
+     "meaning": "议案，账单"
+    },
+    {
+     "id": "s0857",
+     "word": "religion",
+     "meaning": "宗教"
+    },
+    {
+     "id": "s0858",
+     "word": "independence",
+     "meaning": "独立，自主"
+    },
+    {
+     "id": "s0859",
+     "word": "prejudice",
+     "meaning": "偏见，成见"
+    },
+    {
+     "id": "s0860",
+     "word": "regardless",
+     "meaning": "不加理会，不顾"
+    },
+    {
+     "id": "s0862",
+     "word": "complaint",
+     "meaning": "抱怨，投诉"
+    },
+    {
+     "id": "s0863",
+     "word": "upset",
+     "meaning": "苦恼的，心烦的"
+    },
+    {
+     "id": "s0864",
+     "word": "lifestyle",
+     "meaning": "生活方式"
+    },
+    {
+     "id": "s0865",
+     "word": "guarantee",
+     "meaning": "保证，确保"
+    },
+    {
+     "id": "s0866",
+     "word": "resort",
+     "meaning": "胜地，常去之地"
+    },
+    {
+     "id": "s0867",
+     "word": "budget",
+     "meaning": "预算，预算案"
+    },
+    {
+     "id": "s0868",
+     "word": "rate",
+     "meaning": "价格，费用"
+    },
+    {
+     "id": "s0869",
+     "word": "visa",
+     "meaning": "签证"
+    },
+    {
+     "id": "s0870",
+     "word": "arrangement",
+     "meaning": "安排，准备工作"
+    },
+    {
+     "id": "s0871",
+     "word": "passport",
+     "meaning": "护照，过境通行证"
+    },
+    {
+     "id": "s0872",
+     "word": "cheque",
+     "meaning": "支票"
+    },
+    {
+     "id": "s0873",
+     "word": "mental",
+     "meaning": "脑力的，智力的"
+    },
+    {
+     "id": "s0874",
+     "word": "physical",
+     "meaning": "身体的，物理的"
+    },
+    {
+     "id": "s0875",
+     "word": "depression",
+     "meaning": "萧条，降低"
+    },
+    {
+     "id": "s0876",
+     "word": "unemployment",
+     "meaning": "失业，失业众人数"
+    },
+    {
+     "id": "s0877",
+     "word": "former",
+     "meaning": "以前的，前者"
+    },
+    {
+     "id": "s0878",
+     "word": "injustice",
+     "meaning": "不公平，非正义"
+    },
+    {
+     "id": "s0879",
+     "word": "vain",
+     "meaning": "徒劳的，徒然的"
+    },
+    {
+     "id": "s0881",
+     "word": "eventually",
+     "meaning": "最后，终于"
+    },
+    {
+     "id": "s0882",
+     "word": "financial",
+     "meaning": "财务的，金融的"
+    },
+    {
+     "id": "s0883",
+     "word": "insist",
+     "meaning": "坚持"
+    },
+    {
+     "id": "s0884",
+     "word": "chief",
+     "meaning": "首领，上司"
+    },
+    {
+     "id": "s0885",
+     "word": "supply",
+     "meaning": "供给，供应"
+    },
+    {
+     "id": "s0886",
+     "word": "chain",
+     "meaning": "链条，连锁"
+    },
+    {
+     "id": "s0887",
+     "word": "willing",
+     "meaning": "心甘情愿的，愿意的"
+    },
+    {
+     "id": "s0889",
+     "word": "disability",
+     "meaning": "伤残，无能"
+    }
+   ]
+  },
+  {
+   "unit_index": 2,
+   "words": [
+    {
+     "id": "s0890",
+     "word": "ability",
+     "meaning": "能力，才能"
+    },
+    {
+     "id": "s0891",
+     "word": "potential",
+     "meaning": "潜力，可能性"
+    },
+    {
+     "id": "s0892",
+     "word": "cooperate",
+     "meaning": "合作，协作"
+    },
+    {
+     "id": "s0893",
+     "word": "encouragement",
+     "meaning": "鼓励，促进"
+    },
+    {
+     "id": "s0894",
+     "word": "motivate",
+     "meaning": "使有动机，激发"
+    },
+    {
+     "id": "s0895",
+     "word": "adjust",
+     "meaning": "调整，调节"
+    },
+    {
+     "id": "s0896",
+     "word": "candy",
+     "meaning": "糖果"
+    },
+    {
+     "id": "s0897",
+     "word": "ceremony",
+     "meaning": "仪式，典礼"
+    },
+    {
+     "id": "s0898",
+     "word": "victory",
+     "meaning": "胜利"
+    },
+    {
+     "id": "s0899",
+     "word": "conduct",
+     "meaning": "主持，领导"
+    },
+    {
+     "id": "s0900",
+     "word": "survey",
+     "meaning": "调查，鉴定"
+    },
+    {
+     "id": "s0901",
+     "word": "laptop",
+     "meaning": "笔记本电脑"
+    },
+    {
+     "id": "s0902",
+     "word": "officer",
+     "meaning": "官员，军官"
+    },
+    {
+     "id": "s0903",
+     "word": "petrol",
+     "meaning": "汽油"
+    },
+    {
+     "id": "s0904",
+     "word": "background",
+     "meaning": "背景"
+    },
+    {
+     "id": "s0905",
+     "word": "previous",
+     "meaning": "以前的，先的"
+    },
+    {
+     "id": "s0906",
+     "word": "aware",
+     "meaning": "意识到的，知道的"
+    },
+    {
+     "id": "s0907",
+     "word": "desktop",
+     "meaning": "台式电脑"
+    },
+    {
+     "id": "s0908",
+     "word": "pilot",
+     "meaning": "飞行员"
+    },
+    {
+     "id": "s0909",
+     "word": "storage",
+     "meaning": "储存，贮藏"
+    },
+    {
+     "id": "s0910",
+     "word": "merchant",
+     "meaning": "商人"
+    },
+    {
+     "id": "s0911",
+     "word": "uneasy",
+     "meaning": "不安的，忧虑的"
+    },
+    {
+     "id": "s0912",
+     "word": "crown",
+     "meaning": "王冠，皇冠"
+    },
+    {
+     "id": "s0913",
+     "word": "deny",
+     "meaning": "否认，拒绝给予"
+    },
+    {
+     "id": "s0915",
+     "word": "masterpiece",
+     "meaning": "杰作"
+    },
+    {
+     "id": "s0916",
+     "word": "mercy",
+     "meaning": "怜悯，仁"
+    },
+    {
+     "id": "s0917",
+     "word": "enemy",
+     "meaning": "敌人"
+    },
+    {
+     "id": "s0918",
+     "word": "reasonable",
+     "meaning": "合乎情理的，讲理的"
+    },
+    {
+     "id": "s0919",
+     "word": "gentleman",
+     "meaning": "绅士"
+    },
+    {
+     "id": "s0920",
+     "word": "greeting",
+     "meaning": "招呼，问候"
+    },
+    {
+     "id": "s0921",
+     "word": "troublesome",
+     "meaning": "令人烦恼的，讨厌的"
+    },
+    {
+     "id": "s0922",
+     "word": "accuse",
+     "meaning": "指控，指责"
+    },
+    {
+     "id": "s0923",
+     "word": "fate",
+     "meaning": "命运"
+    },
+    {
+     "id": "s0924",
+     "word": "consequence",
+     "meaning": "结果，后果"
+    },
+    {
+     "id": "s0925",
+     "word": "fortune",
+     "meaning": "运气，机会"
+    },
+    {
+     "id": "s0926",
+     "word": "merciful",
+     "meaning": "仁慈的，宽大的"
+    },
+    {
+     "id": "s0927",
+     "word": "bargain",
+     "meaning": "协议，交易"
+    },
+    {
+     "id": "s0928",
+     "word": "legal",
+     "meaning": "法律的，法定的"
+    },
+    {
+     "id": "s0929",
+     "word": "surgeon",
+     "meaning": "外科医生"
+    },
+    {
+     "id": "s0930",
+     "word": "requirement",
+     "meaning": "需要，规定"
+    },
+    {
+     "id": "s0931",
+     "word": "declare",
+     "meaning": "宣布，宣称"
+    },
+    {
+     "id": "s0932",
+     "word": "court",
+     "meaning": "法庭"
+    },
+    {
+     "id": "s0933",
+     "word": "kindness",
+     "meaning": "仁慈，好意"
+    },
+    {
+     "id": "s0934",
+     "word": "punish",
+     "meaning": "惩罚"
+    },
+    {
+     "id": "s0935",
+     "word": "punishment",
+     "meaning": "惩罚"
+    },
+    {
+     "id": "s0936",
+     "word": "order",
+     "meaning": "命令，下令"
+    },
+    {
+     "id": "s0937",
+     "word": "pot",
+     "meaning": "罐，锅"
+    },
+    {
+     "id": "s0938",
+     "word": "emperor",
+     "meaning": "皇帝"
+    },
+    {
+     "id": "s0939",
+     "word": "copper",
+     "meaning": "铜制的，铜"
+    },
+    {
+     "id": "s0940",
+     "word": "weapon",
+     "meaning": "武器"
+    },
+    {
+     "id": "s0941",
+     "word": "approximately",
+     "meaning": "接近"
+    },
+    {
+     "id": "s0942",
+     "word": "average",
+     "meaning": "平均的，普通的"
+    },
+    {
+     "id": "s0943",
+     "word": "lorry",
+     "meaning": "卡车"
+    },
+    {
+     "id": "s0944",
+     "word": "link",
+     "meaning": "连接，联系"
+    },
+    {
+     "id": "s0945",
+     "word": "monument",
+     "meaning": "纪念碑，纪念馆"
+    },
+    {
+     "id": "s0946",
+     "word": "homeland",
+     "meaning": "祖国，国家"
+    },
+    {
+     "id": "s0947",
+     "word": "status",
+     "meaning": "地位，身份"
+    },
+    {
+     "id": "s0948",
+     "word": "remote",
+     "meaning": "遥远的，偏远的"
+    },
+    {
+     "id": "s0949",
+     "word": "distant",
+     "meaning": "遥远的"
+    },
+    {
+     "id": "s0950",
+     "word": "site",
+     "meaning": "遗址，地方"
+    },
+    {
+     "id": "s0951",
+     "word": "quantity",
+     "meaning": "量，数量"
+    },
+    {
+     "id": "s0952",
+     "word": "mask",
+     "meaning": "面具"
+    },
+    {
+     "id": "s0954",
+     "word": "accompany",
+     "meaning": "陪伴，陪同"
+    },
+    {
+     "id": "s0955",
+     "word": "vast",
+     "meaning": "巨大的，庞大的"
+    },
+    {
+     "id": "s0956",
+     "word": "square",
+     "meaning": "平方的，正方形的"
+    },
+    {
+     "id": "s0957",
+     "word": "investigation",
+     "meaning": "调查研究"
+    },
+    {
+     "id": "s0958",
+     "word": "voyager",
+     "meaning": "航行者，航海者"
+    },
+    {
+     "id": "s0959",
+     "word": "tight",
+     "meaning": "紧的，难解开的"
+    },
+    {
+     "id": "s0960",
+     "word": "edition",
+     "meaning": "版本，版次"
+    },
+    {
+     "id": "s0961",
+     "word": "hire",
+     "meaning": "雇佣，租用"
+    },
+    {
+     "id": "s0962",
+     "word": "athletic",
+     "meaning": "运动的，体格健壮的"
+    },
+    {
+     "id": "s0963",
+     "word": "fade",
+     "meaning": "凋谢，变弱"
+    },
+    {
+     "id": "s0964",
+     "word": "account",
+     "meaning": "账目，账户"
+    },
+    {
+     "id": "s0965",
+     "word": "attempt",
+     "meaning": "尝试，努力"
+    },
+    {
+     "id": "s0966",
+     "word": "suitable",
+     "meaning": "适合的，恰当的"
+    },
+    {
+     "id": "s0967",
+     "word": "inspect",
+     "meaning": "检查，视察"
+    },
+    {
+     "id": "s0968",
+     "word": "confirm",
+     "meaning": "证实，确认"
+    },
+    {
+     "id": "s0969",
+     "word": "certificate",
+     "meaning": "证书"
+    },
+    {
+     "id": "s0970",
+     "word": "gradual",
+     "meaning": "逐渐的，渐变的"
+    },
+    {
+     "id": "s0971",
+     "word": "blank",
+     "meaning": "空的，空隙"
+    },
+    {
+     "id": "s0972",
+     "word": "enthusiastic",
+     "meaning": "热情的，热心的"
+    },
+    {
+     "id": "s0973",
+     "word": "bid",
+     "meaning": "出价，投标"
+    },
+    {
+     "id": "s0974",
+     "word": "decade",
+     "meaning": "十年"
+    },
+    {
+     "id": "s0975",
+     "word": "committee",
+     "meaning": "委员会"
+    },
+    {
+     "id": "s0976",
+     "word": "fascinate",
+     "meaning": "迷住，神魂颠倒"
+    },
+    {
+     "id": "s0977",
+     "word": "underline",
+     "meaning": "在……下面画线，强调"
+    },
+    {
+     "id": "s0978",
+     "word": "globe",
+     "meaning": "地球，地球仪"
+    },
+    {
+     "id": "s0979",
+     "word": "bush",
+     "meaning": "灌木，荒野"
+    },
+    {
+     "id": "s0980",
+     "word": "spaceman",
+     "meaning": "宇航员"
+    },
+    {
+     "id": "s0981",
+     "word": "administration",
+     "meaning": "管理，行政"
+    },
+    {
+     "id": "s0982",
+     "word": "permission",
+     "meaning": "许可，同意"
+    },
+    {
+     "id": "s0983",
+     "word": "schoolmate",
+     "meaning": "同学，校友"
+    },
+    {
+     "id": "s0984",
+     "word": "recently",
+     "meaning": "不久前，近来"
+    },
+    {
+     "id": "s0985",
+     "word": "familiar",
+     "meaning": "熟悉的，常见的"
+    },
+    {
+     "id": "s0986",
+     "word": "concentrate",
+     "meaning": "集中，全神贯注，集中"
+    },
+    {
+     "id": "s0987",
+     "word": "truly",
+     "meaning": "直正地，真实地"
+    },
+    {
+     "id": "s0988",
+     "word": "delight",
+     "meaning": "给乐趣，使愉快"
+    },
+    {
+     "id": "s0989",
+     "word": "delighted",
+     "meaning": "非常高兴的，愉快的"
+    },
+    {
+     "id": "s0990",
+     "word": "energetic",
+     "meaning": "精力充沛的"
+    },
+    {
+     "id": "s0991",
+     "word": "cautious",
+     "meaning": "小心的，谨慎的"
+    },
+    {
+     "id": "s0992",
+     "word": "outgoing",
+     "meaning": "外向的"
+    },
+    {
+     "id": "s0993",
+     "word": "evaluate",
+     "meaning": "评价，估计"
+    },
+    {
+     "id": "s0994",
+     "word": "various",
+     "meaning": "各种各样的"
+    },
+    {
+     "id": "s0995",
+     "word": "equip",
+     "meaning": "配备，装备"
+    },
+    {
+     "id": "s0996",
+     "word": "puzzle",
+     "meaning": "难题，谜"
+    },
+    {
+     "id": "s0997",
+     "word": "wealthy",
+     "meaning": "富有的，有财产的"
+    },
+    {
+     "id": "s0998",
+     "word": "Asian",
+     "meaning": "亚洲的，亚洲人的"
+    },
+    {
+     "id": "s0999",
+     "word": "African",
+     "meaning": "非洲人"
+    },
+    {
+     "id": "s1000",
+     "word": "wander",
+     "meaning": "漫游，游荡"
+    },
+    {
+     "id": "s1001",
+     "word": "motherland",
+     "meaning": "祖国"
+    },
+    {
+     "id": "s1002",
+     "word": "awareness",
+     "meaning": "觉察，意识"
+    },
+    {
+     "id": "s1003",
+     "word": "existence",
+     "meaning": "存在，生存"
+    },
+    {
+     "id": "s1004",
+     "word": "accurate",
+     "meaning": "准确的，精确的"
+    },
+    {
+     "id": "s1005",
+     "word": "navy",
+     "meaning": "海军"
+    },
+    {
+     "id": "s1006",
+     "word": "treasure",
+     "meaning": "财宝，财富"
+    },
+    {
+     "id": "s1007",
+     "word": "command",
+     "meaning": "命令，指挥"
+    },
+    {
+     "id": "s1009",
+     "word": "royal",
+     "meaning": "王室的，皇家的"
+    },
+    {
+     "id": "s1010",
+     "word": "zebra",
+     "meaning": "斑马"
+    },
+    {
+     "id": "s1011",
+     "word": "volunteer",
+     "meaning": "志愿者"
+    },
+    {
+     "id": "s1012",
+     "word": "dam",
+     "meaning": "坝，堤"
+    },
+    {
+     "id": "s1013",
+     "word": "horizon",
+     "meaning": "地平线"
+    },
+    {
+     "id": "s1014",
+     "word": "navigation",
+     "meaning": "航海，航空"
+    },
+    {
+     "id": "s1015",
+     "word": "suggest",
+     "meaning": "提议，建议"
+    },
+    {
+     "id": "s1016",
+     "word": "accomplish",
+     "meaning": "完成，实现"
+    },
+    {
+     "id": "s1017",
+     "word": "unable",
+     "meaning": "不能的，不会的"
+    },
+    {
+     "id": "s1018",
+     "word": "Tibet",
+     "meaning": "西藏"
+    },
+    {
+     "id": "s1019",
+     "word": "honesty",
+     "meaning": "诚实"
+    },
+    {
+     "id": "s1020",
+     "word": "ideal",
+     "meaning": "理想的，完美的"
+    },
+    {
+     "id": "s1021",
+     "word": "technological",
+     "meaning": "技术的"
+    },
+    {
+     "id": "s1022",
+     "word": "evidence",
+     "meaning": "证据，语词"
+    },
+    {
+     "id": "s1023",
+     "word": "chairman",
+     "meaning": "主席，董事长"
+    },
+    {
+     "id": "s1024",
+     "word": "claim",
+     "meaning": "声称"
+    },
+    {
+     "id": "s1025",
+     "word": "criminal",
+     "meaning": "犯人，罪犯"
+    },
+    {
+     "id": "s1026",
+     "word": "diverse",
+     "meaning": "多种多样的，不同的"
+    },
+    {
+     "id": "s1027",
+     "word": "transform",
+     "meaning": "改变，转变"
+    },
+    {
+     "id": "s1028",
+     "word": "immigration",
+     "meaning": "移民"
+    },
+    {
+     "id": "s1029",
+     "word": "strengthen",
+     "meaning": "加强，巩固"
+    },
+    {
+     "id": "s1030",
+     "word": "differ",
+     "meaning": "不同，相异"
+    },
+    {
+     "id": "s1031",
+     "word": "pronunciation",
+     "meaning": "发音"
+    },
+    {
+     "id": "s1032",
+     "word": "vocabulary",
+     "meaning": "词汇"
+    },
+    {
+     "id": "s1033",
+     "word": "mate",
+     "meaning": "伙伴，同事"
+    },
+    {
+     "id": "s1034",
+     "word": "concept",
+     "meaning": "概念，观念"
+    },
+    {
+     "id": "s1035",
+     "word": "chew",
+     "meaning": "嚼碎，咀嚼"
+    },
+    {
+     "id": "s1036",
+     "word": "chairwoman",
+     "meaning": "女主席，女董事长"
+    },
+    {
+     "id": "s1037",
+     "word": "entire",
+     "meaning": "全部的，整个的"
+    },
+    {
+     "id": "s1038",
+     "word": "mine",
+     "meaning": "矿井，地雷坑道"
+    },
+    {
+     "id": "s1039",
+     "word": "fence",
+     "meaning": "栅栏，篱笆"
+    },
+    {
+     "id": "s1040",
+     "word": "barrier",
+     "meaning": "障碍，屏障"
+    },
+    {
+     "id": "s1041",
+     "word": "logical",
+     "meaning": "合逻辑的，合乎情理的"
+    },
+    {
+     "id": "s1042",
+     "word": "procedure",
+     "meaning": "步骤，程序"
+    },
+    {
+     "id": "s1043",
+     "word": "rose",
+     "meaning": "玫瑰，蔷薇"
+    },
+    {
+     "id": "s1044",
+     "word": "lemon",
+     "meaning": "柠檬，柠檬树"
+    },
+    {
+     "id": "s1045",
+     "word": "merely",
+     "meaning": "仅，只"
+    },
+    {
+     "id": "s1046",
+     "word": "classify",
+     "meaning": "编排，分类"
+    },
+    {
+     "id": "s1047",
+     "word": "promote",
+     "meaning": "促进，促销"
+    },
+    {
+     "id": "s1048",
+     "word": "wealth",
+     "meaning": "财产，财富"
+    },
+    {
+     "id": "s1049",
+     "word": "appoint",
+     "meaning": "任命，约定"
+    },
+    {
+     "id": "s1050",
+     "word": "calculate",
+     "meaning": "计算，推算"
+    },
+    {
+     "id": "s1051",
+     "word": "expense",
+     "meaning": "花费，代价"
+    },
+    {
+     "id": "s1053",
+     "word": "involve",
+     "meaning": "包括，牵涉"
+    },
+    {
+     "id": "s1054",
+     "word": "accumulate",
+     "meaning": "积累，聚集"
+    },
+    {
+     "id": "s1055",
+     "word": "abandon",
+     "meaning": "离开，遗弃"
+    },
+    {
+     "id": "s1056",
+     "word": "tone",
+     "meaning": "色度，色调"
+    },
+    {
+     "id": "s1057",
+     "word": "reward",
+     "meaning": "报答，报酬"
+    },
+    {
+     "id": "s1058",
+     "word": "nowhere",
+     "meaning": "任何地方都不，无处"
+    },
+    {
+     "id": "s1059",
+     "word": "altogether",
+     "meaning": "总而言之，完全地"
+    },
+    {
+     "id": "s1060",
+     "word": "appearance",
+     "meaning": "外表，外貌"
+    },
+    {
+     "id": "s1061",
+     "word": "output",
+     "meaning": "产量，产品"
+    },
+    {
+     "id": "s1062",
+     "word": "dandelion",
+     "meaning": "蒲公英"
+    },
+    {
+     "id": "s1064",
+     "word": "convey",
+     "meaning": "表达，运载"
+    },
+    {
+     "id": "s1065",
+     "word": "advertise",
+     "meaning": "登广告，做广告"
+    },
+    {
+     "id": "s1066",
+     "word": "consideration",
+     "meaning": "考虑，体贴"
+    },
+    {
+     "id": "s1067",
+     "word": "charge",
+     "meaning": "主管，充电"
+    },
+    {
+     "id": "s1068",
+     "word": "loss",
+     "meaning": "遗失，丧失"
+    },
+    {
+     "id": "s1069",
+     "word": "blame",
+     "meaning": "责备，谴责"
+    },
+    {
+     "id": "s1070",
+     "word": "misleading",
+     "meaning": "使人误解的，欺骗的"
+    },
+    {
+     "id": "s1071",
+     "word": "react",
+     "meaning": "反应，反抗"
+    },
+    {
+     "id": "s1072",
+     "word": "annoy",
+     "meaning": "使烦恼，使恼怒"
+    },
+    {
+     "id": "s1073",
+     "word": "critic",
+     "meaning": "批评者，评论家"
+    },
+    {
+     "id": "s1074",
+     "word": "accuse",
+     "meaning": "控告，谴责"
+    },
+    {
+     "id": "s1075",
+     "word": "associate",
+     "meaning": "使发生联系"
+    },
+    {
+     "id": "s1076",
+     "word": "appeal",
+     "meaning": "有吸引力，呼吁"
+    },
+    {
+     "id": "s1077",
+     "word": "frequent",
+     "meaning": "时常发生的，频繁的"
+    },
+    {
+     "id": "s1078",
+     "word": "figure",
+     "meaning": "数字，价格"
+    },
+    {
+     "id": "s1079",
+     "word": "salesman",
+     "meaning": "推销员，售贷员"
+    },
+    {
+     "id": "s1080",
+     "word": "campaign",
+     "meaning": "运动，竞选活动"
+    },
+    {
+     "id": "s1081",
+     "word": "policy",
+     "meaning": "方针，政策"
+    },
+    {
+     "id": "s1082",
+     "word": "illegal",
+     "meaning": "不合法的，违法的"
+    },
+    {
+     "id": "s1083",
+     "word": "target",
+     "meaning": "目标，靶子"
+    },
+    {
+     "id": "s1084",
+     "word": "bullet",
+     "meaning": "子弹，枪弹"
+    },
+    {
+     "id": "s1085",
+     "word": "nowadays",
+     "meaning": "现今，现在"
+    },
+    {
+     "id": "s1086",
+     "word": "nephew",
+     "meaning": "侄子，外甥"
+    },
+    {
+     "id": "s1087",
+     "word": "waitress",
+     "meaning": "女服务员"
+    },
+    {
+     "id": "s1088",
+     "word": "hostess",
+     "meaning": "女主人，女主持人"
+    },
+    {
+     "id": "s1089",
+     "word": "heroine",
+     "meaning": "女主角，女主人公"
+    },
+    {
+     "id": "s1090",
+     "word": "legend",
+     "meaning": "传奇，传说"
+    },
+    {
+     "id": "s1091",
+     "word": "discount",
+     "meaning": "折扣"
+    },
+    {
+     "id": "s1092",
+     "word": "circumstance",
+     "meaning": "环境，情况"
+    },
+    {
+     "id": "s1094",
+     "word": "assessment",
+     "meaning": "评价，评定"
+    },
+    {
+     "id": "s1098",
+     "word": "survival",
+     "meaning": "存活，幸存"
+    },
+    {
+     "id": "s1099",
+     "word": "alcohol",
+     "meaning": "酒精，乙醇"
+    },
+    {
+     "id": "s1100",
+     "word": "beyond",
+     "meaning": "在，的那边"
+    },
+    {
+     "id": "s1101",
+     "word": "pond",
+     "meaning": "池塘"
+    },
+    {
+     "id": "s1102",
+     "word": "burden",
+     "meaning": "负担，责任"
+    },
+    {
+     "id": "s1103",
+     "word": "desperate",
+     "meaning": "绝望的，极严重的"
+    },
+    {
+     "id": "s1104",
+     "word": "accustomed",
+     "meaning": "习惯的，通常的"
+    },
+    {
+     "id": "s1105",
+     "word": "anxiety",
+     "meaning": "忧虑，担心"
+    },
+    {
+     "id": "s1106",
+     "word": "shallow",
+     "meaning": "浅的"
+    },
+    {
+     "id": "s1107",
+     "word": "tax",
+     "meaning": "税，税额"
+    },
+    {
+     "id": "s1108",
+     "word": "anniversary",
+     "meaning": "周年纪念"
+    },
+    {
+     "id": "s1109",
+     "word": "throat",
+     "meaning": "嗓子，喉咙"
+    },
+    {
+     "id": "s1110",
+     "word": "deliver",
+     "meaning": "递送，发言"
+    },
+    {
+     "id": "s1111",
+     "word": "tough",
+     "meaning": "耐劳的，坚韧的"
+    },
+    {
+     "id": "s1113",
+     "word": "employee",
+     "meaning": "雇工，雇员"
+    },
+    {
+     "id": "s1114",
+     "word": "fake",
+     "meaning": "假的，伪造的"
+    },
+    {
+     "id": "s1115",
+     "word": "powder",
+     "meaning": "粉，粉末"
+    },
+    {
+     "id": "s1116",
+     "word": "handwriting",
+     "meaning": "笔迹，手写稿"
+    },
+    {
+     "id": "s1117",
+     "word": "wage",
+     "meaning": "工资，工钱"
+    },
+    {
+     "id": "s1118",
+     "word": "admit",
+     "meaning": "承认，准许……进入"
+    },
+    {
+     "id": "s1119",
+     "word": "foolish",
+     "meaning": "愚蠢的，傻的"
+    },
+    {
+     "id": "s1120",
+     "word": "partner",
+     "meaning": "合伙人，搭档"
+    },
+    {
+     "id": "s1121",
+     "word": "abundant",
+     "meaning": "丰富的，充裕的"
+    },
+    {
+     "id": "s1122",
+     "word": "occupy",
+     "meaning": "使从事，占有"
+    },
+    {
+     "id": "s1123",
+     "word": "constant",
+     "meaning": "经常的"
+    },
+    {
+     "id": "s1124",
+     "word": "welfare",
+     "meaning": "福利"
+    },
+    {
+     "id": "s1126",
+     "word": "shadow",
+     "meaning": "影子，阴影"
+    },
+    {
+     "id": "s1127",
+     "word": "ambition",
+     "meaning": "雄心，志向"
+    },
+    {
+     "id": "s1128",
+     "word": "indeed",
+     "meaning": "的确，实在地"
+    },
+    {
+     "id": "s1129",
+     "word": "goose",
+     "meaning": "鹅，鹅肉"
+    },
+    {
+     "id": "s1130",
+     "word": "selfish",
+     "meaning": "自私的，不顾他人的"
+    },
+    {
+     "id": "s1131",
+     "word": "motivation",
+     "meaning": "动机，积极性"
+    },
+    {
+     "id": "s1132",
+     "word": "effective",
+     "meaning": "有效的"
+    },
+    {
+     "id": "s1133",
+     "word": "acquire",
+     "meaning": "获得"
+    },
+    {
+     "id": "s1134",
+     "word": "efficient",
+     "meaning": "效率高的"
+    },
+    {
+     "id": "s1135",
+     "word": "data",
+     "meaning": "数据，资料"
+    },
+    {
+     "id": "s1136",
+     "word": "comprehension",
+     "meaning": "理解，的"
+    },
+    {
+     "id": "s1137",
+     "word": "anxious",
+     "meaning": "忧虑的，令人担心"
+    },
+    {
+     "id": "s1139",
+     "word": "interpreter",
+     "meaning": "译员，口译者"
+    },
+    {
+     "id": "s1140",
+     "word": "patience",
+     "meaning": "耐心，忍耐力"
+    },
+    {
+     "id": "s1141",
+     "word": "adopt",
+     "meaning": "采纳，接受"
+    },
+    {
+     "id": "s1142",
+     "word": "pile",
+     "meaning": "堆，摞"
+    },
+    {
+     "id": "s1143",
+     "word": "easygoing",
+     "meaning": "温和宽容的，随便的"
+    },
+    {
+     "id": "s1144",
+     "word": "overweight",
+     "meaning": "超重的"
+    },
+    {
+     "id": "s1145",
+     "word": "operation",
+     "meaning": "手术，运转"
+    },
+    {
+     "id": "s1146",
+     "word": "level",
+     "meaning": "水平，级别"
+    },
+    {
+     "id": "s1147",
+     "word": "junior",
+     "meaning": "年少的，等级较低的"
+    },
+    {
+     "id": "s1148",
+     "word": "senior",
+     "meaning": "较年长的，等级较高的"
+    },
+    {
+     "id": "s1149",
+     "word": "option",
+     "meaning": "选择"
+    },
+    {
+     "id": "s1150",
+     "word": "broaden",
+     "meaning": "使扩大，使宽阔"
+    },
+    {
+     "id": "s1152",
+     "word": "abuse",
+     "meaning": "滥用，虐待"
+    },
+    {
+     "id": "s1153",
+     "word": "insurance",
+     "meaning": "保险，保险业"
+    },
+    {
+     "id": "s1154",
+     "word": "hopeless",
+     "meaning": "没有希望的"
+    },
+    {
+     "id": "s1155",
+     "word": "allowance",
+     "meaning": "津贴，补助"
+    },
+    {
+     "id": "s1156",
+     "word": "pressure",
+     "meaning": "压力"
+    },
+    {
+     "id": "s1157",
+     "word": "chemist",
+     "meaning": "药剂师，化学家"
+    },
+    {
+     "id": "s1158",
+     "word": "statistics",
+     "meaning": "统计资料，数据"
+    },
+    {
+     "id": "s1159",
+     "word": "resident",
+     "meaning": "居民"
+    },
+    {
+     "id": "s1160",
+     "word": "fee",
+     "meaning": "费用，服务费"
+    },
+    {
+     "id": "s1161",
+     "word": "fund",
+     "meaning": "专款，基金"
+    },
+    {
+     "id": "s1162",
+     "word": "tailor",
+     "meaning": "裁缝"
+    },
+    {
+     "id": "s1163",
+     "word": "incident",
+     "meaning": "事情，事件"
+    },
+    {
+     "id": "s1164",
+     "word": "significance",
+     "meaning": "意义，重要性"
+    },
+    {
+     "id": "s1165",
+     "word": "bench",
+     "meaning": "长凳"
+    },
+    {
+     "id": "s1166",
+     "word": "aggressive",
+     "meaning": "有进取心的"
+    },
+    {
+     "id": "s1167",
+     "word": "garbage",
+     "meaning": "垃圾，垃圾箱"
+    },
+    {
+     "id": "s1168",
+     "word": "outcome",
+     "meaning": "结果，效果"
+    },
+    {
+     "id": "s1169",
+     "word": "grocery",
+     "meaning": "杂货店"
+    },
+    {
+     "id": "s1170",
+     "word": "shabby",
+     "meaning": "破旧的，寒酸的"
+    },
+    {
+     "id": "s1171",
+     "word": "mailbox",
+     "meaning": "邮箱，信箱"
+    },
+    {
+     "id": "s1172",
+     "word": "rare",
+     "meaning": "稀有的，罕见的"
+    },
+    {
+     "id": "s1173",
+     "word": "carpet",
+     "meaning": "地毯"
+    },
+    {
+     "id": "s1174",
+     "word": "pale",
+     "meaning": "苍白的，浅色的"
+    },
+    {
+     "id": "s1175",
+     "word": "prayer",
+     "meaning": "祈祷，祷告"
+    },
+    {
+     "id": "s1176",
+     "word": "approve",
+     "meaning": "批准，通过"
+    },
+    {
+     "id": "s1177",
+     "word": "comb",
+     "meaning": "梳子，发插"
+    },
+    {
+     "id": "s1178",
+     "word": "Broadway",
+     "meaning": "百老汇大街"
+    },
+    {
+     "id": "s1179",
+     "word": "jewel",
+     "meaning": "宝石，珠宝"
+    },
+    {
+     "id": "s1180",
+     "word": "flash",
+     "meaning": "闪光，闪烁"
+    },
+    {
+     "id": "s1181",
+     "word": "reaction",
+     "meaning": "反应，回应"
+    },
+    {
+     "id": "s1182",
+     "word": "summary",
+     "meaning": "总结，概要"
+    },
+    {
+     "id": "s1183",
+     "word": "frequency",
+     "meaning": "频率，频繁"
+    },
+    {
+     "id": "s1184",
+     "word": "questionnaire",
+     "meaning": "问卷，调查表"
+    },
+    {
+     "id": "s1185",
+     "word": "reputation",
+     "meaning": "名声，名誉"
+    },
+    {
+     "id": "s1186",
+     "word": "colleague",
+     "meaning": "同事，同僚"
+    },
+    {
+     "id": "s1187",
+     "word": "suspect",
+     "meaning": "怀疑，不相信"
+    },
+    {
+     "id": "s1188",
+     "word": "suspect",
+     "meaning": "嫌疑犯，可疑对象"
+    },
+    {
+     "id": "s1189",
+     "word": "management",
+     "meaning": "管理，管理部门"
+    },
+    {
+     "id": "s1190",
+     "word": "staff",
+     "meaning": "全体职工，全体雇员"
+    },
+    {
+     "id": "s1191",
+     "word": "requirement",
+     "meaning": "需要，要求"
+    },
+    {
+     "id": "s1193",
+     "word": "individual",
+     "meaning": "单独的，个别的"
+    },
+    {
+     "id": "s1194",
+     "word": "temporary",
+     "meaning": "暂时的"
+    },
+    {
+     "id": "s1195",
+     "word": "coach",
+     "meaning": "教练，长途公共汽车"
+    },
+    {
+     "id": "s1196",
+     "word": "expectation",
+     "meaning": "预料，期待"
+    },
+    {
+     "id": "s1197",
+     "word": "division",
+     "meaning": "分割，划分"
+    },
+    {
+     "id": "s1198",
+     "word": "compromise",
+     "meaning": "妥协，和解"
+    },
+    {
+     "id": "s1199",
+     "word": "dynamic",
+     "meaning": "动力的，强有力的"
+    },
+    {
+     "id": "s1200",
+     "word": "shortcoming",
+     "meaning": "缺点，缺陷"
+    },
+    {
+     "id": "s1201",
+     "word": "embarrass",
+     "meaning": "使尴尬，使为难"
+    },
+    {
+     "id": "s1202",
+     "word": "violent",
+     "meaning": "暴力的，强烈的"
+    },
+    {
+     "id": "s1203",
+     "word": "explosion",
+     "meaning": "爆炸"
+    },
+    {
+     "id": "s1204",
+     "word": "resign",
+     "meaning": "辞职"
+    },
+    {
+     "id": "s1205",
+     "word": "ambitious",
+     "meaning": "有雄心的，雄心勃勃的"
+    },
+    {
+     "id": "s1206",
+     "word": "actual",
+     "meaning": "真实的，实在的"
+    },
+    {
+     "id": "s1207",
+     "word": "congratulate",
+     "meaning": "祝贺，庆贺"
+    },
+    {
+     "id": "s1208",
+     "word": "smooth",
+     "meaning": "顺利的，光滑的"
+    },
+    {
+     "id": "s1209",
+     "word": "finance",
+     "meaning": "财政，金融"
+    },
+    {
+     "id": "s1210",
+     "word": "bride",
+     "meaning": "新娘"
+    },
+    {
+     "id": "s1211",
+     "word": "shame",
+     "meaning": "羞耻，惭愧"
+    },
+    {
+     "id": "s1212",
+     "word": "pursue",
+     "meaning": "追求，追逐"
+    },
+    {
+     "id": "s1213",
+     "word": "intellectual",
+     "meaning": "智力的，用脑力的"
+    },
+    {
+     "id": "s1214",
+     "word": "accommodate",
+     "meaning": "适应，供给膳宿"
+    },
+    {
+     "id": "s1215",
+     "word": "complement",
+     "meaning": "补充，与……互补"
+    },
+    {
+     "id": "s1216",
+     "word": "oral",
+     "meaning": "口头的，口述的"
+    },
+    {
+     "id": "s1217",
+     "word": "strict",
+     "meaning": "严厉的，严格的"
+    },
+    {
+     "id": "s1218",
+     "word": "commitment",
+     "meaning": "承诺，保证"
+    },
+    {
+     "id": "s1219",
+     "word": "tendency",
+     "meaning": "倾向，趋势"
+    },
+    {
+     "id": "s1220",
+     "word": "absent",
+     "meaning": "不在场的，缺席的"
+    },
+    {
+     "id": "s1222",
+     "word": "expand",
+     "meaning": "扩大，增加"
+    },
+    {
+     "id": "s1223",
+     "word": "distribute",
+     "meaning": "分布，分发"
+    },
+    {
+     "id": "s1224",
+     "word": "donate",
+     "meaning": "捐赠，赠送"
+    },
+    {
+     "id": "s1225",
+     "word": "worldwide",
+     "meaning": "遍及全世界的"
+    },
+    {
+     "id": "s1226",
+     "word": "aspect",
+     "meaning": "方面"
+    },
+    {
+     "id": "s1227",
+     "word": "profession",
+     "meaning": "职业"
+    },
+    {
+     "id": "s1228",
+     "word": "advocate",
+     "meaning": "提倡"
+    },
+    {
+     "id": "s1229",
+     "word": "label",
+     "meaning": "加标签或标记，标签"
+    },
+    {
+     "id": "s1230",
+     "word": "obtain",
+     "meaning": "取得，获得"
+    },
+    {
+     "id": "s1231",
+     "word": "select",
+     "meaning": "选择，挑选"
+    },
+    {
+     "id": "s1232",
+     "word": "restriction",
+     "meaning": "限制，约束"
+    },
+    {
+     "id": "s1233",
+     "word": "schedule",
+     "meaning": "计划表，日程安排表"
+    },
+    {
+     "id": "s1234",
+     "word": "presentation",
+     "meaning": "描述"
+    },
+    {
+     "id": "s1235",
+     "word": "measurement",
+     "meaning": "衡量，测量"
+    },
+    {
+     "id": "s1236",
+     "word": "informal",
+     "meaning": "非正式的"
+    },
+    {
+     "id": "s1237",
+     "word": "reception",
+     "meaning": "接待，招待会"
+    },
+    {
+     "id": "s1238",
+     "word": "considerate",
+     "meaning": "考虑周到的，体贴的"
+    },
+    {
+     "id": "s1239",
+     "word": "splendid",
+     "meaning": "壮丽的，辉煌的"
+    },
+    {
+     "id": "s1240",
+     "word": "astonish",
+     "meaning": "使惊讶，使震惊"
+    },
+    {
+     "id": "s1241",
+     "word": "coincidence",
+     "meaning": "巧合的事"
+    },
+    {
+     "id": "s1242",
+     "word": "drawer",
+     "meaning": "抽屉"
+    },
+    {
+     "id": "s1243",
+     "word": "investigate",
+     "meaning": "调查，侦查"
+    },
+    {
+     "id": "s1244",
+     "word": "assistance",
+     "meaning": "帮助，援助"
+    },
+    {
+     "id": "s1245",
+     "word": "vital",
+     "meaning": "极重要的，生死攸关的"
+    },
+    {
+     "id": "s1246",
+     "word": "guilty",
+     "meaning": "有罪的，内疚的"
+    },
+    {
+     "id": "s1247",
+     "word": "suspicion",
+     "meaning": "怀疑，涉嫌"
+    },
+    {
+     "id": "s1248",
+     "word": "convince",
+     "meaning": "使确信，说服"
+    },
+    {
+     "id": "s1249",
+     "word": "assume",
+     "meaning": "假定，设想"
+    },
+    {
+     "id": "s1250",
+     "word": "cancel",
+     "meaning": "取消，废除"
+    },
+    {
+     "id": "s1251",
+     "word": "meanwhile",
+     "meaning": "其间，同时"
+    },
+    {
+     "id": "s1252",
+     "word": "innocent",
+     "meaning": "无辜的，无罪的"
+    },
+    {
+     "id": "s1253",
+     "word": "offend",
+     "meaning": "触怒，冒犯"
+    },
+    {
+     "id": "s1254",
+     "word": "straightforward",
+     "meaning": "直接的，坦率的"
+    },
+    {
+     "id": "s1255",
+     "word": "humorous",
+     "meaning": "幽默的，滑稽的"
+    },
+    {
+     "id": "s1256",
+     "word": "Austria",
+     "meaning": "奥地利"
+    },
+    {
+     "id": "s1257",
+     "word": "surrounding",
+     "meaning": "周围附近的"
+    },
+    {
+     "id": "s1258",
+     "word": "troop",
+     "meaning": "成群结队而行，大群"
+    },
+    {
+     "id": "s1259",
+     "word": "assumption",
+     "meaning": "假定，假设"
+    },
+    {
+     "id": "s1260",
+     "word": "maximum",
+     "meaning": "最大的量，体积"
+    },
+    {
+     "id": "s1261",
+     "word": "precise",
+     "meaning": "精确的，准确的"
+    },
+    {
+     "id": "s1262",
+     "word": "adequate",
+     "meaning": "足够的，充分的"
+    },
+    {
+     "id": "s1263",
+     "word": "clarify",
+     "meaning": "澄清"
+    },
+    {
+     "id": "s1264",
+     "word": "psychology",
+     "meaning": "心理学"
+    },
+    {
+     "id": "s1265",
+     "word": "adaptation",
+     "meaning": "适应，适应性"
+    },
+    {
+     "id": "s1266",
+     "word": "camel",
+     "meaning": "骆驼"
+    },
+    {
+     "id": "s1267",
+     "word": "primitive",
+     "meaning": "原始的，上古的"
+    },
+    {
+     "id": "s1268",
+     "word": "missile",
+     "meaning": "导弹，飞弹"
+    },
+    {
+     "id": "s1269",
+     "word": "session",
+     "meaning": "一段时间，学期"
+    },
+    {
+     "id": "s1270",
+     "word": "voluntary",
+     "meaning": "志愿的，自愿的"
+    },
+    {
+     "id": "s1271",
+     "word": "annual",
+     "meaning": "每年的，年度的"
+    },
+    {
+     "id": "s1272",
+     "word": "elder",
+     "meaning": "年长的，年龄较大的"
+    },
+    {
+     "id": "s1273",
+     "word": "elderly",
+     "meaning": "上了年纪的"
+    },
+    {
+     "id": "s1274",
+     "word": "breathless",
+     "meaning": "使人屏住呼吸的"
+    },
+    {
+     "id": "s1275",
+     "word": "dizzy",
+     "meaning": "头晕的"
+    },
+    {
+     "id": "s1276",
+     "word": "eyesight",
+     "meaning": "视力"
+    },
+    {
+     "id": "s1277",
+     "word": "weekly",
+     "meaning": "每星期的，每周一次的"
+    },
+    {
+     "id": "s1278",
+     "word": "enthusiasm",
+     "meaning": "热心，热情"
+    },
+    {
+     "id": "s1279",
+     "word": "satisfaction",
+     "meaning": "满意，满足"
+    },
+    {
+     "id": "s1280",
+     "word": "eager",
+     "meaning": "热切的，渴望的"
+    },
+    {
+     "id": "s1281",
+     "word": "worthwhile",
+     "meaning": "值得的"
+    },
+    {
+     "id": "s1282",
+     "word": "leadership",
+     "meaning": "领导，领导能力"
+    },
+    {
+     "id": "s1283",
+     "word": "timetable",
+     "meaning": "时间表，课程表"
+    },
+    {
+     "id": "s1284",
+     "word": "starve",
+     "meaning": "挨饿，饿死"
+    },
+    {
+     "id": "s1285",
+     "word": "donation",
+     "meaning": "捐赠物，捐赠"
+    },
+    {
+     "id": "s1286",
+     "word": "adjustment",
+     "meaning": "调节，调整"
+    },
+    {
+     "id": "s1287",
+     "word": "enrich",
+     "meaning": "使富裕，使丰富"
+    },
+    {
+     "id": "s1288",
+     "word": "mature",
+     "meaning": "成熟的，充分发育的"
+    },
+    {
+     "id": "s1289",
+     "word": "payment",
+     "meaning": "付款，报酬"
+    },
+    {
+     "id": "s1291",
+     "word": "uniform",
+     "meaning": "制服，一律的"
+    },
+    {
+     "id": "s1292",
+     "word": "casual",
+     "meaning": "便服的，随便的"
+    },
+    {
+     "id": "s1293",
+     "word": "shopkeeper",
+     "meaning": "店主，零售商"
+    },
+    {
+     "id": "s1294",
+     "word": "recent",
+     "meaning": "不久前的，近来的"
+    },
+    {
+     "id": "s1295",
+     "word": "fashionable",
+     "meaning": "时髦的，流行的"
+    },
+    {
+     "id": "s1296",
+     "word": "whereas",
+     "meaning": "鉴于，然而"
+    },
+    {
+     "id": "s1297",
+     "word": "possess",
+     "meaning": "拥有，具有"
+    },
+    {
+     "id": "s1298",
+     "word": "barber",
+     "meaning": "理发师"
+    },
+    {
+     "id": "s1299",
+     "word": "chef",
+     "meaning": "厨师，厨师长"
+    },
+    {
+     "id": "s1300",
+     "word": "accountant",
+     "meaning": "会计师，会计员"
+    },
+    {
+     "id": "s1301",
+     "word": "astronaut",
+     "meaning": "宇航员，太空人"
+    },
+    {
+     "id": "s1302",
+     "word": "devil",
+     "meaning": "魔鬼，恶魔"
+    },
+    {
+     "id": "s1303",
+     "word": "vacant",
+     "meaning": "未占用的，空着的"
+    },
+    {
+     "id": "s1304",
+     "word": "outstanding",
+     "meaning": "杰出的，优秀的"
+    },
+    {
+     "id": "s1305",
+     "word": "assess",
+     "meaning": "评价，估价"
+    },
+    {
+     "id": "s1306",
+     "word": "salary",
+     "meaning": "薪金，薪水"
+    },
+    {
+     "id": "s1307",
+     "word": "occupation",
+     "meaning": "职业，占据"
+    },
+    {
+     "id": "s1308",
+     "word": "amateur",
+     "meaning": "业余爱好者"
+    },
+    {
+     "id": "s1309",
+     "word": "instant",
+     "meaning": "立即的，速成的"
+    },
+    {
+     "id": "s1310",
+     "word": "flexible",
+     "meaning": "灵活的，有弹性的"
+    },
+    {
+     "id": "s1311",
+     "word": "shortly",
+     "meaning": "立刻，马上"
+    },
+    {
+     "id": "s1312",
+     "word": "significant",
+     "meaning": "有意义的，重要的"
+    },
+    {
+     "id": "s1313",
+     "word": "drawback",
+     "meaning": "缺点，障碍"
+    },
+    {
+     "id": "s1314",
+     "word": "applicant",
+     "meaning": "申请人"
+    },
+    {
+     "id": "s1315",
+     "word": "accommodation",
+     "meaning": "住所，住宿"
+    },
+    {
+     "id": "s1316",
+     "word": "qualification",
+     "meaning": "资格，资历"
+    },
+    {
+     "id": "s1317",
+     "word": "modest",
+     "meaning": "谦虚的，质朴的"
+    },
+    {
+     "id": "s1318",
+     "word": "punctual",
+     "meaning": "准时的，守时的"
+    },
+    {
+     "id": "s1319",
+     "word": "tournament",
+     "meaning": "联赛，比赛"
+    },
+    {
+     "id": "s1320",
+     "word": "draft",
+     "meaning": "草稿，草案，起草"
+    }
+   ]
+  }
+ ]
+}
