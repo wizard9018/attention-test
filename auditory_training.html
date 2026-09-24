@@ -326,19 +326,19 @@
         <div class="choice-grid">
           <div class="choice-card" data-difficulty="junior">
             <div class="big">🌱</div>
-            <div class="label">初级词汇</div>
+            <div class="label">小学阶段</div>
             <div class="sub" id="juniorMeta"></div>
           </div>
           <div class="choice-card" data-difficulty="senior">
             <div class="big">🚀</div>
-            <div class="label">高级词汇</div>
+            <div class="label">初中阶段</div>
             <div class="sub" id="seniorMeta"></div>
           </div>
         </div>
       </div>
 
       <div class="field">
-        <label>从第几个 Unit 开始</label>
+        <label>从哪个年级开始</label>
         <div class="unit-grid" id="unitGrid"></div>
       </div>
 
@@ -859,7 +859,7 @@
 
         var tdProgress = document.createElement("td");
         tdProgress.textContent = e.progress.map(function(p){
-          return (p.difficulty === "junior" ? "初级" : "高级") + " U" + (p.group_index + 1);
+          return (p.difficulty === "junior" ? "小学阶段" : "初中阶段") + " " + unitName(p.difficulty, p.group_index);
         }).join(" / ") || "-";
         tdProgress.className = "at-student";
         tdProgress.title = "点击查看具体进度";
@@ -1045,9 +1045,9 @@
         box.className = "rec-entry";
         var unitRows = data.units.map(function(u, i){
           var learned = i < p.group_index ? u.words.length : (i === p.group_index ? p.cursor_index : 0);
-          return "<tr><td>Unit " + (i + 1) + "</td><td>" + learned + " / " + u.words.length + " 词</td></tr>";
+          return "<tr><td>" + (u.name || "Unit " + (i + 1)) + "</td><td>" + learned + " / " + u.words.length + " 词</td></tr>";
         }).join("");
-        box.innerHTML = "<div class=\"fb-title\"><span class=\"fb-chip\">" + (p.difficulty === "junior" ? "初级" : "高级") + "</span></div>" +
+        box.innerHTML = "<div class=\"fb-title\"><span class=\"fb-chip\">" + (p.difficulty === "junior" ? "小学阶段" : "初中阶段") + "</span></div>" +
           "<p style=\"margin:0 0 6px;font-size:15px;\">已学 <b>" + groupsDone + "</b> 组（" + done + " / " + data.total_words + " 词）</p>" +
           "<p style=\"margin:0 0 10px;font-size:15px;\">还差约 <b>" + Math.ceil(left / per) + "</b> 组没学（剩 " + left + " 词，按每组 " + per + " 词算）</p>" +
           "<table class=\"admin-table\"><tbody>" + unitRows + "</tbody></table>";
@@ -1119,8 +1119,8 @@
 
     var head = document.createElement("div");
     head.className = "fb-title";
-    var diffLabel = rec.difficulty === "junior" ? "初级" : "高级";
-    head.innerHTML = "<span class=\"fb-chip\">" + diffLabel + " Unit" + (rec.unit_index + 1) + "</span>" +
+    var diffLabel = rec.difficulty === "junior" ? "小学阶段" : "初中阶段";
+    head.innerHTML = "<span class=\"fb-chip\">" + diffLabel + " " + unitName(rec.difficulty, rec.unit_index) + "</span>" +
       (groupNo ? "<span class=\"fb-group\">第" + groupNo + "组</span>" : "") +
       "<span class=\"hint\" style=\"margin:0 0 0 auto;\">" + new Date(rec.created_at).toLocaleString() + "</span>";
     box.appendChild(head);
@@ -1258,8 +1258,8 @@
       var last = rows.slice().sort(function(a,b){ return new Date(b.updated_at || 0) - new Date(a.updated_at || 0); })[0];
       state.difficulty = last ? last.difficulty : "junior";
 
-      el("juniorMeta").textContent = state.wordData.junior.total_words + " 词 / 3 个 Unit";
-      el("seniorMeta").textContent = state.wordData.senior.total_words + " 词 / 3 个 Unit";
+      el("juniorMeta").textContent = state.wordData.junior.total_words + " 词 / " + state.wordData.junior.units.length + " 个年级";
+      el("seniorMeta").textContent = state.wordData.senior.total_words + " 词 / " + state.wordData.senior.units.length + " 个年级";
       updateVoiceToggleUI();
       applyDifficultySelection();
       showView("viewSetup");
@@ -1327,12 +1327,12 @@
 
     var head = document.createElement("div");
     head.className = "rec-entry-head";
-    var diffLabel = rec.difficulty === "junior" ? "初级" : "高级";
+    var diffLabel = rec.difficulty === "junior" ? "小学阶段" : "初中阶段";
     var groupLabel = groupNo ? ("<span class=\"fb-group\">第" + groupNo + "组</span>") : "";
     var badge = "<span class=\"status-badge " + (rec.admin_status === "pass" ? "pass" : "retry") + "\">" +
       (rec.admin_status === "pass" ? "☑️ 已通过" : "🔁 需要重录") + "</span>";
     head.className = "fb-title";
-    head.innerHTML = "<span class=\"fb-chip\">" + diffLabel + " Unit" + (rec.unit_index + 1) + "</span>" + groupLabel + badge;
+    head.innerHTML = "<span class=\"fb-chip\">" + diffLabel + " " + unitName(rec.difficulty, rec.unit_index) + "</span>" + groupLabel + badge;
     box.appendChild(head);
 
     if (rec.admin_feedback) {
@@ -1487,6 +1487,10 @@
     renderCountGrid();
   }
 
+  function unitName(diff, idx) {
+    var d = state.wordData[diff], u = d && d.units && d.units[idx];
+    return (u && u.name) || ("U" + (idx + 1));
+  }
   function renderUnitGrid() {
     var data = state.wordData[state.difficulty];
     var p = state.progress[state.difficulty];
@@ -1499,7 +1503,7 @@
       if (isLastUnit) cls += " current";
       if (u.unit_index === state.selectedUnit) cls += " selected";
       cell.className = cls;
-      cell.innerHTML = "Unit " + (u.unit_index + 1) + (isLastUnit ? "<span class=\"uc-sub\">上次学到这</span>" : "");
+      cell.innerHTML = (u.name || "Unit " + (u.unit_index + 1)) + (isLastUnit ? "<span class=\"uc-sub\">上次学到这</span>" : "");
       cell.addEventListener("click", function(){
         state.selectedUnit = u.unit_index;
         renderUnitGrid();
