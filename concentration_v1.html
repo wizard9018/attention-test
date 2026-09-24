@@ -3244,8 +3244,8 @@
   var visualTimerInterval = null;
   var visualStage1Duration = 0;
   // 同年龄段常模参考值 (基于数字广度/柯西方块经典研究的近似发展曲线，供家长参考对比，非临床诊断标准)
-  var AUDITORY_AGE_NORMS = { 5:4, 6:4, 7:5, 8:5, 9:6, 10:6, 11:7, 12:7, 13:9, 14:9, 15:9, 16:9, 17:9, 18:9 };
-  var VISUAL_AGE_NORMS = { 5:4, 6:5, 7:5, 8:6, 9:6, 10:7, 11:7, 12:9, 13:9, 14:9, 15:9, 16:9, 17:9, 18:10 };
+  var AUDITORY_AGE_NORMS = { 5:9, 6:9, 7:9, 8:9, 9:9, 10:9, 11:9, 12:9, 13:9, 14:9, 15:9, 16:9, 17:9, 18:9 };
+  var VISUAL_AGE_NORMS = { 5:9, 6:9, 7:9, 8:9, 9:9, 10:9, 11:9, 12:9, 13:9, 14:9, 15:9, 16:9, 17:9, 18:9 };
   function getAgeNorm(table, age) {
     var clamped = Math.max(5, Math.min(18, age));
     return table[clamped];
