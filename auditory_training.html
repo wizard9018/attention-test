@@ -11,8 +11,13 @@
     --border:#e6e1d6;
   }
   *{box-sizing:border-box;}
+  .ambient-bg{position:fixed;inset:0;z-index:0;overflow:hidden;background:var(--bg) url(assets/study_ambient/poster.jpg) center/cover no-repeat;pointer-events:none;}
+  .ambient-bg video{width:100%;height:100%;object-fit:cover;}
+  .ambient-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(247,245,239,.55),rgba(247,245,239,.40));}
+  @media (prefers-reduced-motion:reduce){ .ambient-bg video{display:none;} }
+  body:has(#viewLogin:not([hidden])) .ambient-bg{display:none;}
   body{margin:0;font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);}
-  .wrap{max-width:640px;margin:0 auto;padding:24px 20px 60px;}
+  .wrap{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:24px 20px 60px;}
   .wrap:has(#viewLogin:not([hidden])){max-width:1080px;}
   .hero-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:start;}
   .hero-copy{padding-top:12px;}
@@ -159,6 +164,10 @@
 </style>
 </head>
 <body>
+<!-- 全页背景：同伴安静学习的循环视频，静音自动播放，压一层浅色蒙版保证文字清晰 -->
+<div class="ambient-bg" aria-hidden="true">
+  <video id="ambientVideo" autoplay loop muted playsinline poster="assets/study_ambient/poster.jpg"></video>
+</div>
 <div class="wrap">
   <div class="topbar">
     <a href="concentration_v1.html" class="brand-link" title="返回首页">
@@ -556,10 +565,26 @@
 
   function el(id){ return document.getElementById(id); }
   var ADMIN_VIEWS = { viewAdmin: 1, viewAdminStudent: 1 };
+  // 背景视频：登录后才开始加载（登录页不下载），只加载一次
+  function loadAmbientVideo() {
+    var v = el("ambientVideo");
+    if (v.dataset.loaded) return;
+    v.dataset.loaded = "1";
+    ["webm", "mp4"].forEach(function(ext){
+      var src = document.createElement("source");
+      src.src = "assets/study_ambient/wan21_peer_study_v8_10s_loop." + ext;
+      src.type = "video/" + ext;
+      v.appendChild(src);
+    });
+    v.load();
+    // 视频容器在登录页是隐藏的，隐藏时 play() 会被浏览器搁置；等数据就绪且已显示后再播
+    v.addEventListener("canplay", function(){ v.play().catch(function(){}); }, { once: true });
+  }
   function showView(id) {
     ["viewLogin","viewAdmin","viewAdminStudent","viewSuperAdmin","viewAdminRecords","viewSetup","viewPlayer","viewDone","viewRecord"].forEach(function(v){
       el(v).hidden = (v !== id);
     });
+    if (id !== "viewLogin") loadAmbientVideo();
     // 登录后的每个界面都显示今天的进度条，方便老师批改后随时能看到状态变化
     var isStudentView = !!(state.referrer && state.studentNo);
     el("batchRoadmapBar").hidden = !isStudentView;

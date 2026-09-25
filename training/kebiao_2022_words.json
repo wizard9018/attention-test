@@ -15514,17 +15514,16 @@
    "id": "k1008"
   },
   {
-   "word": "per cent",
+   "word": "percent",
    "level": "三级",
    "stage": "初中",
    "grade": "六年级",
    "grade_source": "词频均分",
    "expansions": [
     "ten per cent",
-    "percent",
     "percentage"
    ],
-   "meaning": "百分之…",
+   "meaning": "百分比",
    "id": "k1009"
   },
   {
@@ -17261,7 +17260,7 @@
     "railway station",
     "high-speed railway"
    ],
-   "meaning": "英铁路",
+   "meaning": "铁路",
    "id": "k1121"
   },
   {

@@ -1,5 +1,5 @@
 {
- "total_words": 1599,
+ "total_words": 1598,
  "units": [
   {
    "unit_index": 0,
@@ -671,11 +671,6 @@
      "meaning": "破坏"
     },
     {
-     "id": "h0134",
-     "word": "percent",
-     "meaning": "百分之……"
-    },
-    {
      "id": "h0135",
      "word": "brick",
      "meaning": "砖块"
@@ -933,7 +928,7 @@
     {
      "id": "h0186",
      "word": "base",
-     "meaning": "以……为据点"
+     "meaning": "基础；基地"
     },
     {
      "id": "h0187",
@@ -1423,7 +1418,7 @@
     {
      "id": "h0284",
      "word": "onto",
-     "meaning": "到…上面"
+     "meaning": "到上面"
     },
     {
      "id": "h0285",
@@ -1878,7 +1873,7 @@
     {
      "id": "h0375",
      "word": "feature",
-     "meaning": "以……为特色"
+     "meaning": "特色；特征"
     },
     {
      "id": "h0376",
@@ -2768,7 +2763,7 @@
     {
      "id": "h0553",
      "word": "dock",
-     "meaning": "对接；……进港"
+     "meaning": "对接；进港"
     },
     {
      "id": "h0554",
@@ -3013,7 +3008,7 @@
     {
      "id": "h0602",
      "word": "beneath",
-     "meaning": "在……下面"
+     "meaning": "在下面"
     },
     {
      "id": "h0603",
@@ -4079,7 +4074,7 @@
     {
      "id": "h0814",
      "word": "interpret",
-     "meaning": "把……理解为"
+     "meaning": "解释；理解"
     },
     {
      "id": "h0815",
@@ -4344,7 +4339,7 @@
     {
      "id": "h0867",
      "word": "devote",
-     "meaning": "把……献"
+     "meaning": "奉献；致力"
     },
     {
      "id": "h0868",
@@ -4909,7 +4904,7 @@
     {
      "id": "h0980",
      "word": "besides",
-     "meaning": "除……之外"
+     "meaning": "除了"
     },
     {
      "id": "h0981",
@@ -4974,7 +4969,7 @@
     {
      "id": "h0993",
      "word": "consist",
-     "meaning": "由……组成"
+     "meaning": "组成"
     },
     {
      "id": "h0994",
@@ -5354,7 +5349,7 @@
     {
      "id": "h1069",
      "word": "alongside",
-     "meaning": "在……旁边"
+     "meaning": "在旁边"
     },
     {
      "id": "h1070",
@@ -5735,7 +5730,7 @@
     {
      "id": "h1144",
      "word": "worthy",
-     "meaning": "值得……的"
+     "meaning": "值得的"
     },
     {
      "id": "h1145",
@@ -7125,7 +7120,7 @@
     {
      "id": "h1422",
      "word": "entitle",
-     "meaning": "给……命名"
+     "meaning": "赋予权利"
     },
     {
      "id": "h1423",
@@ -7400,7 +7395,7 @@
     {
      "id": "h1477",
      "word": "tax",
-     "meaning": "对……征税"
+     "meaning": "征税"
     },
     {
      "id": "h1478",
@@ -7820,7 +7815,7 @@
     {
      "id": "h1561",
      "word": "categorise",
-     "meaning": "把……分类"
+     "meaning": "分类"
     },
     {
      "id": "h1562",
@@ -7905,7 +7900,7 @@
     {
      "id": "h1578",
      "word": "dedicate",
-     "meaning": "把……奉献给"
+     "meaning": "奉献；献给"
     },
     {
      "id": "h1579",
