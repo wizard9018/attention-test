@@ -1834,7 +1834,7 @@
     };
     playerEl.onended = function() {
       var dur = (playerEl.duration && isFinite(playerEl.duration)) ? playerEl.duration * 1000 : 800;
-      if (step.phase === "en") dur *= 2; // 间隔按这一遍实际播放时长动态算：英文=2倍时长，中文=1倍时长
+      dur *= (step.phase === "en") ? 2 : 1.5; // 间隔按这一遍实际播放时长动态算：英文=2倍时长，中文=1.5倍时长
       advance(stepIndex, repeatIndex, dur, gen);
     };
     playerEl.play().catch(function(){});
