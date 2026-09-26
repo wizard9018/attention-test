@@ -1519,13 +1519,15 @@
   // 每天大约学 30 个词：从上次学到的位置往后数 30 个词，把它们的中英文、男女声音频提前下载到浏览器缓存，
   // 进入学习时就不用再等（每个难度只预加载一次；一次约 120 个小文件，不到 2MB）
   var PREFETCH_WORDS = 30, prefetched = {};
-  function prefetchNextWords(diff) {
+  function prefetchNextWords(diff, startUnit, startCur) {   // 不传起点 = 从上次学到的位置开始
     var data = state.wordData[diff], p = state.progress[diff];
     if (!data || !p) return;
-    var key = diff + ":" + (p.group_index || 0) + ":" + (p.cursor_index || 0);
+    var unit = startUnit != null ? startUnit : (p.group_index || 0);
+    var cur = startCur != null ? startCur : (p.cursor_index || 0);
+    var key = diff + ":" + unit + ":" + cur;
     if (prefetched[key]) return;
     prefetched[key] = true;
-    var ids = [], unit = p.group_index || 0, cur = p.cursor_index || 0;
+    var ids = [];
     while (ids.length < PREFETCH_WORDS && unit < data.units.length) {
       var ws = data.units[unit].words;
       for (var i = cur; i < ws.length && ids.length < PREFETCH_WORDS; i++) ids.push(ws[i].id);
@@ -1564,6 +1566,7 @@
       cell.innerHTML = (u.name || "Unit " + (u.unit_index + 1)) + (isLastUnit ? "<span class=\"uc-sub\">上次学到这</span>" : "");
       cell.addEventListener("click", function(){
         state.selectedUnit = u.unit_index;
+        prefetchNextWords(state.difficulty, u.unit_index, u.unit_index === p.group_index ? (p.cursor_index || 0) : 0);
         renderUnitGrid();
       });
       grid.appendChild(cell);
