@@ -444,11 +444,12 @@
       <button class="modal-close" id="ptCloseBtn" aria-label="关闭">✕</button>
       <div id="ptStart">
         <h2>单词分级测试</h2>
-        <p class="hint" style="margin-bottom:14px;">先选你现在的年级。测试会从你的年级往下 2 级、往上 2 级，共 5 个年级，每个年级 5 个单词，一共 25 题。看英文，选出对应的中文意思。</p>
+        <p class="hint" style="margin-bottom:14px;">先选你现在的年级。测试会从你的年级往下 2 级、往上 2 级，每个年级 5 个单词（靠近最低或最高年级时，考的年级会少一些）。看英文，选出对应的中文意思。</p>
         <div class="field">
           <label>你现在的年级</label>
           <select id="ptGrade"></select>
         </div>
+        <p class="hint" id="ptPreview" style="margin:-4px 0 14px;font-weight:700;"></p>
         <button class="btn" id="ptBeginBtn" type="button">开始测试</button>
       </div>
       <div id="ptQuiz" hidden>
@@ -1136,9 +1137,12 @@
   var pt = { pool: null, qs: [], idx: 0, tiers: [], result: null };
   function ptShow(part) { ["ptStart", "ptQuiz", "ptResult"].forEach(function(id){ el(id).hidden = (id !== part); }); }
   function ptShuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
-  function ptWindow(center) {
-    var start = Math.min(Math.max(center - 2, 0), PT_TIERS.length - PT_PER_TIER);   // 靠近两端时整体平移，保证总有 5 个年级
-    return PT_TIERS.slice(start, start + PT_PER_TIER);
+  function ptWindow(center) {   // 往下 2 级、往上 2 级；靠近最低/最高年级时不平移，考的年级少一些（一年级 = 学前~三年级）
+    return PT_TIERS.slice(Math.max(center - 2, 0), Math.min(center + 2, PT_TIERS.length - 1) + 1);
+  }
+  function ptPreview() {
+    var w = ptWindow(PT_TIERS.indexOf(el("ptGrade").value));
+    el("ptPreview").textContent = "将考：" + w[0] + " ~ " + w[w.length - 1] + "，共 " + w.length + " 个年级，" + (w.length * PT_PER_TIER) + " 题";
   }
   function ptTierInfo(name) { var i = PT_TIERS.indexOf(name); return i < 7 ? { diff: "junior", unit: i } : { diff: "senior", unit: i - 7 }; }
   function ptHanzi(m) { return m.replace(/[^\u4e00-\u9fff]/g, ""); }
@@ -1213,8 +1217,10 @@
     var sel = el("ptGrade");
     if (!sel.options.length) PT_TIERS.forEach(function(t){ var o = document.createElement("option"); o.textContent = t; sel.appendChild(o); });
     ptShow("ptStart");
+    ptPreview();
     el("placementModal").hidden = false;
   }
+  el("ptGrade").addEventListener("change", ptPreview);
   el("ptOpenBtn").addEventListener("click", ptOpen);
   el("ptCloseBtn").addEventListener("click", function(){ el("placementModal").hidden = true; });
   el("ptBackdrop").addEventListener("click", function(){ el("placementModal").hidden = true; });
