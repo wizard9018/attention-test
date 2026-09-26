@@ -342,7 +342,7 @@
     <div class="hint" style="margin-bottom:10px;">主页"申请管理员账号"提交的申请。申请人的账号（推荐码）是手机号后5位，处理完点"标记已处理"。</div>
     <div id="superAdminApplicationsWrap"><p class="hint">加载中…</p></div>  </div>
 
-  <!-- 总管理员：音频管理。所有单词的中英文男女读音，逐个试听，标记哪个读音有问题 -->
+  <!-- 音频管理（总管理员、55168）。所有单词的中英文男女读音，逐个试听，标记哪个读音有问题 -->
   <div class="card" id="viewAudioAdmin" hidden>
     <h2>音频管理 · 所有单词的读音检查</h2>
     <div class="hint" id="audioAdminNote" style="margin-bottom:10px;"></div>
@@ -678,6 +678,8 @@
     c.addEventListener("click", function(){ pickScene(c.getAttribute("data-scene")); });
   });
   pickScene(sceneKey);
+  var AUDIO_ADMIN_ACCOUNT = "55168";   // 音频管理除总管理员外，也放在这个管理员账号下
+  function canAudioAdmin() { return !!state.adminIsSuper || (!state.studentNo && state.referrer === AUDIO_ADMIN_ACCOUNT); }   // 总管理员先保留，同时 55168 也有
   var AMBIENT_VIEWS = { viewSetup: 1, viewPlayer: 1, viewDone: 1, viewRecord: 1 };   // 只有学生训练界面有背景视频
   function showView(id) {
     ["viewLogin","viewAdmin","viewAdminStudent","viewSuperAdmin","viewAudioAdmin","viewAdminRecords","viewSetup","viewPlayer","viewDone","viewRecord"].forEach(function(v){
@@ -698,7 +700,7 @@
     // 管理员登录后每个管理页面顶部都有两个 tab，可以来回切换
     var inAdmin = !!(ADMIN_VIEWS[id] || id === "viewSuperAdmin" || id === "viewAdminRecords" || id === "viewAudioAdmin");
     el("adminTabs").hidden = !inAdmin;
-    el("adminTabAudio").hidden = !state.adminIsSuper;          // 音频管理只有总管理员有
+    el("adminTabAudio").hidden = !canAudioAdmin();             // 音频管理：总管理员和 55168 管理员有
     el("adminTabTrain").classList.toggle("active", inAdmin && id !== "viewAdminRecords" && id !== "viewAudioAdmin");
     el("adminTabRecords").classList.toggle("active", id === "viewAdminRecords");
     el("adminTabAudio").classList.toggle("active", id === "viewAudioAdmin");
@@ -1076,12 +1078,13 @@
   });
   el("adminRecordsRefreshBtn").addEventListener("click", loadAdminTestRecords);
   el("adminTabAudio").addEventListener("click", function(){
+    if (!canAudioAdmin()) return;
     if (adminRefreshTimer) { clearInterval(adminRefreshTimer); adminRefreshTimer = null; }
     showView("viewAudioAdmin");
     loadAudioAdmin();
   });
 
-  // ---------- 音频管理（仅总管理员）：所有单词的中英文男女读音，逐个试听并标记有问题 ----------
+  // ---------- 音频管理（总管理员 + 55168 管理员账号）：所有单词的中英文男女读音，逐个试听并标记有问题 ----------
   // 标记存在 Supabase 表 audio_flags（word_id, sound, bad, note），所有管理设备共用；表还没建时先存在本机浏览器。
   var AA = { words: null, flags: {}, tableOk: true, page: 0, per: 40, audio: new Audio(), inited: false };
   var AA_SOUNDS = [["zh_male", "男声中文"], ["en_male", "男声英文"], ["zh_female", "女声中文"], ["en_female", "女声英文"]];
