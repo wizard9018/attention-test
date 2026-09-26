@@ -20,7 +20,7 @@
   .scene-chip.active{border-color:var(--blue);background:#ddf4ff;color:var(--ink);}
   .ambient-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(247,245,239,.55),rgba(247,245,239,.40));}
   @media (prefers-reduced-motion:reduce){ .ambient-bg video{display:none;} }
-  body:has(#viewLogin:not([hidden])) .ambient-bg{display:none;}
+  body.no-ambient .ambient-bg{display:none;}   /* 登录页和管理员页面不要背景视频 */
   body{margin:0;font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);}
   .wrap{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:24px 20px 60px;}
   .wrap:has(#viewLogin:not([hidden])){max-width:1080px;}
@@ -179,7 +179,7 @@
   [hidden]{display:none !important;}
 </style>
 </head>
-<body>
+<body class="no-ambient">
 <!-- 全页背景：同伴安静学习的循环视频，静音自动播放，压一层浅色蒙版保证文字清晰 -->
 <div class="ambient-bg" aria-hidden="true">
   <video id="ambientVideo" autoplay loop muted playsinline poster="assets/study_ambient/poster.jpg"></video>
@@ -678,11 +678,14 @@
     c.addEventListener("click", function(){ pickScene(c.getAttribute("data-scene")); });
   });
   pickScene(sceneKey);
+  var AMBIENT_VIEWS = { viewSetup: 1, viewPlayer: 1, viewDone: 1, viewRecord: 1 };   // 只有学生训练界面有背景视频
   function showView(id) {
     ["viewLogin","viewAdmin","viewAdminStudent","viewSuperAdmin","viewAudioAdmin","viewAdminRecords","viewSetup","viewPlayer","viewDone","viewRecord"].forEach(function(v){
       el(v).hidden = (v !== id);
     });
-    if (id !== "viewLogin") loadAmbientVideo();
+    var ambient = !!AMBIENT_VIEWS[id];
+    document.body.classList.toggle("no-ambient", !ambient);
+    if (ambient) loadAmbientVideo();
     // 登录后的每个界面都显示今天的进度条，方便老师批改后随时能看到状态变化
     var isStudentView = !!(state.referrer && state.studentNo);
     el("batchRoadmapBar").hidden = !isStudentView;
@@ -699,6 +702,7 @@
     el("adminTabTrain").classList.toggle("active", inAdmin && id !== "viewAdminRecords" && id !== "viewAudioAdmin");
     el("adminTabRecords").classList.toggle("active", id === "viewAdminRecords");
     el("adminTabAudio").classList.toggle("active", id === "viewAudioAdmin");
+    if (inAdmin) { try { sessionStorage.setItem("training_admin_view", id); } catch(e) {} }
     updateIdleWatch();
   }
 
@@ -731,6 +735,7 @@
 
   // 管理员入口：只从主页 header 的"管理员登录"带着账号跳过来。账号 admin = 总管理员，5位推荐码 = 普通管理员
   function enterAdmin(account) {
+    try { sessionStorage.setItem("training_admin", account); } catch(e) {}   // 刷新页面时用它恢复登录（只存账号，关闭标签页即失效）
     if (account === "admin") {
       state.adminIsSuper = true;
       showView("viewSuperAdmin");
@@ -793,6 +798,7 @@
   function adminLogout() {
     if (adminRefreshTimer) { clearInterval(adminRefreshTimer); adminRefreshTimer = null; }
     state.adminIsSuper = false;
+    try { sessionStorage.removeItem("training_admin"); sessionStorage.removeItem("training_admin_view"); } catch(e) {}
     showView("viewLogin");
   }
   el("adminStudentBackBtn").addEventListener("click", function(){
@@ -2339,7 +2345,17 @@
     var params = new URLSearchParams(window.location.search);
     var referrer = params.get("adminReferrer");
     var pwd = params.get("adminPwd");
-    if (!referrer || !pwd) return;
+    if (!referrer || !pwd) {
+      // 没带参数（比如在管理员页面刷新）：如果这个标签页里已经以管理员身份登录过，直接恢复，回到刷新前的那个标签
+      var saved = null, view = null;
+      try { saved = sessionStorage.getItem("training_admin"); view = sessionStorage.getItem("training_admin_view"); } catch(e) {}
+      if (saved && (saved === "admin" || /^\d{5}$/.test(saved))) {
+        enterAdmin(saved);
+        var tab = { viewAudioAdmin: "adminTabAudio", viewAdminRecords: "adminTabRecords" }[view];
+        if (tab) setTimeout(function(){ el(tab).click(); }, 600);
+      }
+      return;
+    }
     history.replaceState(null, "", window.location.pathname);
     if (pwd === "admin123" && (referrer === "admin" || /^\d{5}$/.test(referrer))) enterAdmin(referrer);
   })();
