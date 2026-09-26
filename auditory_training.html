@@ -13,7 +13,7 @@
   }
   *{box-sizing:border-box;}
   .ambient-bg{position:fixed;inset:0;z-index:0;overflow:hidden;background:var(--bg) url(assets/study_ambient/poster.jpg) center/cover no-repeat;pointer-events:none;}
-  .ambient-bg video{width:100%;height:100%;object-fit:cover;}
+  .ambient-bg video{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.22,.8,.3,1);will-change:transform;}
   .field label.has-scene{position:relative;}
   .scene-picker{position:absolute;right:0;top:-3px;display:inline-flex;align-items:center;gap:4px;}
   .scene-chip{border:1.5px solid var(--border);border-radius:10px;padding:0 8px;font-size:12px;line-height:18px;font-weight:700;color:var(--muted);background:#fdfcf9;cursor:pointer;}
@@ -584,14 +584,10 @@
   };
   var sceneKey = "classroom", ambientOn = false;
   try { var saved = localStorage.getItem("training_scene"); if (saved && SCENES[saved]) sceneKey = saved; } catch(e) {}
-  function loadAmbientVideo() {
-    ambientOn = true;
-    var v = el("ambientVideo"), sc = SCENES[sceneKey];
-    if (v.dataset.scene === sceneKey) return;
-    v.dataset.scene = sceneKey;
-    v.innerHTML = "";
+  var SCENE_ORDER = ["classroom", "cafe", "beach", "attic"];
+  function fillVideo(v, sc, key) {
+    v.dataset.scene = key;
     v.poster = sc.poster;
-    v.parentNode.style.backgroundImage = "url(" + sc.poster + ")";
     ["webm", "mp4"].forEach(function(ext){
       var src = document.createElement("source");
       src.src = sc.base + "." + ext;
@@ -601,6 +597,48 @@
     v.load();
     // 视频容器在登录页是隐藏的，隐藏时 play() 会被浏览器搁置；等数据就绪且已显示后再播
     v.addEventListener("canplay", function(){ v.play().catch(function(){}); }, { once: true });
+  }
+  // 换场景：新视频从一侧滑入盖住旧的（往后的场景从右边进，往前的从左边进），滑完再移除旧的
+  function finishSlide() {
+    var next = el("ambientVideoNext");
+    if (!next) return;
+    var old = el("ambientVideo");
+    if (old) old.remove();
+    next.id = "ambientVideo";
+    next.style.transform = "";
+  }
+  function loadAmbientVideo() {
+    ambientOn = true;
+    finishSlide();
+    var cur = el("ambientVideo"), sc = SCENES[sceneKey], bg = cur.parentNode;
+    if (cur.dataset.scene === sceneKey) return;
+    bg.style.backgroundImage = "url(" + sc.poster + ")";
+    var first = !cur.dataset.scene;
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (first || reduce) {           // 第一次加载，或用户要求减少动效：直接换，不滑动
+      cur.innerHTML = "";
+      fillVideo(cur, sc, sceneKey);
+      return;
+    }
+    var dir = SCENE_ORDER.indexOf(sceneKey) >= SCENE_ORDER.indexOf(cur.dataset.scene) ? 1 : -1;
+    var nv = document.createElement("video");
+    nv.id = "ambientVideoNext";
+    nv.muted = true; nv.loop = true; nv.autoplay = true; nv.playsInline = true;
+    nv.setAttribute("muted", ""); nv.setAttribute("playsinline", "");
+    nv.style.transform = "translateX(" + (dir * 100) + "%)";
+    bg.insertBefore(nv, cur.nextSibling);
+    fillVideo(nv, sc, sceneKey);
+    var go = function(){
+      if (nv.dataset.started) return;
+      nv.dataset.started = "1";
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){
+        nv.style.transform = "translateX(0)";
+        cur.style.transform = "translateX(" + (-dir * 18) + "%)";
+        setTimeout(function(){ if (el("ambientVideoNext") === nv) finishSlide(); }, 760);
+      }); });
+    };
+    nv.addEventListener("canplay", go, { once: true });
+    setTimeout(go, 4000);            // 网络慢时最多等 4 秒，不让旧画面一直停着
   }
   function pickScene(key) {
     if (!SCENES[key]) return;
