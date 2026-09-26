@@ -111,3 +111,18 @@ create policy "anon all training_usage_sessions" on training_usage_sessions
 drop policy if exists "anon all training_quota" on training_quota;
 create policy "anon all training_quota" on training_quota
   for all using (true) with check (true);
+
+-- 音频管理：总管理员对每个单词每个读音标记"有问题"（word_id 是词表里的 id，如 k0001 / h0001）
+-- sound: zh_male | en_male | zh_female | en_female；sound = 'note' 的那一行只存这个词的备注
+create table if not exists audio_flags (
+  word_id text not null,
+  sound text not null,
+  bad boolean not null default false,
+  note text,
+  updated_at timestamptz not null default now(),
+  primary key (word_id, sound)
+);
+alter table audio_flags enable row level security;
+drop policy if exists "anon all audio_flags" on audio_flags;
+create policy "anon all audio_flags" on audio_flags
+  for all using (true) with check (true);

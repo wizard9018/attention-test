@@ -38,7 +38,18 @@
   .wrap:has(#viewAdminStudent:not([hidden])){max-width:1100px;}
   .wrap:has(#viewAdminRecords:not([hidden])),
   .wrap:has(#viewAdmin:not([hidden])),
-  .wrap:has(#viewSuperAdmin:not([hidden])){max-width:1100px;}
+  .wrap:has(#viewSuperAdmin:not([hidden])),
+  .wrap:has(#viewAudioAdmin:not([hidden])){max-width:1100px;}
+  .aa-row{display:grid;grid-template-columns:minmax(150px,1.1fr) repeat(4,minmax(112px,1fr)) minmax(120px,1fr);gap:6px 10px;align-items:center;padding:9px 2px;border-bottom:1px solid var(--border);}
+  .aa-row.has-bad{background:#fff4f2;}
+  .aa-word b{font-size:17px;}
+  .aa-word span{display:block;color:var(--muted);font-size:12px;}
+  .aa-snd{display:flex;gap:4px;align-items:center;}
+  .aa-play{flex:1;padding:6px 4px;border-radius:9px;border:1.5px solid var(--border);background:#fff;font:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}
+  .aa-flag{padding:6px 7px;border-radius:9px;border:1.5px solid var(--border);background:#fff;font:inherit;font-size:12px;font-weight:800;cursor:pointer;color:var(--muted);white-space:nowrap;}
+  .aa-flag.bad{border-color:var(--red);background:#ffeaea;color:var(--red);}
+  .aa-note{width:100%;font:inherit;font-size:12px;padding:5px 6px;border:1.5px solid var(--border);border-radius:8px;background:#fdfcf9;}
+  @media (max-width:860px){ .aa-row{grid-template-columns:1fr 1fr;} .aa-word,.aa-note{grid-column:1 / -1;} }
   .admin-tabs{display:flex;gap:8px;margin-bottom:16px;}
   .admin-tab{flex:1;padding:12px 10px;border-radius:14px;border:2px solid var(--border);background:#fff;font:inherit;font-size:15px;font-weight:800;color:var(--muted);cursor:pointer;}
   .admin-tab.active{border-color:var(--blue);background:#ddf4ff;color:var(--ink);}
@@ -202,6 +213,7 @@
   <div class="admin-tabs" id="adminTabs" hidden>
     <button class="admin-tab" id="adminTabTrain">🎧 专注力训练管理</button>
     <button class="admin-tab" id="adminTabRecords">📋 专注力测试记录</button>
+    <button class="admin-tab" id="adminTabAudio" hidden>🔊 音频管理</button>
   </div>
 
   <!-- 管理员改密码：点header的"改密码"展开/收起 -->
@@ -329,6 +341,21 @@
     <h2 style="margin-top:28px;">管理员账号申请</h2>
     <div class="hint" style="margin-bottom:10px;">主页"申请管理员账号"提交的申请。申请人的账号（推荐码）是手机号后5位，处理完点"标记已处理"。</div>
     <div id="superAdminApplicationsWrap"><p class="hint">加载中…</p></div>  </div>
+
+  <!-- 总管理员：音频管理。所有单词的中英文男女读音，逐个试听，标记哪个读音有问题 -->
+  <div class="card" id="viewAudioAdmin" hidden>
+    <h2>音频管理 · 所有单词的读音检查</h2>
+    <div class="hint" id="audioAdminNote" style="margin-bottom:10px;"></div>
+    <div class="admin-row" style="flex-wrap:wrap;">
+      <select id="aaGrade" style="padding:9px 10px;border:1.5px solid var(--border);border-radius:10px;font:inherit;"><option value="">全部年级</option></select>
+      <input id="aaSearch" placeholder="搜索单词或中文" style="flex:1;min-width:140px;">
+      <label style="display:flex;gap:4px;align-items:center;font-size:13px;color:var(--muted);"><input type="checkbox" id="aaOnlyBad" style="width:auto;">只看有标记的</label>
+      <button id="aaExport">导出标记清单</button>
+      <span class="hint" id="aaCount"></span>
+    </div>
+    <div id="audioAdminList"><p class="hint">加载中…</p></div>
+    <div class="admin-row" style="justify-content:center;margin-top:12px;"><button id="aaPrev">上一页</button><span class="hint" id="aaPage"></span><button id="aaNext">下一页</button></div>
+  </div>
 
   <!-- 学习设置：难度 + Unit + 每次学几个词，都在一个界面里选；右边一列放老师反馈 -->
   <div class="setup-grid" id="viewSetup" hidden>
@@ -652,7 +679,7 @@
   });
   pickScene(sceneKey);
   function showView(id) {
-    ["viewLogin","viewAdmin","viewAdminStudent","viewSuperAdmin","viewAdminRecords","viewSetup","viewPlayer","viewDone","viewRecord"].forEach(function(v){
+    ["viewLogin","viewAdmin","viewAdminStudent","viewSuperAdmin","viewAudioAdmin","viewAdminRecords","viewSetup","viewPlayer","viewDone","viewRecord"].forEach(function(v){
       el(v).hidden = (v !== id);
     });
     if (id !== "viewLogin") loadAmbientVideo();
@@ -666,10 +693,12 @@
     el("headerAdminPwdBtn").hidden = !ADMIN_VIEWS[id];
     if (!ADMIN_VIEWS[id]) el("adminPwdPanel").hidden = true;
     // 管理员登录后每个管理页面顶部都有两个 tab，可以来回切换
-    var inAdmin = !!(ADMIN_VIEWS[id] || id === "viewSuperAdmin" || id === "viewAdminRecords");
+    var inAdmin = !!(ADMIN_VIEWS[id] || id === "viewSuperAdmin" || id === "viewAdminRecords" || id === "viewAudioAdmin");
     el("adminTabs").hidden = !inAdmin;
-    el("adminTabTrain").classList.toggle("active", inAdmin && id !== "viewAdminRecords");
+    el("adminTabAudio").hidden = !state.adminIsSuper;          // 音频管理只有总管理员有
+    el("adminTabTrain").classList.toggle("active", inAdmin && id !== "viewAdminRecords" && id !== "viewAudioAdmin");
     el("adminTabRecords").classList.toggle("active", id === "viewAdminRecords");
+    el("adminTabAudio").classList.toggle("active", id === "viewAudioAdmin");
     updateIdleWatch();
   }
 
@@ -1040,6 +1069,133 @@
     loadAdminTestRecords();
   });
   el("adminRecordsRefreshBtn").addEventListener("click", loadAdminTestRecords);
+  el("adminTabAudio").addEventListener("click", function(){
+    if (adminRefreshTimer) { clearInterval(adminRefreshTimer); adminRefreshTimer = null; }
+    showView("viewAudioAdmin");
+    loadAudioAdmin();
+  });
+
+  // ---------- 音频管理（仅总管理员）：所有单词的中英文男女读音，逐个试听并标记有问题 ----------
+  // 标记存在 Supabase 表 audio_flags（word_id, sound, bad, note），所有管理设备共用；表还没建时先存在本机浏览器。
+  var AA = { words: null, flags: {}, tableOk: true, page: 0, per: 40, audio: new Audio(), inited: false };
+  var AA_SOUNDS = [["zh_male", "男声中文"], ["en_male", "男声英文"], ["zh_female", "女声中文"], ["en_female", "女声英文"]];
+  var AA_LOCAL = "audio_flags_local_v1";
+  function aaUrl(id, sound) {
+    var p = sound.split("_");
+    return AUDIO_BASE + (id.charAt(0) === "h" ? "senior" : "junior") + "/" + p[0] + "/" + p[1] + "/" + id + ".mp3";
+  }
+  function aaLocalLoad() { try { return JSON.parse(localStorage.getItem(AA_LOCAL) || "{}"); } catch(e) { return {}; } }
+  function aaLocalSave() { try { localStorage.setItem(AA_LOCAL, JSON.stringify(AA.flags)); } catch(e) {} }
+  function aaKey(id, sound) { return id + "|" + sound; }
+  function aaSaveFlag(id, sound, bad, note) {
+    AA.flags[aaKey(id, sound)] = { bad: !!bad, note: note || "" };
+    aaLocalSave();
+    if (!AA.tableOk) return;
+    sbUpsert("audio_flags", [{ word_id: id, sound: sound, bad: !!bad, note: note || "", updated_at: new Date().toISOString() }]).then(function(r){
+      if (!r.ok) { AA.tableOk = false; aaShowNote(); }
+    }).catch(function(){ AA.tableOk = false; aaShowNote(); });
+  }
+  function aaShowNote() {
+    el("audioAdminNote").textContent = AA.tableOk
+      ? "点“▶”试听；读音不对就点旁边的“标记”，可在备注里写问题。再点一次取消标记。标记保存在数据库，所有管理设备共用。"
+      : "⚠ 数据库里还没有 audio_flags 表，标记暂时只保存在这台电脑的浏览器里。建表后刷新本页，本机的标记会保留。";
+  }
+  function aaWordFlagged(id) {
+    return AA_SOUNDS.some(function(s){ var f = AA.flags[aaKey(id, s[0])]; return f && f.bad; });
+  }
+  function aaFlaggedCount() { return AA.words.filter(function(w){ return aaWordFlagged(w.id); }).length; }
+  function loadAudioAdmin() {
+    var flagsLoaded = sbGet("audio_flags", "select=*&limit=20000").then(function(rows){
+      if (Array.isArray(rows)) {
+        AA.tableOk = true; AA.flags = {};
+        rows.forEach(function(r){ AA.flags[aaKey(r.word_id, r.sound)] = { bad: r.bad, note: r.note || "" }; });
+        // 表建好之前在本机标的，补传到数据库，之后不再用本机的
+        var loc = aaLocalLoad(), pending = [];
+        Object.keys(loc).forEach(function(k){
+          if (AA.flags[k]) return;
+          AA.flags[k] = loc[k];
+          var kk = k.split("|");
+          pending.push({ word_id: kk[0], sound: kk[1], bad: !!loc[k].bad, note: loc[k].note || "", updated_at: new Date().toISOString() });
+        });
+        if (pending.length) sbUpsert("audio_flags", pending).then(function(r){ if (r.ok) { try { localStorage.removeItem(AA_LOCAL); } catch(e) {} } });
+      } else { AA.tableOk = false; AA.flags = aaLocalLoad(); }
+    }).catch(function(){ AA.tableOk = false; AA.flags = aaLocalLoad(); });
+    Promise.all([ensureWordData(), flagsLoaded]).then(function(){
+      var all = [];
+      ["junior", "senior"].forEach(function(d){
+        state.wordData[d].units.forEach(function(u){
+          u.words.forEach(function(w){ all.push({ id: w.id, word: w.word, meaning: w.meaning, grade: u.name || ("Unit " + (u.unit_index + 1)) }); });
+        });
+      });
+      AA.words = all;
+      if (!AA.inited) {
+        AA.inited = true;
+        var sel = el("aaGrade"), seen = {};
+        all.forEach(function(w){ if (!seen[w.grade]) { seen[w.grade] = 1; var o = document.createElement("option"); o.textContent = w.grade; sel.appendChild(o); } });
+        ["aaGrade", "aaSearch", "aaOnlyBad"].forEach(function(id){ el(id).addEventListener("input", function(){ AA.page = 0; renderAudioAdmin(); }); });
+        el("aaPrev").addEventListener("click", function(){ AA.page = Math.max(0, AA.page - 1); renderAudioAdmin(); });
+        el("aaNext").addEventListener("click", function(){ AA.page++; renderAudioAdmin(); });
+        el("aaExport").addEventListener("click", aaExport);
+      }
+      aaShowNote();
+      renderAudioAdmin();
+    });
+  }
+  function renderAudioAdmin() {
+    var g = el("aaGrade").value, q = el("aaSearch").value.trim().toLowerCase(), ob = el("aaOnlyBad").checked;
+    var list = AA.words.filter(function(w){
+      if (g && w.grade !== g) return false;
+      if (q && w.word.toLowerCase().indexOf(q) < 0 && w.meaning.indexOf(q) < 0) return false;
+      if (ob && !aaWordFlagged(w.id)) return false;
+      return true;
+    });
+    var pages = Math.max(1, Math.ceil(list.length / AA.per));
+    AA.page = Math.min(AA.page, pages - 1);
+    el("aaCount").textContent = "共 " + list.length + " 个词，已标记 " + aaFlaggedCount() + " 个";
+    el("aaPage").textContent = "第 " + (AA.page + 1) + " / " + pages + " 页";
+    var box = el("audioAdminList"); box.innerHTML = "";
+    list.slice(AA.page * AA.per, AA.page * AA.per + AA.per).forEach(function(w){
+      var row = document.createElement("div"); row.className = "aa-row" + (aaWordFlagged(w.id) ? " has-bad" : "");
+      var wd = document.createElement("div"); wd.className = "aa-word";
+      var b = document.createElement("b"); b.textContent = w.word; wd.appendChild(b);
+      var sp = document.createElement("span"); sp.textContent = w.meaning + " · " + w.grade; wd.appendChild(sp);
+      row.appendChild(wd);
+      AA_SOUNDS.forEach(function(sn){
+        var cell = document.createElement("div"); cell.className = "aa-snd";
+        var play = document.createElement("button"); play.className = "aa-play"; play.textContent = "▶ " + sn[1];
+        play.addEventListener("click", function(){ AA.audio.pause(); AA.audio.src = aaUrl(w.id, sn[0]); AA.audio.play().catch(function(){}); });
+        var f = AA.flags[aaKey(w.id, sn[0])] || {};
+        var flag = document.createElement("button"); flag.className = "aa-flag" + (f.bad ? " bad" : ""); flag.textContent = f.bad ? "✗ 有问题" : "标记";
+        flag.addEventListener("click", function(){
+          var now = !(AA.flags[aaKey(w.id, sn[0])] || {}).bad;
+          aaSaveFlag(w.id, sn[0], now, "");
+          flag.className = "aa-flag" + (now ? " bad" : ""); flag.textContent = now ? "✗ 有问题" : "标记";
+          row.className = "aa-row" + (aaWordFlagged(w.id) ? " has-bad" : "");
+          el("aaCount").textContent = "共 " + list.length + " 个词，已标记 " + aaFlaggedCount() + " 个";
+        });
+        cell.appendChild(play); cell.appendChild(flag); row.appendChild(cell);
+      });
+      var note = document.createElement("input"); note.className = "aa-note"; note.placeholder = "备注（哪里不对）";
+      note.value = (AA.flags[aaKey(w.id, "note")] || {}).note || "";
+      note.addEventListener("change", function(){ aaSaveFlag(w.id, "note", false, note.value); });
+      row.appendChild(note);
+      box.appendChild(row);
+    });
+    if (!list.length) box.innerHTML = '<p class="hint">没有符合条件的词</p>';
+  }
+  function aaExport() {
+    function q(s){ return '"' + String(s == null ? "" : s).replace(/"/g, '""') + '"'; }
+    var lines = ["id,单词,中文,年级,有问题的读音,备注"];
+    AA.words.forEach(function(w){
+      var bad = AA_SOUNDS.filter(function(s){ return (AA.flags[aaKey(w.id, s[0])] || {}).bad; }).map(function(s){ return s[1]; });
+      var note = (AA.flags[aaKey(w.id, "note")] || {}).note || "";
+      if (bad.length || note) lines.push([w.id, q(w.word), q(w.meaning), w.grade, q(bad.join("、")), q(note)].join(","));
+    });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob(["\ufeff" + lines.join("\n")], { type: "text/csv;charset=utf-8" }));
+    a.download = "音频问题标记.csv"; a.click();
+  }
+
 
   // 专注力测试记录：和主页测评记录同一个数据来源(get_all_records)；普通管理员只看自己推荐码下的
   function loadAdminTestRecords() {
@@ -1340,13 +1496,18 @@
   }
 
   // ---------- setup (难度 + unit + 每次学几个词，都在一个界面) ----------
+  // 两个难度的词表只加载一次
+  function ensureWordData() {
+    return Promise.all(["junior", "senior"].map(function(d){
+      return state.wordData[d] ? Promise.resolve() : fetch("training/" + d + "_words.json").then(function(r){ return r.json(); }).then(function(j){ state.wordData[d] = j; });
+    }));
+  }
   function enterSetupView() {
     Promise.all([
-      state.wordData.junior ? Promise.resolve() : fetch("training/junior_words.json").then(function(r){return r.json();}).then(function(d){ state.wordData.junior = d; }),
-      state.wordData.senior ? Promise.resolve() : fetch("training/senior_words.json").then(function(r){return r.json();}).then(function(d){ state.wordData.senior = d; }),
+      ensureWordData(),
       sbGet("training_progress", "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo)
     ]).then(function(results){
-      var rows = results[2];
+      var rows = results[1];
       state.progress.junior = rows.filter(function(r){ return r.difficulty === "junior"; })[0] || { group_index: 0, cursor_index: 0, words_per_session: 3, notStarted: true };
       state.progress.senior = rows.filter(function(r){ return r.difficulty === "senior"; })[0] || { group_index: 0, cursor_index: 0, words_per_session: 3, notStarted: true };
 
