@@ -40,6 +40,21 @@
   .wrap:has(#viewAdmin:not([hidden])),
   .wrap:has(#viewSuperAdmin:not([hidden])),
   .wrap:has(#viewAudioAdmin:not([hidden])){max-width:1100px;}
+  #viewSetup > .card{position:relative;}
+  .pt-open{position:absolute;top:24px;right:24px;padding:7px 12px;border-radius:12px;border:2px solid var(--blue);background:#ddf4ff;color:var(--ink);font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
+  @media (max-width:520px){ .pt-open{position:static;display:block;margin:0 0 12px auto;} }
+  .modal-panel.pt-panel{max-width:520px;}
+  .pt-bar{height:8px;border-radius:6px;background:#eceae2;overflow:hidden;margin:6px 0 16px;}
+  .pt-bar > i{display:block;height:100%;background:var(--blue);border-radius:6px;transition:width .25s;}
+  .pt-word{font-size:34px;font-weight:900;text-align:center;margin:8px 0 18px;letter-spacing:.5px;}
+  .pt-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .pt-opt{padding:14px 8px;border-radius:14px;border:2px solid var(--border);background:#fdfcf9;font:inherit;font-size:17px;font-weight:800;cursor:pointer;}
+  .pt-opt:hover{border-color:var(--blue);}
+  .pt-opt.picked{border-color:var(--blue);background:#ddf4ff;}
+  .pt-big{font-size:44px;font-weight:900;text-align:center;color:var(--blue);margin:6px 0;}
+  .pt-table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0 14px;}
+  .pt-table th,.pt-table td{padding:7px 6px;text-align:left;border-bottom:1px solid var(--border);}
+  .pt-table tr.hit td{background:#eafbe0;font-weight:800;}
   .aa-row{display:grid;grid-template-columns:minmax(150px,1.1fr) repeat(4,minmax(112px,1fr)) minmax(120px,1fr);gap:6px 10px;align-items:center;padding:9px 2px;border-bottom:1px solid var(--border);}
   .aa-row.has-bad{background:#fff4f2;}
   .aa-word b{font-size:17px;}
@@ -361,6 +376,7 @@
   <div class="setup-grid" id="viewSetup" hidden>
     <div class="card">
       <h2>选好难度、Unit、每次学几个词</h2>
+      <button class="pt-open" id="ptOpenBtn" type="button">📝 单词分级测试</button>
 
       <div class="field">
         <label class="has-scene">课程难度
@@ -418,6 +434,41 @@
       <button class="modal-close" id="weeklyStatsCloseBtn" aria-label="关闭">✕</button>
       <h2>训练记录 · 最近7天</h2>
       <div id="weeklyChartWrap"><p class="hint">加载中…</p></div>
+    </div>
+  </div>
+
+  <!-- 单词分级测试：输入年级 -> 25 道英文选中文 -> 判断年级 -> 回课程选择 -->
+  <div class="modal-overlay" id="placementModal" hidden>
+    <div class="modal-backdrop" id="ptBackdrop"></div>
+    <div class="modal-panel card pt-panel">
+      <button class="modal-close" id="ptCloseBtn" aria-label="关闭">✕</button>
+      <div id="ptStart">
+        <h2>单词分级测试</h2>
+        <p class="hint" style="margin-bottom:14px;">先选你现在的年级。测试会从你的年级往下 2 级、往上 2 级，共 5 个年级，每个年级 5 个单词，一共 25 题。看英文，选出对应的中文意思。</p>
+        <div class="field">
+          <label>你现在的年级</label>
+          <select id="ptGrade"></select>
+        </div>
+        <button class="btn" id="ptBeginBtn" type="button">开始测试</button>
+      </div>
+      <div id="ptQuiz" hidden>
+        <p class="hint" id="ptProgress" style="margin:0;"></p>
+        <div class="pt-bar"><i id="ptBarFill" style="width:0"></i></div>
+        <div class="pt-word" id="ptWord"></div>
+        <div class="pt-opts" id="ptOpts"></div>
+      </div>
+      <div id="ptResult" hidden>
+        <h2>测试结果</h2>
+        <p class="hint" id="ptScore" style="margin:0;"></p>
+        <div class="pt-big" id="ptGradeBig"></div>
+        <p class="hint" id="ptAdvice" style="text-align:center;margin:0 0 6px;"></p>
+        <table class="pt-table" id="ptTable"></table>
+        <button class="btn" id="ptApplyBtn" type="button"></button>
+        <div class="btn-row" style="margin-top:10px;">
+          <button class="btn btn-ghost" id="ptRetryBtn" type="button">重新测试</button>
+          <button class="btn btn-ghost" id="ptDoneBtn" type="button">关闭</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1077,6 +1128,115 @@
     loadAdminTestRecords();
   });
   el("adminRecordsRefreshBtn").addEventListener("click", loadAdminTestRecords);
+  // ---------- 单词分级测试 ----------
+  // 学生选自己的年级 -> 该年级前后各 2 级共 5 个年级，每个年级从候选池里随机抽 5 个词，共 25 题（英文选中文，4 选 1）。
+  // 判分：答对 1-5 题 = 最低的那个年级，6-10 = 第二个，11-15 = 第三个，16-20 = 第四个，21-25 = 最高的那个年级。
+  var PT_TIERS = ["学前", "一年级", "二年级", "三年级", "四年级", "五年级", "六年级", "初一", "初二", "初三"];
+  var PT_PER_TIER = 5;
+  var pt = { pool: null, qs: [], idx: 0, tiers: [], result: null };
+  function ptShow(part) { ["ptStart", "ptQuiz", "ptResult"].forEach(function(id){ el(id).hidden = (id !== part); }); }
+  function ptShuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function ptWindow(center) {
+    var start = Math.min(Math.max(center - 2, 0), PT_TIERS.length - PT_PER_TIER);   // 靠近两端时整体平移，保证总有 5 个年级
+    return PT_TIERS.slice(start, start + PT_PER_TIER);
+  }
+  function ptTierInfo(name) { var i = PT_TIERS.indexOf(name); return i < 7 ? { diff: "junior", unit: i } : { diff: "senior", unit: i - 7 }; }
+  function ptHanzi(m) { return m.replace(/[^\u4e00-\u9fff]/g, ""); }
+  function ptBuild(gradeName) {
+    var byId = {}, distract = [];
+    ["junior", "senior"].forEach(function(d){
+      state.wordData[d].units.forEach(function(u){
+        u.words.forEach(function(w){
+          byId[w.id] = w;
+          var n = ptHanzi(w.meaning).length;
+          if (w.meaning.indexOf("；") < 0 && n >= 2 && n <= 4 && !/[…（(]/.test(w.meaning)) distract.push(w);   // 干扰项只用简单、完整的释义
+        });
+      });
+    });
+    pt.tiers = ptWindow(PT_TIERS.indexOf(gradeName));
+    var qs = [];
+    pt.tiers.forEach(function(t){
+      var ids = ptShuffle((pt.pool[t] || []).filter(function(id){ return byId[id]; })).slice(0, PT_PER_TIER);
+      ids.forEach(function(id){
+        var w = byId[id], right = ptHanzi(w.meaning), used = {}, wrong = [];
+        used[w.meaning] = 1;
+        ptShuffle(distract).forEach(function(c){
+          if (wrong.length >= 3 || used[c.meaning]) return;
+          var h = ptHanzi(c.meaning);
+          for (var k = 0; k < h.length; k++) if (right.indexOf(h.charAt(k)) >= 0) return;   // 和正确答案有相同的字就不用，避免有歧义
+          wrong.push(c.meaning); used[c.meaning] = 1;
+        });
+        var opts = ptShuffle([w.meaning].concat(wrong));
+        qs.push({ tier: t, word: w.word, meaning: w.meaning, options: opts, correct: opts.indexOf(w.meaning), picked: -1 });
+      });
+    });
+    pt.qs = qs; pt.idx = 0;
+  }
+  function ptRender() {
+    var q = pt.qs[pt.idx];
+    el("ptProgress").textContent = "第 " + (pt.idx + 1) + " / " + pt.qs.length + " 题";
+    el("ptBarFill").style.width = (pt.idx / pt.qs.length * 100) + "%";
+    el("ptWord").textContent = q.word;
+    var box = el("ptOpts"); box.innerHTML = "";
+    q.options.forEach(function(text, i){
+      var b = document.createElement("button"); b.type = "button"; b.className = "pt-opt"; b.textContent = text;
+      b.addEventListener("click", function(){
+        if (q.picked >= 0) return;
+        q.picked = i; b.classList.add("picked");
+        setTimeout(function(){ pt.idx++; if (pt.idx < pt.qs.length) ptRender(); else ptFinish(); }, 250);
+      });
+      box.appendChild(b);
+    });
+  }
+  function ptFinish() {
+    var total = 0, per = {};
+    pt.tiers.forEach(function(t){ per[t] = 0; });
+    pt.qs.forEach(function(q){ if (q.picked === q.correct) { total++; per[q.tier]++; } });
+    var level = total <= 0 ? 0 : Math.min(pt.tiers.length - 1, Math.ceil(total / PT_PER_TIER) - 1);
+    var tier = pt.tiers[level];
+    pt.result = { total: total, tier: tier };
+    el("ptScore").textContent = "共 " + pt.qs.length + " 题，答对 " + total + " 题";
+    el("ptGradeBig").textContent = tier;
+    el("ptAdvice").textContent = total === 0
+      ? "这次一题都没答对，建议从最低的「" + pt.tiers[0] + "」开始；如果还是觉得难，可以再往前选一个年级。"
+      : "根据答对的题数，建议从「" + tier + "」开始学习。";
+    var html = "<tr><th>年级</th><th>本次答对</th><th>答对总题数在这个范围，就选这个年级</th></tr>";
+    pt.tiers.forEach(function(t, i){
+      var lo = i * PT_PER_TIER + 1, hi = (i + 1) * PT_PER_TIER;
+      html += "<tr" + (t === tier ? " class=\"hit\"" : "") + "><td>" + t + "</td><td>" + per[t] + " / " + PT_PER_TIER + "</td><td>" + lo + "–" + hi + " 题</td></tr>";
+    });
+    el("ptTable").innerHTML = html;
+    el("ptApplyBtn").textContent = "去课程选择，选「" + tier + "」";
+    ptShow("ptResult");
+  }
+  function ptOpen() {
+    var sel = el("ptGrade");
+    if (!sel.options.length) PT_TIERS.forEach(function(t){ var o = document.createElement("option"); o.textContent = t; sel.appendChild(o); });
+    ptShow("ptStart");
+    el("placementModal").hidden = false;
+  }
+  el("ptOpenBtn").addEventListener("click", ptOpen);
+  el("ptCloseBtn").addEventListener("click", function(){ el("placementModal").hidden = true; });
+  el("ptBackdrop").addEventListener("click", function(){ el("placementModal").hidden = true; });
+  el("ptDoneBtn").addEventListener("click", function(){ el("placementModal").hidden = true; });
+  el("ptRetryBtn").addEventListener("click", function(){ ptShow("ptStart"); });
+  el("ptBeginBtn").addEventListener("click", function(){
+    var start = function(){ ptBuild(el("ptGrade").value); ptShow("ptQuiz"); ptRender(); };
+    if (pt.pool) { start(); return; }
+    fetch("training/placement_pool.json").then(function(r){ return r.json(); }).then(function(j){ pt.pool = j; start(); })
+      .catch(function(){ alert("题库加载失败，请检查网络后再试"); });
+  });
+  // 回到课程选择：选中测出来的年级（难度 + Unit），并预加载它的音频
+  el("ptApplyBtn").addEventListener("click", function(){
+    var info = ptTierInfo(pt.result.tier);
+    state.difficulty = info.diff;
+    applyDifficultySelection();
+    state.selectedUnit = info.unit;
+    renderUnitGrid();
+    prefetchNextWords(info.diff, info.unit, 0);
+    el("placementModal").hidden = true;
+  });
+
   el("adminTabAudio").addEventListener("click", function(){
     if (!canAudioAdmin()) return;
     if (adminRefreshTimer) { clearInterval(adminRefreshTimer); adminRefreshTimer = null; }
