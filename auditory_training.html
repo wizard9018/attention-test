@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>听觉专注训练 · 清良思维</title>
+<link rel="preconnect" href="https://knhpwhdgzwhdpnbsrbty.supabase.co" crossorigin>
 <style>
   :root{
     --bg:#f7f5ef; --card:#fff; --ink:#10131a; --muted:#5b6472;
@@ -450,6 +451,8 @@
   "use strict";
 
   var SUPABASE_URL = "https://knhpwhdgzwhdpnbsrbty.supabase.co";
+  // 训练音频放在 Supabase Storage 的公开桶里（路径 = 难度/语言/性别/词id.mp3）
+  var AUDIO_BASE = SUPABASE_URL + "/storage/v1/object/public/training-audio/";
   var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtuaHB3aGRnendoZHBuYnNyYnR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkxNzM5MzIsImV4cCI6MjEwNDc0OTkzMn0.Nsd_fxNquX-_hTLyKwteHuezgp2HI4-rNWiMC-XTohI";
 
   function sbHeaders(extra) {
@@ -1163,7 +1166,7 @@
         pill.addEventListener("click", function(){
           if (playing) playing.pause();
           if (playingPill) playingPill.classList.remove("on");
-          var a = new Audio("training/audio/" + rec.difficulty + "/" + item[0] + "/" + rec.gender + "/" + w.id + ".mp3");
+          var a = new Audio(AUDIO_BASE + rec.difficulty + "/" + item[0] + "/" + rec.gender + "/" + w.id + ".mp3");
           playing = a; playingPill = pill; pill.classList.add("on");
           a.onended = function(){ pill.classList.remove("on"); };
           a.play().catch(function(){ pill.classList.remove("on"); });
@@ -1510,6 +1513,36 @@
     });
     renderUnitGrid();
     renderCountGrid();
+    prefetchNextWords(state.difficulty);
+  }
+
+  // 每天大约学 30 个词：从上次学到的位置往后数 30 个词，把它们的中英文、男女声音频提前下载到浏览器缓存，
+  // 进入学习时就不用再等（每个难度只预加载一次；一次约 120 个小文件，不到 2MB）
+  var PREFETCH_WORDS = 30, prefetched = {};
+  function prefetchNextWords(diff) {
+    var data = state.wordData[diff], p = state.progress[diff];
+    if (!data || !p) return;
+    var key = diff + ":" + (p.group_index || 0) + ":" + (p.cursor_index || 0);
+    if (prefetched[key]) return;
+    prefetched[key] = true;
+    var ids = [], unit = p.group_index || 0, cur = p.cursor_index || 0;
+    while (ids.length < PREFETCH_WORDS && unit < data.units.length) {
+      var ws = data.units[unit].words;
+      for (var i = cur; i < ws.length && ids.length < PREFETCH_WORDS; i++) ids.push(ws[i].id);
+      unit++; cur = 0;
+    }
+    var urls = [];
+    ids.forEach(function(id){
+      ["zh", "en"].forEach(function(lang){
+        ["male", "female"].forEach(function(g){ urls.push(AUDIO_BASE + diff + "/" + lang + "/" + g + "/" + id + ".mp3"); });
+      });
+    });
+    var next = 0;
+    function worker() {   // 3 路并发，不和背景视频抢带宽
+      if (next >= urls.length) return;
+      fetch(urls[next++]).then(function(r){ return r.blob(); }).catch(function(){}).then(worker);
+    }
+    for (var k = 0; k < 3; k++) worker();
   }
 
   function unitName(diff, idx) {
@@ -1704,7 +1737,7 @@
 
   function audioUrl(step) {
     var lang = step.phase === "zh" ? "zh" : "en";
-    return "training/audio/" + state.difficulty + "/" + lang + "/" + state.gender + "/" + step.word.id + ".mp3";
+    return AUDIO_BASE + state.difficulty + "/" + lang + "/" + state.gender + "/" + step.word.id + ".mp3";
   }
 
   var playerEl = el("player");
