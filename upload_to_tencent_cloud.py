@@ -28,11 +28,25 @@ FILES_TO_UPLOAD = [
     ("综合专注力测试.html", "index.html", "text/html; charset=utf-8"),
     ("视觉专注力测试.html", "视觉专注力测试.html", "text/html; charset=utf-8"),
     ("听觉专注力测试.html", "听觉专注力测试.html", "text/html; charset=utf-8"),
-    
+
+    # 听觉专注力训练 (自建单词学习系统：课程选择/学习/单词分级测试/英文跟读，音频走 Supabase Storage)
+    ("auditory_training.html", "auditory_training.html", "text/html; charset=utf-8"),
+    ("training/junior_words.json", "training/junior_words.json", "application/json; charset=utf-8"),
+    ("training/senior_words.json", "training/senior_words.json", "application/json; charset=utf-8"),
+    ("training/placement_pool.json", "training/placement_pool.json", "application/json; charset=utf-8"),
+    ("training/voice_male.png", "training/voice_male.png", "image/png"),
+    ("training/voice_female.png", "training/voice_female.png", "image/png"),
+    ("assets/study_ambient/poster.jpg", "assets/study_ambient/poster.jpg", "image/jpeg"),
+    ("assets/study_ambient/poster_cafe.jpg", "assets/study_ambient/poster_cafe.jpg", "image/jpeg"),
+    ("assets/study_ambient/poster_beach.jpg", "assets/study_ambient/poster_beach.jpg", "image/jpeg"),
+    ("assets/study_ambient/poster_attic.jpg", "assets/study_ambient/poster_attic.jpg", "image/jpeg"),
+    ("assets/study_ambient/wan21_peer_study_v8_10s_loop.mp4", "assets/study_ambient/wan21_peer_study_v8_10s_loop.mp4", "video/mp4"),
+    ("assets/study_ambient/wan21_peer_study_v8_10s_loop.webm", "assets/study_ambient/wan21_peer_study_v8_10s_loop.webm", "video/webm"),
+
     # 核心 JS 依赖 (拼音解析库 + 1MB 少年音 Base64 离线离线包)
     ("assets/pinyin-pro.js", "assets/pinyin-pro.js", "application/javascript; charset=utf-8"),
     ("assets/audio_pack.js", "assets/audio_pack.js", "application/javascript; charset=utf-8"),
-    
+
     # UI 图标与等级徽章
     ("assets/level_5.png", "assets/level_5.png", "image/png"),
     ("assets/level_6.png", "assets/level_6.png", "image/png"),
@@ -118,6 +132,8 @@ def main():
     test_urls = [
         f"https://{BUCKET}.cos.{REGION}.myqcloud.com/index.html",
         f"https://{BUCKET}.cos.{REGION}.myqcloud.com/综合专注力测试.html",
+        f"https://{BUCKET}.cos.{REGION}.myqcloud.com/auditory_training.html",
+        f"https://{BUCKET}.cos.{REGION}.myqcloud.com/training/junior_words.json",
         f"https://{BUCKET}.cos.{REGION}.myqcloud.com/assets/audio_pack.js",
         f"https://{BUCKET}.cos.{REGION}.myqcloud.com/database/all_records.json"
     ]

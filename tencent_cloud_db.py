@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 _env_file = os.path.join(BASE_DIR, ".env")
 if os.path.isfile(_env_file):
     try:
-        with open(_env_file, "r", encoding="utf-8") as _f:
+        with open(_env_file, "r", encoding="utf-8-sig") as _f:
             for _line in _f:
                 _line = _line.strip()
                 if _line and not _line.startswith("#") and "=" in _line:

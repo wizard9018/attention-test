@@ -142,3 +142,18 @@ alter table visual_recordings enable row level security;
 drop policy if exists "anon all visual_recordings" on visual_recordings;
 create policy "anon all visual_recordings" on visual_recordings
   for all using (true) with check (true);
+
+-- 艾宾浩斯复习 + 拼写练习：每个学生每个词学过几次、下次该复习的时间（word_id 如 k0001 / h0001）
+create table if not exists word_memory (
+  referral_code text not null,
+  student_no text not null,
+  word_id text not null,
+  learn_count int not null default 1,
+  last_at timestamptz not null default now(),
+  due_at timestamptz not null,
+  primary key (referral_code, student_no, word_id)
+);
+alter table word_memory enable row level security;
+drop policy if exists "anon all word_memory" on word_memory;
+create policy "anon all word_memory" on word_memory
+  for all using (true) with check (true);

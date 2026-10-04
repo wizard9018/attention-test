@@ -41,13 +41,34 @@
   .wrap:has(#viewSuperAdmin:not([hidden])),
   .wrap:has(#viewAudioAdmin:not([hidden])){max-width:1100px;}
   #viewSetup > .card{position:relative;}
-  .setup-tools{position:absolute;top:24px;right:24px;display:flex;gap:8px;}
+  .setup-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;margin:0 0 18px;}
+  .setup-head h2{margin:0;}
+  .setup-tools{display:flex;flex-wrap:wrap;gap:6px;}
   .pt-open{padding:7px 12px;border-radius:12px;border:2px solid var(--blue);background:#ddf4ff;color:var(--ink);font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
-  @media (max-width:520px){ .setup-tools{position:static;display:flex;gap:8px;margin:0 0 12px;justify-content:flex-end;} }
   .rs-syls{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:10px;}
   .rs-syl{font-size:26px;font-weight:900;padding:2px 6px;border-radius:8px;}
   .rs-syl.good{color:var(--green);background:#e6f6e8;}
   .rs-syl.bad{color:var(--red);background:#fdecec;}
+  .sp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;}
+  .sp-flip{font:inherit;border:2px solid var(--border);border-radius:16px;background:#fdfcf9;padding:14px 8px;min-height:92px;cursor:pointer;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;}
+  .sp-flip-zh{font-size:18px;font-weight:800;}
+  .sp-flip-en{font-size:24px;font-weight:900;color:var(--blue);}
+  .sp-flip.open{border-color:var(--blue);background:#ddf4ff;}
+  .sp-row{margin:0 0 18px;}
+  .sp-row-zh{font-size:20px;font-weight:800;text-align:center;margin-bottom:6px;}
+  .sp-slots{display:flex;justify-content:center;flex-wrap:wrap;gap:4px;}
+  .sp-slot{width:30px;height:40px;border:0;border-bottom:3px solid var(--ink);background:transparent;text-align:center;font:inherit;font-size:24px;font-weight:800;padding:0;border-radius:0;color:var(--ink);}
+  .sp-slot:focus{outline:none;border-bottom-color:var(--blue);}
+  .sp-slot.ok{color:var(--green);border-bottom-color:var(--green);}
+  .sp-slot.bad{color:var(--red);border-bottom-color:var(--red);}
+  .sp-fixed{display:inline-flex;align-items:flex-end;justify-content:center;min-width:14px;height:40px;font-size:24px;font-weight:800;}
+  .sp-fix{text-align:center;color:var(--red);font-weight:800;margin-top:4px;}
+  .sp-ok{color:var(--green);font-weight:800;}
+  .sp-bad{color:var(--red);font-weight:800;}
+  .batch-pill.bp-retry{border-color:var(--red);}
+  .setup-side{display:flex;flex-direction:column;gap:24px;}
+  .rv-chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px;}
+  .rv-chip{padding:3px 10px;border-radius:10px;background:#ddf4ff;font-weight:800;font-size:14px;}
   .modal-panel.pt-panel{max-width:520px;}
   .pt-bar{height:8px;border-radius:6px;background:#eceae2;overflow:hidden;margin:6px 0 16px;}
   .pt-bar > i{display:block;height:100%;background:var(--blue);border-radius:6px;transition:width .25s;}
@@ -389,12 +410,14 @@
   </div>
 
   <!-- 学习设置：难度 + Unit + 每次学几个词，都在一个界面里选；右边一列放老师反馈 -->
-  <div class="setup-grid" id="viewSetup" hidden>
+  <div class="setup-grid has-feedback" id="viewSetup" hidden>
     <div class="card">
-      <h2>选好难度、Unit、每次学几个词</h2>
-      <div class="setup-tools">
-        <button class="pt-open" id="ptOpenBtn" type="button">📝 单词分级测试</button>
-        <button class="pt-open" id="rsOpenBtn" type="button">🗣️ 英文跟读</button>
+      <div class="setup-head">
+        <h2>选好难度、Unit、每次学几个词</h2>
+        <div class="setup-tools">
+          <button class="pt-open" id="ptOpenBtn" type="button">📝 单词分级测试</button>
+          <button class="pt-open" id="rsOpenBtn" type="button">🗣️ 英文跟读</button>
+        </div>
       </div>
 
       <div class="field">
@@ -440,9 +463,62 @@
       <button class="btn btn-ghost" id="logoutBtn" style="margin-top:10px;">退出登录</button>
     </div>
 
-    <div class="card" id="feedbackPanel" hidden>
-      <h2>老师反馈</h2>
-      <div id="feedbackList"></div>
+    <div class="setup-side">
+      <div class="card" id="reviewPanel">
+        <h2>今日建议复习</h2>
+        <p class="hint" id="reviewHint">加载中…</p>
+        <div class="rv-chips" id="reviewChips"></div>
+        <button class="btn" id="reviewStartBtn" type="button" hidden>开始复习</button>
+        <button class="btn btn-blue" id="spOpenBtn" type="button" style="margin-top:10px;">✍️ 拼写练习</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 拼写练习：学过 3 次以上的词，分组做闪卡背诵，背好后看中文拼写英文 -->
+  <div class="modal-overlay" id="spellModal" hidden>
+    <div class="modal-backdrop" id="spBackdrop"></div>
+    <div class="modal-panel card pt-panel">
+      <button class="modal-close" id="spCloseBtn" aria-label="关闭">✕</button>
+      <div id="spStart">
+        <h2>拼写练习</h2>
+        <p class="hint" id="spAvail" style="margin-bottom:14px;"></p>
+        <div class="field">
+          <label>一组几个词（先一起学闪卡，学完一起考）</label>
+          <div class="count-grid" id="spSizeGrid" style="grid-template-columns:repeat(4,1fr);margin-bottom:12px;"></div>
+        </div>
+        <button class="btn" id="spBeginBtn" type="button">开始</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 老师让重录的组：先看老师的留言/语音，再进入这一组重听重录 -->
+  <div class="modal-overlay" id="retryModal" hidden>
+    <div class="modal-backdrop" id="retryBackdrop"></div>
+    <div class="modal-panel card pt-panel">
+      <button class="modal-close" id="retryCloseBtn" aria-label="关闭">✕</button>
+      <h2 id="retryTitle">老师反馈</h2>
+      <div id="retryBody"></div>
+      <button class="btn btn-blue" id="retryGoBtn" type="button" style="margin-top:14px;">🔁 重听 / 重录这一组</button>
+    </div>
+  </div>
+
+  <!-- 拼写练习页面：闪卡 -> 一起考 -> 结果（开始后从弹窗跳到这里） -->
+  <div class="card" id="viewSpell" hidden>
+    <div>
+      <div id="spCards" hidden>
+        <h2>闪卡</h2>
+        <p class="hint" style="margin:0 0 12px;">点一下卡片：翻出英文并朗读。把这几个词都背下来。</p>
+        <div class="sp-grid" id="spCardGrid"></div>
+        <button class="btn" id="spToQuizBtn" type="button" style="margin-top:14px;">背好了，开始拼写</button>
+      </div>
+      <div id="spQuiz" hidden>
+        <h2>拼写</h2>
+        <p class="hint" style="margin:0 0 14px;">看中文，在下面一格一格写出英文；写满一个词会自动跳到下一个。</p>
+        <div id="spQuizList"></div>
+        <p class="hint" id="spFeedback" style="min-height:22px;margin:4px 0 8px;text-align:center;"></p>
+        <button class="btn" id="spSubmitBtn" type="button">提交</button>
+      </div>
+      <button class="btn btn-ghost" id="spBackBtn" type="button" style="margin-top:14px;">← 返回课程选择</button>
     </div>
   </div>
 
@@ -780,14 +856,15 @@
   pickScene(sceneKey);
   var AUDIO_ADMIN_ACCOUNT = "55168";   // 音频管理除总管理员外，也放在这个管理员账号下
   function canAudioAdmin() { return !!state.adminIsSuper || (!state.studentNo && state.referrer === AUDIO_ADMIN_ACCOUNT); }   // 总管理员先保留，同时 55168 也有
-  var AMBIENT_VIEWS = { viewSetup: 1, viewPlayer: 1, viewDone: 1, viewRecord: 1 };   // 只有学生训练界面有背景视频
+  var AMBIENT_VIEWS = { viewSetup: 1, viewPlayer: 1, viewDone: 1, viewRecord: 1, viewSpell: 1 };   // 只有学生训练界面有背景视频
   function showView(id) {
-    ["viewLogin","viewAdmin","viewAdminStudent","viewSuperAdmin","viewAudioAdmin","viewVisualAdmin","viewAdminRecords","viewSetup","viewPlayer","viewDone","viewRecord"].forEach(function(v){
+    ["viewLogin","viewAdmin","viewAdminStudent","viewSuperAdmin","viewAudioAdmin","viewVisualAdmin","viewAdminRecords","viewSetup","viewPlayer","viewDone","viewRecord","viewSpell"].forEach(function(v){
       el(v).hidden = (v !== id);
     });
     var ambient = !!AMBIENT_VIEWS[id];
     document.body.classList.toggle("no-ambient", !ambient);
     if (ambient) loadAmbientVideo();
+    if (id === "viewSetup") loadReviewPanel();
     // 登录后的每个界面都显示今天的进度条，方便老师批改后随时能看到状态变化
     var isStudentView = !!(state.referrer && state.studentNo);
     el("batchRoadmapBar").hidden = !isStudentView;
@@ -1271,6 +1348,202 @@
   }
   el("ptGrade").addEventListener("change", ptPreview);
   el("ptOpenBtn").addEventListener("click", ptOpen);
+
+  // ---------- 艾宾浩斯复习 + 拼写练习：word_memory 表记每个词学过几次、下次该复习的时间 ----------
+  var EBB_DAYS = [1, 2, 4, 7, 15, 30];   // 学完第 n 次后，隔几天再复习；第 6 次以后一直是 30 天
+  var REVIEW_SIZE = 10;                  // 每次复习几个词
+  function memQuery() { return "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo; }
+  function memDue(count, fromMs) { return new Date(fromMs + EBB_DAYS[Math.min(count, EBB_DAYS.length) - 1] * 86400000).toISOString(); }
+  function wordMap() {
+    if (!state.wordById) {
+      state.wordById = {};
+      ["junior", "senior"].forEach(function(d){ state.wordData[d].units.forEach(function(u){ u.words.forEach(function(w){ state.wordById[w.id] = w; }); }); });
+    }
+    return state.wordById;
+  }
+  // 学完/复习完一批词：次数 +1，按遗忘曲线排下次复习时间
+  function memTouch(ids) {
+    return sbGet("word_memory", memQuery() + "&word_id=in.(" + ids.join(",") + ")&select=word_id,learn_count").then(function(rows){
+      var have = {};
+      (Array.isArray(rows) ? rows : []).forEach(function(r){ have[r.word_id] = r.learn_count; });
+      var now = Date.now();
+      return sbUpsert("word_memory", ids.map(function(id){
+        var n = (have[id] || 0) + 1;
+        return { referral_code: state.referrer, student_no: state.studentNo, word_id: id, learn_count: n, last_at: new Date(now).toISOString(), due_at: memDue(n, now) };
+      }));
+    }).catch(function(){});
+  }
+  // 第一次打开时表里还没有这个学生的数据：用他以前学过的批次(training_batches)补出来
+  function memBackfill() {
+    return sbGet("training_batches", memQuery() + "&order=created_at.asc&select=words,created_at&limit=5000").then(function(bs){
+      var m = {};
+      (Array.isArray(bs) ? bs : []).forEach(function(b){
+        var t = new Date(b.created_at).getTime();
+        (b.words || []).forEach(function(w){ var r = m[w.id] || (m[w.id] = { n: 0, t: 0 }); r.n++; r.t = t; });
+      });
+      var rows = Object.keys(m).map(function(id){
+        return { referral_code: state.referrer, student_no: state.studentNo, word_id: id, learn_count: m[id].n, last_at: new Date(m[id].t).toISOString(), due_at: memDue(m[id].n, m[id].t) };
+      });
+      var p = Promise.resolve();
+      for (var i = 0; i < rows.length; i += 500) (function(c){ p = p.then(function(){ return sbUpsert("word_memory", c); }); })(rows.slice(i, i + 500));
+      return p.then(function(){ return rows; });
+    });
+  }
+  // 返回这个学生的 word_memory 行；表还没建时返回 null
+  function memLoad() {
+    return (state.memPending || Promise.resolve()).then(function(){
+      return sbGet("word_memory", memQuery() + "&select=word_id,learn_count,due_at&limit=5000");
+    }).then(function(rows){
+      if (!Array.isArray(rows)) return null;
+      return rows.length ? rows : memBackfill();
+    }).catch(function(){ return null; });
+  }
+  function loadReviewPanel() {
+    if (!state.referrer || !state.studentNo) return;
+    ensureWordData().then(memLoad).then(function(rows){
+      var hint = el("reviewHint"), chips = el("reviewChips"), btn = el("reviewStartBtn");
+      chips.innerHTML = ""; btn.hidden = true;
+      if (!rows) { hint.textContent = "复习计划还没开通（需要先在数据库里建 word_memory 表）。"; return; }
+      var now = Date.now(), map = wordMap();
+      el("spOpenBtn").textContent = "✍️ 拼写练习（可练 " + rows.filter(function(r){ return r.learn_count >= 3 && map[r.word_id]; }).length + " 词）";
+      var due = rows.filter(function(r){ return map[r.word_id] && new Date(r.due_at).getTime() <= now; })
+        .sort(function(a, b){ return new Date(a.due_at) - new Date(b.due_at); });
+      state.reviewDue = due;
+      if (!due.length) {
+        hint.textContent = rows.length ? "今天没有要复习的词，继续学新词吧。" : "学完第一组词后，这里会按艾宾浩斯遗忘曲线（1/2/4/7/15/30 天）安排复习。";
+        return;
+      }
+      var n = Math.min(due.length, REVIEW_SIZE);
+      hint.textContent = "共 " + due.length + " 个词该复习了，这次先复习 " + n + " 个：";
+      due.slice(0, n).forEach(function(r){
+        var c = document.createElement("span"); c.className = "rv-chip"; c.textContent = map[r.word_id].word; chips.appendChild(c);
+      });
+      btn.textContent = "开始复习（" + n + " 个词）"; btn.hidden = false;
+    });
+  }
+  el("reviewStartBtn").addEventListener("click", function(){
+    var map = wordMap(), words = (state.reviewDue || []).slice(0, REVIEW_SIZE).map(function(r){ return map[r.word_id]; });
+    if (!words.length) return;
+    state.retryQueue = [];
+    state.session = { groupIndex: 0, startCursor: 0, words: words, steps: [], stepIndex: 0, repeatIndex: 0, paused: false, pass: 2, revealed: {}, reviewMode: true, ebbReview: true };
+    pushSteps(state.session);
+    renderRoadmap();
+    applyPassUI();
+    showView("viewPlayer");
+    globalGen++;
+    playStep(0, 0, globalGen);
+  });
+
+  // 拼写练习：学过 3 次以上的词，随机抽一组 -> 闪卡背诵 -> 看中文拼英文 -> 错的再练
+  var sp = { pool: [], words: [], rows: [], slots: [], submitted: false, allOk: false, size: 3 }, spAudio = new Audio();
+  // 选组大小在弹窗里(spStart)；开始后跳到独立页面 viewSpell 做闪卡/考试/看结果
+  function spShow(part) {
+    ["spCards", "spQuiz"].forEach(function(id){ el(id).hidden = (id !== part); });
+    if (part === "spStart") { el("spellModal").hidden = false; return; }
+    el("spellModal").hidden = true;
+    showView("viewSpell");
+  }
+  function spExit() { spAudio.pause(); el("spellModal").hidden = true; showView("viewSetup"); }
+  function spPlayWord(w) { spAudio.pause(); spAudio.src = aaUrl(w.id, "en_" + state.gender); spAudio.play().catch(function(){}); }
+  function spOpen() {
+    el("spellModal").hidden = false;
+    spShow("spStart");
+    el("spAvail").textContent = "加载中…";
+    el("spBeginBtn").disabled = true;
+    spRenderSize();
+    ensureWordData().then(memLoad).then(function(rows){
+      var map = wordMap();
+      sp.pool = (rows || []).filter(function(r){ return r.learn_count >= 3 && map[r.word_id]; }).map(function(r){ return map[r.word_id]; });
+      el("spAvail").textContent = !rows ? "拼写练习还没开通（需要先在数据库里建 word_memory 表）。"
+        : sp.pool.length ? "可练习 " + sp.pool.length + " 个词（学过 3 次以上）。随机抽一组：先一起看闪卡背一背，学完一起考，看中文拼写英文。"
+        : "还没有学过 3 次的词。每个词学完一遍、再复习两次，就能来这里练拼写了。";
+      el("spBeginBtn").disabled = !sp.pool.length;
+    });
+  }
+  function spStartCards(words) { sp.words = words; spRenderCards(); spShow("spCards"); }
+  function spNewGroup() { spStartCards(ptShuffle(sp.pool).slice(0, sp.size)); }
+  function spRenderSize() {
+    var grid = el("spSizeGrid"); grid.innerHTML = "";
+    [3, 4, 5, 6].forEach(function(n){
+      var cell = document.createElement("div");
+      cell.className = "count-cell" + (n === sp.size ? " selected" : "");
+      cell.textContent = n;
+      cell.addEventListener("click", function(){ sp.size = n; spRenderSize(); });
+      grid.appendChild(cell);
+    });
+  }
+  // 闪卡全部铺平：正面是中文，点一下翻出英文并朗读
+  function spRenderCards() {
+    var box = el("spCardGrid"); box.innerHTML = "";
+    sp.words.forEach(function(w){
+      var card = document.createElement("button");
+      card.type = "button"; card.className = "sp-flip";
+      var zh = document.createElement("span"); zh.className = "sp-flip-zh"; zh.textContent = w.meaning;
+      var en = document.createElement("span"); en.className = "sp-flip-en";
+      card.appendChild(zh); card.appendChild(en);
+      card.addEventListener("click", function(){ card.classList.add("open"); en.textContent = w.word; spPlayWord(w); });
+      box.appendChild(card);
+    });
+  }
+  // 拼写页：这一组的中文打乱顺序全列出来，每个词下面一排字母下划线；写满一个词自动跳到下一个词
+  function spRenderQuiz() {
+    var box = el("spQuizList"); box.innerHTML = "";
+    sp.rows = []; sp.slots = []; sp.submitted = false;
+    ptShuffle(sp.words).forEach(function(w){
+      var target = w.word.split("/")[0].trim();
+      var row = { word: w, letters: target.replace(/[^a-z]/gi, "").toLowerCase(), inputs: [] };
+      var wrap = document.createElement("div"); wrap.className = "sp-row";
+      var zh = document.createElement("div"); zh.className = "sp-row-zh"; zh.textContent = w.meaning;
+      var slots = document.createElement("div"); slots.className = "sp-slots";
+      target.split("").forEach(function(c){
+        if (!/[a-z]/i.test(c)) { var f = document.createElement("span"); f.className = "sp-fixed"; f.textContent = c === " " ? "\u00a0" : c; slots.appendChild(f); return; }
+        var inp = document.createElement("input");
+        inp.className = "sp-slot"; inp.maxLength = 1; inp.autocomplete = "off"; inp.autocapitalize = "off"; inp.spellcheck = false;
+        var idx = sp.slots.length;
+        inp.addEventListener("input", function(){
+          inp.value = inp.value.replace(/[^a-z]/gi, "").slice(-1);
+          if (!inp.value) return;
+          var next = sp.slots[idx + 1];
+          if (next) next.focus(); else el("spSubmitBtn").focus();
+        });
+        inp.addEventListener("keydown", function(e){
+          if (e.key === "Backspace" && !inp.value && sp.slots[idx - 1]) { sp.slots[idx - 1].value = ""; sp.slots[idx - 1].focus(); e.preventDefault(); }
+          else if (e.key === "Enter") spSubmit();
+        });
+        row.inputs.push(inp); sp.slots.push(inp); slots.appendChild(inp);
+      });
+      var fix = document.createElement("div"); fix.className = "sp-fix"; row.fix = fix;
+      wrap.appendChild(zh); wrap.appendChild(slots); wrap.appendChild(fix);
+      box.appendChild(wrap);
+      sp.rows.push(row);
+    });
+    el("spFeedback").textContent = ""; el("spFeedback").className = "hint";
+    el("spSubmitBtn").textContent = "提交";
+  }
+  // 提交：全对 -> 下一组；有错 -> 标红并显示正确拼写，再背同一组
+  function spSubmit() {
+    if (sp.submitted) { if (sp.allOk) spNewGroup(); else spStartCards(sp.words); return; }
+    sp.submitted = true;
+    var wrong = 0;
+    sp.rows.forEach(function(r){
+      var ok = r.inputs.map(function(i){ return i.value; }).join("").toLowerCase() === r.letters;
+      r.inputs.forEach(function(i){ i.disabled = true; i.classList.add(ok ? "ok" : "bad"); });
+      if (!ok) { wrong++; r.fix.textContent = "正确拼写：" + r.word.word; }
+    });
+    sp.allOk = wrong === 0;
+    var fb = el("spFeedback");
+    fb.textContent = sp.allOk ? "✓ 全部拼对！" : "还有 " + wrong + " 个没拼对，再背一遍这一组";
+    fb.className = "hint " + (sp.allOk ? "sp-ok" : "sp-bad");
+    el("spSubmitBtn").textContent = sp.allOk ? "下一组 →" : "再背一遍这一组 →";
+  }
+  function spClose() { spAudio.pause(); el("spellModal").hidden = true; }
+  el("spOpenBtn").addEventListener("click", spOpen);
+  el("spCloseBtn").addEventListener("click", spClose);
+  el("spBackdrop").addEventListener("click", spClose);
+  el("spBackBtn").addEventListener("click", spExit);
+  el("spBeginBtn").addEventListener("click", spNewGroup);
+  el("spToQuizBtn").addEventListener("click", function(){ spAudio.pause(); spRenderQuiz(); spShow("spQuiz"); if (sp.slots[0]) sp.slots[0].focus(); });
+  el("spSubmitBtn").addEventListener("click", spSubmit);
 
   // ---------- 英文跟读：放一个词 -> 学生"再听一遍"或"录制" -> 录完"识别"，波形对比找出读音不对的音节 -> "下一个" ----------
   // 音节：按元音组个数粗略切分单词拼写；对比：把录音和原音各自的音量包络切成等长的 N 段(近似按时间对齐)，
@@ -2081,95 +2354,28 @@
     };
   }
 
-  // 老师批改过的录音（有成绩/反馈的）显示在设置页顶部，让学生登录就能看到
+  // 老师让重录、且还没重录的组：和今天的进度条(roadmap)合并显示，点那一组直接重录
   function loadMyFeedback() {
+    var q = "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo;
     Promise.all([
-      sbGet("training_recordings", "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo + "&admin_status=eq.retry&order=created_at.desc&limit=50"),
-      sbGet("training_batches", "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo + "&order=created_at.asc&select=difficulty,unit_index,words"),
-      sbGet("training_recordings", "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo + "&select=difficulty,unit_index,words,created_at&order=created_at.desc&limit=300")
+      sbGet("training_recordings", q + "&admin_status=eq.retry&order=created_at.desc&limit=50"),
+      sbGet("training_batches", q + "&order=created_at.asc&select=difficulty,unit_index,words"),
+      sbGet("training_recordings", q + "&select=difficulty,unit_index,words,created_at&order=created_at.desc&limit=300")
     ]).then(function(results){
       var rows = Array.isArray(results[0]) ? results[0] : [];
       var allBatches = Array.isArray(results[1]) ? results[1] : [];
       var allRecs = Array.isArray(results[2]) ? results[2] : [];
-
-      // 老师反馈里只显示没通过（需要重录）的；已重新录过那一组（后面有同一组的新录音）的旧反馈也不再显示
-      rows = rows.filter(function(rec){
-        if (rec.admin_status !== "retry") return false;
+      // 已重新录过那一组（后面有同一组的新录音）的旧反馈不再算
+      state.retryRecs = rows.filter(function(rec){
         var key = batchKey(rec.difficulty, rec.unit_index, rec.words);
         return !allRecs.some(function(r){ return r.created_at > rec.created_at && batchKey(r.difficulty, r.unit_index, r.words) === key; });
       });
-      // 还需要重录的组，用来做"重录下一个"
-      state.retryItems = rows.filter(function(r){ return r.admin_status === "retry"; })
-        .map(function(r){ return { difficulty: r.difficulty, unit_index: r.unit_index, cursor_start: 0, words: r.words }; });
-
-      var findGroupNo = makeGroupNoFinder(allBatches);
-
-      var panel = el("feedbackPanel");
-      var list = el("feedbackList");
-      list.innerHTML = "";
-      var hasFeedback = rows.length > 0;
-      panel.hidden = !hasFeedback;
-      el("viewSetup").classList.toggle("has-feedback", hasFeedback);
-      if (!hasFeedback) return;
-      rows.forEach(function(rec){ list.appendChild(buildFeedbackItem(rec, findGroupNo(rec))); });
+      state.retryItems = state.retryRecs.map(function(r){ return { difficulty: r.difficulty, unit_index: r.unit_index, cursor_start: 0, words: r.words }; });
+      state.retryGroupNo = makeGroupNoFinder(allBatches);
+      renderBatchPills();
     });
   }
 
-  function buildFeedbackItem(rec, groupNo) {
-    var box = document.createElement("div");
-    box.className = "rec-entry";
-
-    var head = document.createElement("div");
-    head.className = "rec-entry-head";
-    var diffLabel = rec.difficulty === "junior" ? "小学阶段" : "初中阶段";
-    var groupLabel = groupNo ? ("<span class=\"fb-group\">第" + groupNo + "组</span>") : "";
-    var badge = "<span class=\"status-badge " + (rec.admin_status === "pass" ? "pass" : "retry") + "\">" +
-      (rec.admin_status === "pass" ? "☑️ 已通过" : "🔁 需要重录") + "</span>";
-    head.className = "fb-title";
-    head.innerHTML = "<span class=\"fb-chip\">" + diffLabel + " " + unitName(rec.difficulty, rec.unit_index) + "</span>" + groupLabel + badge;
-    box.appendChild(head);
-
-    if (rec.admin_feedback) {
-      var fb = document.createElement("p");
-      fb.className = "hint";
-      fb.style.margin = "6px 0";
-      fb.textContent = "老师留言：" + rec.admin_feedback;
-      box.appendChild(fb);
-    }
-
-    if (rec.admin_feedback_audio) {
-      var tLabel = document.createElement("p");
-      tLabel.className = "hint";
-      tLabel.style.margin = "8px 0 0";
-      tLabel.textContent = "老师的语音反馈：";
-      box.appendChild(tLabel);
-      var tAudio = document.createElement("audio");
-      tAudio.className = "rec-audio";
-      tAudio.controls = true;
-      tAudio.src = "data:audio/webm;base64," + rec.admin_feedback_audio;
-      box.appendChild(tAudio);
-    }
-
-    var audio = document.createElement("audio");
-    audio.className = "rec-audio";
-    audio.controls = true;
-    audio.src = "data:audio/webm;base64," + rec.audio_base64;
-    box.appendChild(audio);
-
-    // 直接回到这一组重听、重录（不影响当前学习进度）
-    var redo = document.createElement("button");
-    redo.className = "btn btn-blue";
-    redo.textContent = "🔁 重听 / 重录这一组";
-    redo.addEventListener("click", function(){
-      var thisKey = batchKey(rec.difficulty, rec.unit_index, rec.words);
-      // 其它还要重录的组排成队，这一组重录完后可以直接"重录下一个"
-      state.retryQueue = (state.retryItems || []).filter(function(it){ return batchKey(it.difficulty, it.unit_index, it.words) !== thisKey; });
-      enterBatchReview({ difficulty: rec.difficulty, unit_index: rec.unit_index, cursor_start: 0, words: rec.words });
-    });
-    box.appendChild(redo);
-
-    return box;
-  }
   function updateVoiceToggleUI() {
     el("voiceMaleBtn").classList.toggle("active", state.gender === "male");
     el("voiceFemaleBtn").classList.toggle("active", state.gender === "female");
@@ -2186,6 +2392,7 @@
     el("adminProgressModal").hidden = true;
     el("studentPwdModal").hidden = true;
     el("batchChoiceModal").hidden = true;
+    el("retryModal").hidden = true;
   });
 
   // ---------- 学生修改自己的密码 ----------
@@ -2425,16 +2632,22 @@
       groupIndex: unitIndex, startCursor: cursor, words: words,
       steps: [], stepIndex: 0, repeatIndex: 0, paused: false, pass: pass
     };
-    words.forEach(function(w){
-      state.session.steps.push({ phase: "zh", word: w, repeats: 3 });
-      state.session.steps.push({ phase: "en", word: w, repeats: 3 });
-    });
+    pushSteps(state.session);
 
     renderRoadmap();
     applyPassUI();
     showView("viewPlayer");
     globalGen++;
     playStep(0, 0, globalGen);
+  }
+
+  // 每个词：中文读 3 遍，再英文读 15 遍
+  var REPEATS = { zh: 3, en: 15 };
+  function pushSteps(session) {
+    session.words.forEach(function(w){
+      session.steps.push({ phase: "zh", word: w, repeats: REPEATS.zh });
+      session.steps.push({ phase: "en", word: w, repeats: REPEATS.en });
+    });
   }
 
   function startRelisten() {
@@ -2456,7 +2669,7 @@
     el("passHint").textContent = pass2
       ? "第二遍：默认还是不显示文字，点正在播放的圆点可以显示/再点一次隐藏这个词，点别的圆点会跳过去播放那个词"
       : "第一遍：先认真听，还不显示文字";
-    el("gotoRecordBtn").hidden = !pass2;
+    el("gotoRecordBtn").hidden = !pass2 || !!state.session.ebbReview;
   }
 
   // roadmap 每一步是一个圆点(中/英)，第二遍时圆点下面再加一个 👁 小按钮，
@@ -2505,8 +2718,7 @@
   }
 
   function audioUrl(step) {
-    var lang = step.phase === "zh" ? "zh" : "en";
-    return AUDIO_BASE + state.difficulty + "/" + lang + "/" + state.gender + "/" + step.word.id + ".mp3";
+    return aaUrl(step.word.id, (step.phase === "zh" ? "zh_" : "en_") + state.gender);   // 按词 id 判断音频目录，复习时一组里可能有小学、初中的词
   }
 
   var playerEl = el("player");
@@ -2563,6 +2775,16 @@
 
   function finishSession() {
     document.querySelectorAll("#roadmap .rm-node").forEach(function(n){ n.classList.add("done"); n.classList.remove("active"); });
+    var ebb = !!state.session.ebbReview;
+    el("startRecordBtn").hidden = ebb;
+    el("relistenBtn").hidden = ebb;
+    if (ebb) {
+      state.memPending = memTouch(state.session.words.map(function(w){ return w.id; }));
+      el("doneTitle").textContent = "✅ 复习完成";
+      el("doneSummary").textContent = "这 " + state.session.words.length + " 个词已记入复习计划，下次复习时间按遗忘曲线自动安排。";
+      showView("viewDone");
+      return;
+    }
     if (state.session.reviewMode) {
       // 回顾模式：听完就完了，不影响进度，也不再算一条新的"今天第N组"
       if (state.pendingRecording === batchKey(state.difficulty, state.session.groupIndex, state.session.words)) {
@@ -2584,6 +2806,7 @@
     if (state.session.pass === 1) {
       saveProgress(groupIndex, newCursor);
       logBatch();
+      state.memPending = memTouch(state.session.words.map(function(w){ return w.id; }));
       state.pendingRecording = batchKey(state.difficulty, state.session.groupIndex, state.session.words);
       state.pendingBatch = {
         difficulty: state.difficulty, unit_index: state.session.groupIndex, cursor_start: state.session.startCursor,
@@ -2665,26 +2888,73 @@
   el("batchChoiceExitBtn").addEventListener("click", function(){ el("batchChoiceModal").hidden = true; });
   el("batchChoiceBackdrop").addEventListener("click", function(){ el("batchChoiceModal").hidden = true; });
 
+  // 老师对这一组的反馈（留言、语音）和学生自己上次的录音，看完点"重听/重录"进入这一组
+  var retryGo = null;
+  function closeRetryModal() {
+    el("retryModal").hidden = true;
+    el("retryBody").innerHTML = "";
+  }
+  function showRetryFeedback(rec, groupNo, go) {
+    retryGo = go;
+    el("retryTitle").textContent = "第 " + groupNo + " 组 · 老师反馈";
+    var body = el("retryBody");
+    body.innerHTML = "";
+    function addAudio(label, b64) {
+      var p = document.createElement("p"); p.className = "hint"; p.style.margin = "8px 0 0"; p.textContent = label; body.appendChild(p);
+      var a = document.createElement("audio"); a.className = "rec-audio"; a.controls = true; a.src = "data:audio/webm;base64," + b64; body.appendChild(a);
+    }
+    if (rec.admin_feedback) { var t = document.createElement("p"); t.style.margin = "6px 0"; t.textContent = "老师留言：" + rec.admin_feedback; body.appendChild(t); }
+    if (rec.admin_feedback_audio) addAudio("老师的语音反馈：", rec.admin_feedback_audio);
+    if (rec.audio_base64) addAudio("你上次的录音：", rec.audio_base64);
+    el("retryModal").hidden = false;
+  }
+  el("retryGoBtn").addEventListener("click", function(){ var go = retryGo; closeRetryModal(); if (go) go(); });
+  el("retryCloseBtn").addEventListener("click", closeRetryModal);
+  el("retryBackdrop").addEventListener("click", closeRetryModal);
+
   function renderBatchPills() {
     var row = el("batchPillRow");
     row.innerHTML = "";
     var batches = state.todayBatches || [];
-    if (!batches.length) { row.innerHTML = "<span class=\"hint\">今天还没开始学习</span>"; return; }
-    batches.forEach(function(b, i){
+    // 以前学的、老师让重录且还没重录的组：排在今天的前面
+    var todayKeys = {};
+    batches.forEach(function(b){ todayKeys[batchKey(b.difficulty, b.unit_index, b.words)] = 1; });
+    var olds = (state.retryRecs || []).filter(function(r){ return !todayKeys[batchKey(r.difficulty, r.unit_index, r.words)]; });
+    if (!batches.length && !olds.length) { row.innerHTML = "<span class=\"hint\">今天还没开始学习</span>"; return; }
+
+    function addPill(batch, groupNo, isCurrent, isRetry) {
       var pill = document.createElement("button");
-      var isLast = i === batches.length - 1;
-      pill.className = "batch-pill" + (isLast ? " bp-current" : "");
-      var groupNo = (state.groupNoOf && state.groupNoOf(b)) || (i + 1);
+      pill.className = "batch-pill" + (isCurrent ? " bp-current" : "") + (isRetry ? " bp-retry" : "");
       // 上面是组号，下面是状态（待批改 / 已通过 / 需重录）；没状态时留个占位，保证每个格子一样高
-      var badge = batchStatusBadge(b) || "<span class=\"status-badge\" style=\"visibility:hidden\">·</span>";
-      pill.innerHTML = "<span>第" + groupNo + "组" + (isLast ? "（当前）" : "") + "</span>" + badge;
+      var badge = isRetry ? "<span class=\"status-badge retry\">🔁需重录</span>" : (batchStatusBadge(batch) || "<span class=\"status-badge\" style=\"visibility:hidden\">·</span>");
+      pill.innerHTML = "<span>第" + groupNo + "组" + (isCurrent ? "（当前）" : "") + "</span>" + badge;
+      var key = batchKey(batch.difficulty, batch.unit_index, batch.words);
+      var rec = isRetry ? (state.retryRecs || []).filter(function(r){ return batchKey(r.difficulty, r.unit_index, r.words) === key; })[0] : null;
       pill.addEventListener("click", function(){
-        // 不直接跳进朗读：先弹出"重新学习 / 退出"让学生选
-        pendingBatchChoice = b;
+        if (isRetry) {
+          // 需要重录的组：回到这一组重听/重录，其它要重录的排成队，录完可以"重录下一个"；老师有留言/语音时先弹出来看
+          var go = function(){
+            state.retryQueue = (state.retryItems || []).filter(function(it){ return batchKey(it.difficulty, it.unit_index, it.words) !== key; });
+            enterBatchReview({ difficulty: batch.difficulty, unit_index: batch.unit_index, cursor_start: batch.cursor_start || 0, words: batch.words });
+          };
+          if (rec && (rec.admin_feedback || rec.admin_feedback_audio)) showRetryFeedback(rec, groupNo, go); else go();
+          return;
+        }
+        // 其它组：先弹出"重新学习 / 退出"让学生选
+        pendingBatchChoice = batch;
         el("batchChoiceTitle").textContent = "第 " + groupNo + " 组";
         el("batchChoiceModal").hidden = false;
       });
       row.appendChild(pill);
+    }
+
+    olds.forEach(function(r){
+      addPill({ difficulty: r.difficulty, unit_index: r.unit_index, cursor_start: 0, words: r.words }, (state.retryGroupNo && state.retryGroupNo(r)) || "?", false, true);
+    });
+    batches.forEach(function(b, i){
+      var rec = findRecordingForBatch(b);
+      var groupNo = (state.groupNoOf && state.groupNoOf(b)) || (i + 1);
+      addPill(b, groupNo, i === batches.length - 1, !!(rec && rec.admin_status === "retry"));
     });
   }
 
@@ -2708,10 +2978,7 @@
       groupIndex: batch.unit_index, startCursor: batch.cursor_start, words: batch.words,
       steps: [], stepIndex: 0, repeatIndex: 0, paused: false, pass: 2, revealed: {}, reviewMode: true
     };
-    batch.words.forEach(function(w){
-      state.session.steps.push({ phase: "zh", word: w, repeats: 3 });
-      state.session.steps.push({ phase: "en", word: w, repeats: 3 });
-    });
+    pushSteps(state.session);
     renderRoadmap();
     applyPassUI();
     showView("viewPlayer");
