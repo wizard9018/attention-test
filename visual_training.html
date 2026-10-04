@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>视觉专注力训练 · 清良思维</title>
+<link rel="preconnect" href="https://knhpwhdgzwhdpnbsrbty.supabase.co" crossorigin>
+<style>
+  :root{--bg:#f7f5ef;--card:#fff;--ink:#10131a;--muted:#5b6472;--blue:#1cb0f6;--green:#58cc02;--gold:#ffc800;--red:#ff4b4b;--border:#e6e1d6}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.5}
+  .wrap{max-width:1080px;margin:0 auto;padding:20px 16px 60px}
+  [hidden]{display:none!important}
+  header.top{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+  header.top h1{font-size:20px;font-weight:900;margin:0}
+  header.top .who{margin-left:auto;color:var(--muted);font-weight:700;font-size:13px}
+  .card{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:16px}
+  h2{font-size:18px;font-weight:900;margin:0 0 12px}
+  h3{font-size:14px;font-weight:800;color:var(--muted);margin:0 0 10px}
+  .hint{color:var(--muted);font-size:13px}
+  img,video{max-width:100%;border-radius:10px;display:block}
+  video{width:100%;background:#000}
+  button,.btn{font:inherit;font-weight:800;cursor:pointer;border:2px solid var(--border);background:var(--card);color:var(--ink);border-radius:14px;padding:10px 16px;box-shadow:0 3px 0 var(--border);transition:transform .05s}
+  button:active:not(:disabled){transform:translateY(2px);box-shadow:none}
+  button:disabled{opacity:.45;cursor:default}
+  button.on{background:#ddf4ff;border-color:var(--blue);box-shadow:0 3px 0 var(--blue)}
+  button.done{background:#eafbe0;border-color:var(--green);box-shadow:0 3px 0 var(--green)}
+  .btn-green{background:var(--green);color:#fff;border-color:#4aa302;box-shadow:0 4px 0 #4aa302}
+  .btn-blue{background:var(--blue);color:#fff;border-color:#0e95d9;box-shadow:0 4px 0 #0e95d9}
+  .btn-red{background:var(--red);color:#fff;border-color:#d33;box-shadow:0 4px 0 #d33}
+  .btn-green:disabled{background:#cfd4da;border-color:#bbb;box-shadow:0 4px 0 #bbb;color:#fff;opacity:1}
+  /* 登录 */
+  .hero-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:start}
+  .hero-eyebrow{display:inline-flex;background:#ddf4ff;color:#0e7fb8;font-size:13px;font-weight:800;padding:6px 14px;border-radius:20px;margin-bottom:14px}
+  .hero-title{font-size:32px;font-weight:900;line-height:1.32;margin:0 0 14px}
+  .hero-title span{color:var(--blue)}
+  .hero-desc{font-weight:600;color:var(--muted);line-height:1.7;max-width:460px}
+  .field{margin-bottom:12px}
+  .field label{display:block;font-weight:800;font-size:13px;margin-bottom:4px}
+  .field input{width:100%;font:inherit;padding:10px 12px;border:2px solid var(--border);border-radius:12px}
+  .err{color:var(--red);font-weight:700;margin-bottom:8px;display:none}
+  @media (max-width:760px){.hero-grid{grid-template-columns:1fr;gap:20px}.hero-title{font-size:26px}}
+  /* 课程选择 */
+  .course-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:start}
+  .course-grid.nofb{grid-template-columns:1fr}
+  @media (max-width:860px){.course-grid{grid-template-columns:1fr}}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+  .row .lbl{font-weight:800;color:var(--muted);min-width:56px}
+  .tab{padding:8px 18px;border-radius:20px;border:2px solid var(--border);background:var(--card);color:var(--muted);font-weight:800;cursor:pointer;box-shadow:none}
+  .tab.active{background:var(--blue);border-color:#0e95d9;color:#fff;box-shadow:0 3px 0 #0e95d9}
+  .tab.empty{opacity:.45}
+  .modehint{font-size:13px;color:var(--muted);margin:-6px 0 14px}
+  .chapters{display:flex;flex-direction:column;gap:10px}
+  .chapter{display:flex;align-items:center;gap:12px;text-align:left;width:100%;padding:12px 16px}
+  .chapter .num{background:#ddf4ff;color:#0e7fb8;border-radius:10px;padding:2px 10px;font-weight:900}
+  .chapter .prog{margin-left:auto;color:var(--muted);font-size:13px}
+  .empty-note{padding:24px;text-align:center;color:var(--muted);font-weight:700}
+  .rec-entry{border:2px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px}
+  .badge{display:inline-block;border-radius:10px;padding:1px 10px;font-weight:800;font-size:12px}
+  .badge.pass{background:#eafbe0;color:#3a8a00}.badge.retry{background:#ffe3e3;color:#c22}.badge.pending{background:#fff4cc;color:#8a6a00}
+  /* 学习界面 */
+  .learn-top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+  .learn-top .title{font-weight:900;font-size:17px}
+  .pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+  .pill{min-width:44px;padding:6px 10px;border-radius:12px;font-size:13px}
+  .pill.cur{border-color:var(--blue);background:#ddf4ff;box-shadow:0 3px 0 var(--blue)}
+  .pill.pass{border-color:var(--green);background:#eafbe0}
+  .pill.retry{border-color:var(--red);background:#ffe3e3}
+  .pill.pending{border-color:var(--gold);background:#fff4cc}
+  .split{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .split > .card{flex:1;min-width:300px}
+  .recbar{margin-top:14px}
+  .recbar .main{width:100%;padding:14px;font-size:16px}
+  .recbar .status{margin-top:8px;font-size:14px;color:var(--muted)}
+  .recbar audio{width:100%;margin-top:10px}
+  .recbar .acts{display:flex;gap:10px;margin-top:10px}.recbar .acts button{flex:1}
+  .parts{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .nextbar{margin-top:14px;display:flex;gap:10px}.nextbar button{flex:1;padding:14px}
+  /* 交互版 */
+  canvas{border:3px dashed var(--border);border-radius:14px;touch-action:none;background:#fff;max-width:100%}
+  .col{display:flex;flex-direction:column;align-items:center;gap:6px}
+  .col button{min-width:64px;padding:10px}
+  .segments{display:flex;flex-wrap:wrap;gap:22px;margin-bottom:6px}
+  .seg{display:flex;flex-direction:column;gap:10px;padding:10px;border-radius:14px;background:#fbfaf6}
+  .seg .colsRow{display:flex;gap:10px}
+  .seg + .seg{border-left:2px dashed var(--border);padding-left:20px}
+  #curQuestion{min-height:1.6em;color:var(--blue);font-weight:800;background:#ddf4ff;border-radius:10px;padding:8px 12px;margin:10px 0}
+  .segrec{display:flex;flex-direction:column;gap:4px;width:100%}.segrec button{width:100%}
+  .segrec .st{font-size:12px;color:var(--muted);max-width:260px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>👁️ 视觉专注力训练</h1>
+    <span class="who" id="who"></span>
+    <button id="logoutBtn" hidden>退出登录</button>
+  </header>
+
+  <!-- 登录：和听觉专注力训练同一套账号(推荐码+学生账号+密码) -->
+  <div class="hero-grid" id="viewLogin">
+    <div>
+      <span class="hero-eyebrow">👁️ K12 视觉专注力训练</span>
+      <h2 class="hero-title">用眼睛看、用耳朵听，把题目<span>讲明白</span></h2>
+      <p class="hero-desc">清良思维 · 认知与思维发展实验室出品。先看题、看讲解，再自己复述一遍，交给老师批改，帮助孩子提升视觉专注与表达能力。</p>
+    </div>
+    <div class="card">
+      <h2>登录</h2>
+      <div class="field"><label>推荐码（手机号后5位）</label><input id="loginReferrer" inputmode="numeric" maxlength="5" placeholder="如 55168"></div>
+      <div class="field"><label>学生账号（001-999）</label><input id="loginStudentNo" inputmode="numeric" maxlength="3" placeholder="如 001"></div>
+      <div class="field"><label>密码</label><input id="loginPassword" type="password" placeholder="默认 123456"></div>
+      <div class="err" id="loginErr"></div>
+      <button class="btn btn-blue" id="loginBtn" style="width:100%">登录</button>
+      <div class="hint" style="margin-top:10px">账号和听觉专注力训练相同。管理员请从主页顶部的"管理员登录"进入。</div>
+    </div>
+  </div>
+
+  <!-- 课程选择 -->
+  <div class="course-grid" id="viewCourse" hidden>
+    <div class="card">
+      <h2>选择课程</h2>
+      <div class="row"><span class="lbl">学段</span><div id="stageTabs" class="row" style="margin:0"></div></div>
+      <div class="row"><span class="lbl">版本</span><div id="modeTabs" class="row" style="margin:0"></div></div>
+      <div class="modehint" id="modeHint"></div>
+      <div class="row"><span class="lbl">科目</span><div id="subjectTabs" class="row" style="margin:0"></div></div>
+      <div class="row"><span class="lbl">年级</span><div id="gradeTabs" class="row" style="margin:0"></div></div>
+      <h3>章节</h3>
+      <div class="chapters" id="chapterList"></div>
+    </div>
+    <div class="card" id="feedbackPanel" hidden>
+      <h2>老师的反馈 · 需要重录</h2>
+      <div id="feedbackList"></div>
+    </div>
+  </div>
+
+  <!-- 学习界面 -->
+  <div id="viewLearn" hidden>
+    <div class="learn-top">
+      <button id="backBtn">◀ 返回课程</button>
+      <span class="title" id="learnTitle"></span>
+    </div>
+    <div class="pills" id="pills"></div>
+    <div id="learnBody"></div>
+  </div>
+</div>
+
+<script type="module">
+const SUPABASE_URL = "https://knhpwhdgzwhdpnbsrbty.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtuaHB3aGRnendoZHBuYnNyYnR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkxNzM5MzIsImV4cCI6MjEwNDc0OTkzMn0.Nsd_fxNquX-_hTLyKwteHuezgp2HI4-rNWiMC-XTohI";
+const CONTENT = "visual_content/";
+const MODE_NAME = { gen1: "纯享版", gen2: "交互版" };
+const MODE_HINT = { gen1: "看老师的讲解视频，然后自己复述一遍。", gen2: "点小喇叭一句一句听讲解，分段复述并自动打分，最后整体复述。" };
+const $ = id => document.getElementById(id);
+const sbHeaders = extra => ({ apikey: SUPABASE_ANON_KEY, Authorization: "Bearer " + SUPABASE_ANON_KEY, "Content-Type": "application/json", ...extra });
+const sbGet = (t, q) => fetch(SUPABASE_URL + "/rest/v1/" + t + "?" + q, { headers: sbHeaders() }).then(r => r.json());
+const sbPost = (t, rows, extra) => fetch(SUPABASE_URL + "/rest/v1/" + t, { method: "POST", headers: sbHeaders(extra), body: JSON.stringify(rows) });
+const pad3 = n => String(n).padStart(3, "0");
+const url = p => CONTENT + p.split("/").map(encodeURIComponent).join("/");
+
+let user = null, index = null, status = {};   // status: question_id -> {status, feedback, created_at}（最新一条）
+let sel = { stage: "初中", mode: "gen1", subject: "数学", grade: "初一", term: "上" };
+let cur = null;   // {course, chapter, manifest, qi}
+
+function show(v) { ["viewLogin", "viewCourse", "viewLearn"].forEach(x => $(x).hidden = x !== v); $("logoutBtn").hidden = v === "viewLogin"; }
+const qidOf = (dir, q) => dir + "/" + q.id;
+const esc = s => String(s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+
+// ---------- 登录 ----------
+async function ensureProvisioned(ref) {
+  const rows = await sbGet("training_students", "referral_code=eq." + ref + "&limit=1&select=student_no");
+  if (rows.length) return;
+  const all = []; for (let i = 1; i <= 999; i++) all.push({ referral_code: ref, student_no: pad3(i) });
+  for (let j = 0; j < all.length; j += 200) await sbPost("training_students", all.slice(j, j + 200), { Prefer: "resolution=merge-duplicates" });
+}
+$("loginBtn").onclick = async () => {
+  const err = $("loginErr"); err.style.display = "none";
+  const ref = $("loginReferrer").value.trim(), n = parseInt($("loginStudentNo").value.trim(), 10), pwd = $("loginPassword").value;
+  const fail = m => { err.textContent = m; err.style.display = "block"; };
+  if (!/^\d{5}$/.test(ref)) return fail("推荐码需为5位数字");
+  if (!n || n < 1 || n > 999) return fail("学生账号需为 001-999");
+  await Promise.all([ensureProvisioned(ref), sbPost("training_quota", [{ referral_code: ref, total_minutes: 9999 * 60 }], { Prefer: "resolution=ignore-duplicates" })]);
+  const rows = await sbGet("training_students", "referral_code=eq." + ref + "&student_no=eq." + pad3(n) + "&select=password");
+  if (!rows.length) return fail("账号不存在，请联系管理员");
+  if (rows[0].password !== pwd) return fail("密码错误");
+  user = { referrer: ref, studentNo: pad3(n) };
+  try { sessionStorage.setItem("vt_user", JSON.stringify(user)); } catch (e) {}
+  try { await enterCourse(); } catch (e) { user = null; fail("课程内容加载失败（" + e.message + "）。本地测试请用「启动听觉训练本地测试.bat」打开，不要直接双击 html 文件。"); }
+};
+$("logoutBtn").onclick = () => { user = null; status = {}; try { sessionStorage.removeItem("vt_user"); } catch (e) {} stopMedia(); $("who").textContent = ""; show("viewLogin"); };
+
+// ---------- 课程选择 ----------
+async function loadStatus() {
+  const rows = await sbGet("visual_recordings", "referral_code=eq." + user.referrer + "&student_no=eq." + user.studentNo + "&select=question_id,admin_status,admin_feedback,created_at&order=created_at.desc&limit=2000");
+  status = {};
+  (Array.isArray(rows) ? rows : []).forEach(r => { if (!status[r.question_id]) status[r.question_id] = { status: r.admin_status || "pending", feedback: r.admin_feedback, created_at: r.created_at }; });
+}
+async function enterCourse() {
+  $("who").textContent = "推荐码 " + user.referrer + " · 学生 " + user.studentNo;
+  if (!index) index = await (await fetch(CONTENT + "index.json")).json();
+  show("viewCourse");
+  await loadStatus();
+  renderCourse();
+}
+const GRADES = { 小学: ["一年级", "二年级", "三年级", "四年级", "五年级", "六年级"], 初中: ["初一", "初二", "初三"] };
+function chip(parent, text, active, empty, onclick) {
+  const b = document.createElement("button"); b.className = "tab" + (active ? " active" : "") + (empty ? " empty" : ""); b.textContent = text; b.onclick = onclick; parent.appendChild(b);
+}
+const courseOf = () => index.courses.find(c => c.mode === sel.mode && c.grade === sel.grade && c.term === sel.term && c.subject === sel.subject);
+function renderCourse() {
+  $("stageTabs").innerHTML = ""; ["小学", "初中"].forEach(s => chip($("stageTabs"), s, s === sel.stage, false, () => { sel.stage = s; sel.grade = GRADES[s][0]; sel.term = "上"; renderCourse(); }));
+  $("modeTabs").innerHTML = ""; ["gen1", "gen2"].forEach(m => chip($("modeTabs"), MODE_NAME[m], m === sel.mode, false, () => { sel.mode = m; renderCourse(); }));
+  $("modeHint").textContent = MODE_HINT[sel.mode];
+  $("subjectTabs").innerHTML = ""; chip($("subjectTabs"), "数学", true, false, () => {}); chip($("subjectTabs"), "物理（即将上线）", false, true, () => {});
+  $("gradeTabs").innerHTML = "";
+  const terms = sel.stage === "小学" ? ["上", "下", "专题"] : ["上", "下"];   // 专题 = 奥数 / 错题笔记
+  GRADES[sel.stage].forEach(g => terms.forEach(t => {
+    const has = index.courses.some(c => c.mode === sel.mode && c.grade === g && c.term === t);
+    chip($("gradeTabs"), g + (t === "专题" ? "专题" : t + "册"), g === sel.grade && t === sel.term, !has, () => { sel.grade = g; sel.term = t; renderCourse(); });
+  }));
+  const list = $("chapterList"); list.innerHTML = "";
+  const course = courseOf();
+  if (!course) list.innerHTML = '<div class="empty-note">这个年级暂时没有' + MODE_NAME[sel.mode] + '内容，敬请期待</div>';
+  else course.chapters.forEach(ch => {
+    const b = document.createElement("button"); b.className = "chapter";
+    const done = Object.keys(status).filter(k => k.startsWith(ch.dir + "/")).length;
+    const closed = ch.open === false;   // 线上先只开放部分单元，其余灰掉不能点
+    b.innerHTML = (course.term === "专题" ? "" : '<span class="num">第' + ch.num + '章</span>') + '<b>' + ch.title + '</b><span class="prog">' + (closed ? "🔒 即将开放" : "已提交 " + done + " / " + ch.n + " 题") + '</span>';
+    b.disabled = closed;
+    b.onclick = () => openChapter(course, ch, null);
+    list.appendChild(b);
+  });
+  renderFeedback();
+}
+function renderFeedback() {
+  const items = Object.entries(status).filter(([, s]) => s.status === "retry");
+  $("feedbackPanel").hidden = !items.length;
+  $("viewCourse").classList.toggle("nofb", !items.length);
+  const box = $("feedbackList"); box.innerHTML = "";
+  items.forEach(([qid, s]) => {
+    const [mode, d, ...rest] = qid.split("/"), dir = mode + "/" + d;
+    const course = index.courses.find(c => c.chapters.some(ch => ch.dir === dir)); if (!course) return;
+    const ch = course.chapters.find(c => c.dir === dir);
+    const e = document.createElement("div"); e.className = "rec-entry";
+    e.innerHTML = '<div><span class="badge retry">🔁 需要重录</span> <b>' + MODE_NAME[mode] + " · " + course.grade + course.term + " · 第" + ch.num + "章 " + ch.title + '</b></div>' +
+      (s.feedback ? '<p class="hint" style="margin:6px 0">老师留言：' + esc(s.feedback) + '</p>' : "");
+    const b = document.createElement("button"); b.className = "btn-blue"; b.textContent = "去重录"; b.style.marginTop = "6px";
+    b.onclick = () => openChapter(course, ch, rest.join("/"));
+    e.appendChild(b); box.appendChild(e);
+  });
+}
+
+// ---------- 学习界面 ----------
+async function openChapter(course, ch, startQid) {
+  const manifest = await (await fetch(CONTENT + ch.dir + "/manifest.json")).json();
+  cur = { course, chapter: ch, manifest, qi: 0 };
+  if (startQid) { const i = manifest.questions.findIndex(q => q.id === startQid); if (i >= 0) cur.qi = i; }
+  else { const i = manifest.questions.findIndex(q => !status[qidOf(ch.dir, q)]); cur.qi = i < 0 ? 0 : i; }   // 默认进到第一道还没提交的题
+  show("viewLearn");
+  $("learnTitle").textContent = MODE_NAME[course.mode] + " · " + course.grade + course.term + " · " + (course.term === "专题" ? "" : "第" + ch.num + "章 ") + ch.title;
+  loadQuestion(cur.qi);
+}
+$("backBtn").onclick = () => { stopMedia(); enterCourse(); };
+function unlocked(i) { const qs = cur.manifest.questions; return i === 0 || !!status[qidOf(cur.chapter.dir, qs[i - 1])]; }
+function renderPills() {
+  const box = $("pills"); box.innerHTML = "";
+  cur.manifest.questions.forEach((q, i) => {
+    const s = status[qidOf(cur.chapter.dir, q)], ok = unlocked(i);
+    const b = document.createElement("button");
+    b.className = "pill" + (i === cur.qi ? " cur" : "") + (s ? " " + s.status : "");
+    b.textContent = !ok ? "🔒" : s ? ({ pass: "✅", retry: "🔁", pending: "⏳" }[s.status]) + (i + 1) : String(i + 1);
+    b.disabled = !ok; b.onclick = () => loadQuestion(i);
+    box.appendChild(b);
+  });
+}
+let mediaEls = [];
+function stopMedia() { mediaEls.forEach(m => { try { m.pause(); } catch (e) {} }); mediaEls = []; }
+function loadQuestion(i) {
+  stopMedia();
+  cur.qi = i;
+  const q = cur.manifest.questions[i];
+  renderPills();
+  const body = $("learnBody"); body.innerHTML = "";
+  const qid = qidOf(cur.chapter.dir, q), s = status[qid];
+  if (s && (s.status === "retry" || s.status === "pass")) {
+    const fb = document.createElement("div"); fb.className = "card";
+    fb.style.cssText = "margin-bottom:14px;border-color:" + (s.status === "retry" ? "var(--red)" : "var(--green)");
+    fb.innerHTML = s.status === "retry" ? '<span class="badge retry">🔁 老师让你重录</span> ' : '<span class="badge pass">☑️ 老师已通过</span> ';
+    fb.innerHTML += s.feedback ? esc(s.feedback) : ""; body.appendChild(fb);
+  }
+  const host = document.createElement("div"); body.appendChild(host);
+  const last = i === cur.manifest.questions.length - 1;
+  const nextBar = document.createElement("div"); nextBar.className = "nextbar"; nextBar.hidden = !s;
+  const nb = document.createElement("button"); nb.className = "btn-green"; nb.textContent = last ? "本章完成，返回课程 ▶" : "下一题 ▶";
+  nb.onclick = () => { if (last) { stopMedia(); enterCourse(); } else loadQuestion(i + 1); };
+  nextBar.appendChild(nb);
+  const submitter = makeSubmitter(qid, () => { renderPills(); nextBar.hidden = false; });
+  if (cur.course.mode === "gen1") renderGen1(host, q, submitter); else renderGen2(host, q, submitter);
+  body.appendChild(nextBar);
+}
+
+// ---------- 录音 + 提交给老师批改（两种版本共用）----------
+let micStream = null;
+async function getMic() { return micStream ??= await navigator.mediaDevices.getUserMedia({ audio: true }); }
+function blobToBase64(blob) { return new Promise((res, rej) => { const r = new FileReader(); r.onloadend = () => res(r.result.split(",")[1]); r.onerror = rej; r.readAsDataURL(blob); }); }
+// 录音 -> 回听 -> 重录/提交；setEnabled 用来在看完视频之前锁住录音
+function makeSubmitter(qid, onSubmitted) {
+  const el = document.createElement("div"); el.className = "recbar";
+  const main = document.createElement("button"), st = document.createElement("div"), review = document.createElement("div");
+  st.className = "status"; el.append(main, st, review);
+  let enabled = true, lockText = "", mr, chunks = [], recording = false, blob = null;
+  const idle = () => { main.textContent = enabled ? (status[qid] ? "🎙 重新录一遍" : "🎙 开始复述") : lockText; main.disabled = !enabled; main.className = "main btn-green"; };
+  idle();
+  main.onclick = async () => {
+    if (!recording) {
+      let stream; try { stream = await getMic(); } catch (e) { st.textContent = "⚠ 无法使用麦克风，请允许浏览器使用麦克风后重试"; return; }
+      mr = new MediaRecorder(stream); chunks = []; review.innerHTML = "";
+      mr.ondataavailable = e => chunks.push(e.data); mr.onstop = onStop;
+      mr.start(); recording = true; main.textContent = "■ 说完了，点这里停止"; main.className = "main btn-red"; st.textContent = "录音中…";
+    } else { mr.stop(); recording = false; idle(); }
+  };
+  function onStop() {
+    blob = new Blob(chunks, { type: "audio/webm" });
+    st.textContent = "先听一下自己的录音，满意就提交给老师";
+    review.innerHTML = "";
+    const a = document.createElement("audio"); a.controls = true; a.src = URL.createObjectURL(blob);
+    const acts = document.createElement("div"); acts.className = "acts";
+    const redo = document.createElement("button"); redo.textContent = "🔄 重录";
+    const sub = document.createElement("button"); sub.className = "btn-blue"; sub.textContent = "📤 提交给老师批改";
+    redo.onclick = () => { review.innerHTML = ""; st.textContent = ""; };
+    sub.onclick = async () => {
+      sub.disabled = redo.disabled = true; st.textContent = "正在提交…";
+      try {
+        const r = await sbPost("visual_recordings", [{ referral_code: user.referrer, student_no: user.studentNo, question_id: qid, audio_base64: await blobToBase64(blob) }]);
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        status[qid] = { status: "pending", feedback: null, created_at: new Date().toISOString() };
+        review.innerHTML = ""; st.innerHTML = "✅ 已提交，<b>等待老师批改</b>。可以继续下一题；想改的话也可以重新录一遍再提交。";
+        idle(); onSubmitted();
+      } catch (e) { st.textContent = "⚠ 提交失败：" + e.message + "，录音还在，请再点一次提交"; sub.disabled = redo.disabled = false; }
+    };
+    acts.append(redo, sub); review.append(a, acts);
+  }
+  return { el, setEnabled(on, text) { enabled = on; lockText = text || ""; if (!recording && !review.children.length) idle(); } };
+}
+
+// ---------- 纯享版：左题目、右视频，看完视频才能录音 ----------
+function renderGen1(host, q, submitter) {
+  const base = cur.chapter.dir + "/";
+  host.className = "split";
+  const left = document.createElement("div"); left.className = "card";
+  left.innerHTML = "<h3>题目</h3>";
+  const img = document.createElement("img"); img.src = url(base + "images/" + q.images[0]); left.appendChild(img);
+  if (q.images.length > 1) {
+    const ans = document.createElement("div"); ans.hidden = true;
+    q.images.slice(1).forEach(f => { const a = document.createElement("img"); a.src = url(base + "images/" + f); a.style.marginTop = "10px"; ans.appendChild(a); });
+    const btn = document.createElement("button"); btn.style.marginTop = "14px"; btn.textContent = "💡 查看解答图";
+    btn.onclick = () => { ans.hidden = !ans.hidden; btn.textContent = ans.hidden ? "💡 查看解答图" : "收起解答图"; };
+    left.append(btn, ans);
+  }
+  const right = document.createElement("div"); right.className = "card";
+  right.innerHTML = "<h3>看视频讲解</h3>";
+  const vids = q.videos, watched = vids.map(() => !!status[qidOf(cur.chapter.dir, q)]);   // 已经交过的题，重录时不用再逼着重看
+  const player = document.createElement("video"); player.controls = true; player.controlsList = "nodownload"; mediaEls.push(player);
+  let part = 0;
+  const parts = document.createElement("div"); parts.className = "parts";
+  const refresh = () => {
+    [...parts.children].forEach((b, k) => { b.className = "tab" + (k === part ? " active" : ""); b.textContent = "第" + (k + 1) + "段" + (watched[k] ? " ✓" : ""); });
+    submitter.setEnabled(watched.every(Boolean), vids.length > 1 ? "🎙 先看完全部视频，再开始复述" : "🎙 先看完视频，再开始复述");
+  };
+  const play = k => { part = k; player.src = url(base + vids[k].src); player.load(); refresh(); };
+  if (vids.length > 1) vids.forEach((v, k) => { const b = document.createElement("button"); b.onclick = () => play(k); parts.appendChild(b); });
+  player.onended = () => { watched[part] = true; if (part < vids.length - 1) play(part + 1); else refresh(); };
+  if (vids.length > 1) right.appendChild(parts);
+  right.append(player, submitter.el);
+  host.append(left, right);
+  play(0);
+}
+
+// ---------- 交互版：喇叭逐句听 + 分段复述自动打分 + 整体复述交给老师 ----------
+let pinyinFn = null, asrPipe = null;
+const HAS_WEBGPU = !!navigator.gpu;
+async function getPinyin() { return pinyinFn ??= (await import("https://cdn.jsdelivr.net/npm/pinyin-pro@3/+esm")).pinyin; }
+async function getAsr() {
+  if (asrPipe) return asrPipe;
+  const { pipeline } = HAS_WEBGPU ? await import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.0")
+    : await import("https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/dist/transformers.min.js");
+  return asrPipe = HAS_WEBGPU ? await pipeline("automatic-speech-recognition", "onnx-community/whisper-small", { device: "webgpu" })
+    : await pipeline("automatic-speech-recognition", "Xenova/whisper-small", { quantized: true });
+}
+// 按拼音(不管声调)比对，同音字不算错；"角B"这类单个英文字母按字母名读音比
+const LETTER_PINYIN = { A:"ei",B:"bi",C:"xi",D:"di",E:"yi",F:"aifu",G:"ji",H:"eiqi",I:"ai",J:"jie",K:"kei",L:"ailu",M:"aimu",N:"ainu",O:"ou",P:"pi",Q:"kiu",R:"aer",S:"aisi",T:"ti",U:"you",V:"wei",W:"dabuliu",X:"eikesi",Y:"wai",Z:"zei" };
+function toPinyin(s) {
+  const t = [], re = /[一-鿿]+|[A-Za-z]/g; let m;
+  while ((m = re.exec(s))) {
+    if (/[一-鿿]/.test(m[0])) t.push(...pinyinFn(m[0], { toneType: "none", type: "array" }));
+    else t.push(LETTER_PINYIN[m[0].toUpperCase()] || m[0].toLowerCase());
+  }
+  return t;
+}
+function overlapScore(said, ref) {
+  const a = toPinyin(said), b = toPinyin(ref), set = new Set();
+  for (let i = 0; i < a.length - 1; i++) set.add(a[i] + " " + a[i + 1]);
+  let hit = 0, total = 0;
+  for (let i = 0; i < b.length - 1; i++) { total++; if (set.has(b[i] + " " + b[i + 1])) hit++; }
+  return total ? Math.round(hit / total * 100) : 0;
+}
+function segRecorder(getRef, label) {
+  const box = document.createElement("div"); box.className = "segrec";
+  const btn = document.createElement("button"), st = document.createElement("span"); st.className = "st";
+  const idle = "🎙 " + label; btn.textContent = idle; box.append(btn, st);
+  let mr, chunks = [], rec = false;
+  btn.onclick = async () => {
+    if (!rec) {
+      let stream; try { stream = await getMic(); } catch (e) { st.textContent = "⚠ 无法使用麦克风"; return; }
+      mr = new MediaRecorder(stream); chunks = []; mr.ondataavailable = e => chunks.push(e.data); mr.onstop = onStop;
+      mr.start(); rec = true; btn.textContent = "■ 停止"; btn.classList.add("on"); st.textContent = "录音中…";
+    } else { mr.stop(); rec = false; btn.textContent = idle; btn.classList.remove("on"); btn.disabled = true; }
+  };
+  async function onStop() {
+    st.textContent = "识别中（第一次要下载语音识别模型，请稍等）…";
+    try {
+      await getPinyin();
+      const asr = await getAsr();
+      const res = await asr(URL.createObjectURL(new Blob(chunks, { type: "audio/webm" })), { language: "chinese", task: "transcribe", chunk_length_s: 30, return_timestamps: true });
+      btn.classList.add("done"); st.innerHTML = "重合度 <b>" + overlapScore(res.text, getRef()) + "%</b>　" + esc(res.text);
+    } catch (e) { st.textContent = "⚠ 识别失败：" + e.message; }
+    btn.disabled = false;
+  }
+  return box;
+}
+function renderStage(container, group, base) {
+  container.innerHTML = "";
+  if (!group) return;
+  const [x0, y0, cx, cy] = group.bbox;
+  container.style.cssText = "position:relative;width:100%;aspect-ratio:" + (cx / cy).toFixed(4);
+  group.layers.forEach(layer => {
+    const stack = layer.slice().reverse(); let top = stack.length - 1;
+    const imgs = stack.map(it => {
+      const im = document.createElement("img");
+      im.src = url(base + "images/" + it.media.replace(/\.emf$/i, ".png"));
+      im.style.cssText = "position:absolute;left:" + ((it.x - x0) / cx * 100) + "%;top:" + ((it.y - y0) / cy * 100) + "%;width:" + (it.cx / cx * 100) + "%;height:" + (it.cy / cy * 100) + "%;cursor:" + (stack.length > 1 ? "pointer" : "default");
+      container.appendChild(im); return im;
+    });
+    if (stack.length > 1) imgs.forEach((im, i) => { if (i === top) im.title = "点一下，移开看下面"; im.onclick = () => { if (i !== top) return; im.style.display = "none"; top--; }; });
+  });
+}
+function renderGen2(host, q, submitter) {
+  const base = cur.chapter.dir + "/";
+  host.innerHTML = '<div class="split"><div class="card"><h3>1. 题目</h3><div class="stage"></div></div>' +
+    '<div class="card" style="flex:0 0 auto;min-width:0"><h3>2. 默画图形</h3><canvas width="320" height="240"></canvas><br><br><button class="clr">清空</button></div></div>' +
+    '<h3 style="margin-top:20px">3. 依次听讲解</h3><div class="row tabsrow"></div><div id="curQuestion"></div><div class="segments"></div>' +
+    '<h3 style="margin-top:20px">4. 全部听完后，完整复述一遍（交给老师批改）</h3><div class="finalbox"></div>' +
+    '<h3 style="margin-top:20px">5. 参考讲解</h3><button class="reveal tab">听不懂？点这里看参考讲解</button><div class="card backcard" style="display:none;margin-top:10px"><div class="back"></div></div>';
+  const $q = s => host.querySelector(s);
+  renderStage($q(".stage"), q.fronts[0], base); renderStage($q(".back"), q.backs[0], base);
+  $q(".finalbox").appendChild(submitter.el);
+  $q(".reveal").onclick = () => { const c = $q(".backcard"), s = c.style.display === "none"; c.style.display = s ? "block" : "none"; $q(".reveal").textContent = s ? "收起参考讲解" : "听不懂？点这里看参考讲解"; };
+  const cv = $q("canvas"), ctx = cv.getContext("2d"); let drawing = false;
+  const pos = e => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  cv.onpointerdown = e => { drawing = true; ctx.beginPath(); ctx.moveTo(...pos(e)); };
+  cv.onpointermove = e => { if (drawing) { ctx.lineTo(...pos(e)); ctx.stroke(); } };
+  window.addEventListener("pointerup", () => drawing = false);
+  $q(".clr").onclick = () => ctx.clearRect(0, 0, cv.width, cv.height);
+  const audio = new Audio(); mediaEls.push(audio);
+  const byPair = {}; q.steps.forEach(s => (byPair[s.pair] ??= []).push(s));
+  const columns = Object.values(byPair), qText = $q("#curQuestion"), segs = $q(".segments"), REVEAL = 5;
+  function colEl(pair, n) {
+    const w = document.createElement("div"); w.className = "col";
+    pair.forEach(s => {
+      const b = document.createElement("button"); b.textContent = s.kind === "prompt" ? "❓ " + n : s.kind === "answer" ? "💡" : "🔊 " + n; s._plays = 0;
+      b.onclick = () => {
+        audio.pause(); audio.src = url(base + "audio/" + s.audio); audio.play();
+        segs.querySelectorAll("button").forEach(x => x.classList.remove("on")); b.classList.add("on", "done");
+        if (s.kind !== "answer") { s._plays++; qText.textContent = s._plays >= REVEAL ? (s.text || "") : "🔊 已听 " + s._plays + " / " + REVEAL + " 遍，听不懂就多听几遍，满" + REVEAL + "遍会显示文字"; }
+      };
+      w.appendChild(b);
+    });
+    return w;
+  }
+  function renderGroups(n) {
+    segs.innerHTML = "";
+    for (let i = 0; i < columns.length; i += n) {
+      const chunk = columns.slice(i, i + n), seg = document.createElement("div"); seg.className = "seg";
+      const row = document.createElement("div"); row.className = "colsRow";
+      chunk.forEach((p, k) => row.appendChild(colEl(p, i + k + 1)));
+      seg.append(row, segRecorder(() => chunk.flat().map(s => s.text || "").join(""), chunk.length > 1 ? (i + 1) + "-" + (i + chunk.length) : String(i + 1)));
+      segs.appendChild(seg);
+    }
+  }
+  const tabs = $q(".tabsrow");
+  [1, 2, 3, 4].forEach(n => { const t = document.createElement("button"); t.className = "tab" + (n === 1 ? " active" : ""); t.textContent = n === 1 ? "1组一起" : n + "组一起";
+    t.onclick = () => { tabs.querySelectorAll(".tab").forEach(x => x.classList.remove("active")); t.classList.add("active"); renderGroups(n); }; tabs.appendChild(t); });
+  renderGroups(1);
+}
+
+// ---------- 启动：刷新页面时恢复登录 ----------
+try { const u = sessionStorage.getItem("vt_user"); if (u) { user = JSON.parse(u); enterCourse(); } } catch (e) {}
+</script>
+</body>
+</html>

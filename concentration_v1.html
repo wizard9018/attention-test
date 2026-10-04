@@ -4788,9 +4788,7 @@
       comingSoonModalCtrl.open();
     }
     navVisualTrainingBtn.addEventListener("click", function() {
-      requireLoginThen(function() {
-        showComingSoon("👁️ 视觉专注力训练", "训练内容正在开发中，即将上线，敬请期待。");
-      });
+      window.location.href = "visual_training.html";
     });
     navAuditoryTrainingBtn.addEventListener("click", function() {
       window.location.href = "auditory_training.html";

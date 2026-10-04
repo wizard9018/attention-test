@@ -41,8 +41,13 @@
   .wrap:has(#viewSuperAdmin:not([hidden])),
   .wrap:has(#viewAudioAdmin:not([hidden])){max-width:1100px;}
   #viewSetup > .card{position:relative;}
-  .pt-open{position:absolute;top:24px;right:24px;padding:7px 12px;border-radius:12px;border:2px solid var(--blue);background:#ddf4ff;color:var(--ink);font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
-  @media (max-width:520px){ .pt-open{position:static;display:block;margin:0 0 12px auto;} }
+  .setup-tools{position:absolute;top:24px;right:24px;display:flex;gap:8px;}
+  .pt-open{padding:7px 12px;border-radius:12px;border:2px solid var(--blue);background:#ddf4ff;color:var(--ink);font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
+  @media (max-width:520px){ .setup-tools{position:static;display:flex;gap:8px;margin:0 0 12px;justify-content:flex-end;} }
+  .rs-syls{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:10px;}
+  .rs-syl{font-size:26px;font-weight:900;padding:2px 6px;border-radius:8px;}
+  .rs-syl.good{color:var(--green);background:#e6f6e8;}
+  .rs-syl.bad{color:var(--red);background:#fdecec;}
   .modal-panel.pt-panel{max-width:520px;}
   .pt-bar{height:8px;border-radius:6px;background:#eceae2;overflow:hidden;margin:6px 0 16px;}
   .pt-bar > i{display:block;height:100%;background:var(--blue);border-radius:6px;transition:width .25s;}
@@ -229,6 +234,7 @@
     <button class="admin-tab" id="adminTabTrain">🎧 专注力训练管理</button>
     <button class="admin-tab" id="adminTabRecords">📋 专注力测试记录</button>
     <button class="admin-tab" id="adminTabAudio" hidden>🔊 音频管理</button>
+    <button class="admin-tab" id="adminTabVisual">🎬 视觉训练批改</button>
   </div>
 
   <!-- 管理员改密码：点header的"改密码"展开/收起 -->
@@ -372,11 +378,24 @@
     <div class="admin-row" style="justify-content:center;margin-top:12px;"><button id="aaPrev">上一页</button><span class="hint" id="aaPage"></span><button id="aaNext">下一页</button></div>
   </div>
 
+  <!-- 视觉专注力训练：整体复述录音批改（所有管理员都能看自己学生的） -->
+  <div class="card" id="viewVisualAdmin" hidden>
+    <h2>视觉专注力训练 · 整体复述批改</h2>
+    <div class="admin-tabs" style="margin-bottom:14px;">
+      <button class="admin-tab" id="vaTabPending">待批改</button>
+      <button class="admin-tab" id="vaTabGraded">已批改</button>
+    </div>
+    <div id="visualAdminList"><p class="hint">加载中…</p></div>
+  </div>
+
   <!-- 学习设置：难度 + Unit + 每次学几个词，都在一个界面里选；右边一列放老师反馈 -->
   <div class="setup-grid" id="viewSetup" hidden>
     <div class="card">
       <h2>选好难度、Unit、每次学几个词</h2>
-      <button class="pt-open" id="ptOpenBtn" type="button">📝 单词分级测试</button>
+      <div class="setup-tools">
+        <button class="pt-open" id="ptOpenBtn" type="button">📝 单词分级测试</button>
+        <button class="pt-open" id="rsOpenBtn" type="button">🗣️ 英文跟读</button>
+      </div>
 
       <div class="field">
         <label class="has-scene">课程难度
@@ -434,6 +453,35 @@
       <button class="modal-close" id="weeklyStatsCloseBtn" aria-label="关闭">✕</button>
       <h2>训练记录 · 最近7天</h2>
       <div id="weeklyChartWrap"><p class="hint">加载中…</p></div>
+    </div>
+  </div>
+
+  <!-- 英文跟读：播放一个英文单词 -> 学生选“再听一遍”或“录制” -> 录完点“识别”，用波形和原音对比，标出读音不对的音节 -> “下一个” -->
+  <div class="modal-overlay" id="readSpeakModal" hidden>
+    <div class="modal-backdrop" id="rsBackdrop"></div>
+    <div class="modal-panel card pt-panel">
+      <button class="modal-close" id="rsCloseBtn" aria-label="关闭">✕</button>
+      <h2>英文跟读</h2>
+      <p class="hint" style="margin:0 0 10px;">听单词发音，跟着读一遍，录下来看看哪个音节读得不对。</p>
+      <div class="pt-word" id="rsWord">-</div>
+      <div class="field">
+        <label>播放速度：<span id="rsRateLabel">1.0x</span></label>
+        <input type="range" id="rsRate" min="0.5" max="1.5" step="0.1" value="1">
+      </div>
+      <div class="btn-row" style="margin-top:10px;">
+        <button class="btn btn-ghost" id="rsReplayBtn" type="button">🔁 再听一遍</button>
+        <button class="btn" id="rsRecordBtn" type="button">🎙️ 录制</button>
+        <button class="btn" id="rsCheckBtn" type="button" hidden>🔍 识别</button>
+      </div>
+      <p class="hint" id="rsStatus" style="min-height:18px;margin:10px 0 0;"></p>
+      <div id="rsResult" hidden>
+        <div class="rs-syls" id="rsSyls"></div>
+        <p class="hint" id="rsScore" style="margin:8px 0 0;"></p>
+      </div>
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btn" id="rsNextBtn" type="button" hidden>➡️ 下一个</button>
+        <button class="btn btn-ghost" id="rsDoneBtn" type="button">返回</button>
+      </div>
     </div>
   </div>
 
@@ -734,7 +782,7 @@
   function canAudioAdmin() { return !!state.adminIsSuper || (!state.studentNo && state.referrer === AUDIO_ADMIN_ACCOUNT); }   // 总管理员先保留，同时 55168 也有
   var AMBIENT_VIEWS = { viewSetup: 1, viewPlayer: 1, viewDone: 1, viewRecord: 1 };   // 只有学生训练界面有背景视频
   function showView(id) {
-    ["viewLogin","viewAdmin","viewAdminStudent","viewSuperAdmin","viewAudioAdmin","viewAdminRecords","viewSetup","viewPlayer","viewDone","viewRecord"].forEach(function(v){
+    ["viewLogin","viewAdmin","viewAdminStudent","viewSuperAdmin","viewAudioAdmin","viewVisualAdmin","viewAdminRecords","viewSetup","viewPlayer","viewDone","viewRecord"].forEach(function(v){
       el(v).hidden = (v !== id);
     });
     var ambient = !!AMBIENT_VIEWS[id];
@@ -750,12 +798,13 @@
     el("headerAdminPwdBtn").hidden = !ADMIN_VIEWS[id];
     if (!ADMIN_VIEWS[id]) el("adminPwdPanel").hidden = true;
     // 管理员登录后每个管理页面顶部都有两个 tab，可以来回切换
-    var inAdmin = !!(ADMIN_VIEWS[id] || id === "viewSuperAdmin" || id === "viewAdminRecords" || id === "viewAudioAdmin");
+    var inAdmin = !!(ADMIN_VIEWS[id] || id === "viewSuperAdmin" || id === "viewAdminRecords" || id === "viewAudioAdmin" || id === "viewVisualAdmin");
     el("adminTabs").hidden = !inAdmin;
     el("adminTabAudio").hidden = !canAudioAdmin();             // 音频管理：总管理员和 55168 管理员有
-    el("adminTabTrain").classList.toggle("active", inAdmin && id !== "viewAdminRecords" && id !== "viewAudioAdmin");
+    el("adminTabTrain").classList.toggle("active", inAdmin && id !== "viewAdminRecords" && id !== "viewAudioAdmin" && id !== "viewVisualAdmin");
     el("adminTabRecords").classList.toggle("active", id === "viewAdminRecords");
     el("adminTabAudio").classList.toggle("active", id === "viewAudioAdmin");
+    el("adminTabVisual").classList.toggle("active", id === "viewVisualAdmin");
     if (inAdmin) { try { sessionStorage.setItem("training_admin_view", id); } catch(e) {} }
     updateIdleWatch();
   }
@@ -1222,6 +1271,198 @@
   }
   el("ptGrade").addEventListener("change", ptPreview);
   el("ptOpenBtn").addEventListener("click", ptOpen);
+
+  // ---------- 英文跟读：放一个词 -> 学生"再听一遍"或"录制" -> 录完"识别"，波形对比找出读音不对的音节 -> "下一个" ----------
+  // 音节：按元音组个数粗略切分单词拼写；对比：把录音和原音各自的音量包络切成等长的 N 段(近似按时间对齐)，
+  // 再按音节数分组算相似度，低于阈值就标红。用 WebGPU 算包络(不支持则退回 JS 算)，这段音频很短其实 CPU 也够快，
+  // 但用户点名要 WebGPU 就用上。
+  var RS_FRAMES = 40, RS_BAD = 0.55;
+  var rsAudio = new Audio(), rs = { gen: 0, word: null, rec: null, stream: null, recorder: null, chunks: [] };
+  var rsCtx = null;
+  function rsPool() {
+    var list = [];
+    ["junior", "senior"].forEach(function(d){
+      (state.wordData[d] ? state.wordData[d].units : []).forEach(function(u){ u.words.forEach(function(w){ list.push(w); }); });
+    });
+    return list;
+  }
+  function rsSyllables(word) {
+    var groups = word.toLowerCase().match(/[aeiouy]+/g);
+    return Math.max(1, groups ? groups.length : 1);
+  }
+  function rsResetUI() {
+    el("rsStatus").textContent = "";
+    el("rsResult").hidden = true;
+    el("rsCheckBtn").hidden = true;
+    el("rsNextBtn").hidden = true;
+    el("rsRecordBtn").textContent = "🎙️ 录制";
+    el("rsRecordBtn").disabled = false;
+    rs.rec = null;
+  }
+  function rsNewWord() {
+    var pool = rsPool();
+    rs.word = pool[Math.floor(Math.random() * pool.length)];
+    el("rsWord").textContent = rs.word.word;
+    rsResetUI();
+    rsPlayRef();
+  }
+  function rsPlayRef() {
+    rsAudio.pause();
+    rsAudio.src = aaUrl(rs.word.id, "en_" + state.gender);
+    rsAudio.playbackRate = Number(el("rsRate").value);
+    rsAudio.play().catch(function(){});
+  }
+  function rsAudioCtx() { return rsCtx || (rsCtx = new (window.AudioContext || window.webkitAudioContext)()); }
+  // 把一段 PCM 切成 RS_FRAMES 段，每段取 RMS(音量) -> 包络数组，长度固定所以录音/原音时长不同也能粗略对齐
+  function rsEnvelopeJS(samples) {
+    var n = samples.length, chunk = Math.max(1, Math.floor(n / RS_FRAMES)), out = new Float32Array(RS_FRAMES);
+    for (var i = 0; i < RS_FRAMES; i++) {
+      var start = i * chunk, end = (i === RS_FRAMES - 1) ? n : start + chunk, sum = 0, c = 0;
+      for (var j = start; j < end && j < n; j++) { sum += samples[j] * samples[j]; c++; }
+      out[i] = c ? Math.sqrt(sum / c) : 0;
+    }
+    return out;
+  }
+  var RS_WGSL = "struct P { totalLen: u32, chunkSize: u32, n: u32 };\n" +
+    "@group(0) @binding(0) var<storage, read> samples: array<f32>;\n" +
+    "@group(0) @binding(1) var<storage, read_write> out: array<f32>;\n" +
+    "@group(0) @binding(2) var<uniform> p: P;\n" +
+    "@compute @workgroup_size(64)\n" +
+    "fn main(@builtin(global_invocation_id) gid: vec3<u32>) {\n" +
+    "  let i = gid.x; if (i >= p.n) { return; }\n" +
+    "  let start = i * p.chunkSize; var end = start + p.chunkSize; if (i == p.n - 1u) { end = p.totalLen; }\n" +
+    "  var sumsq: f32 = 0.0; var c: u32 = 0u; var j: u32 = start;\n" +
+    "  loop { if (j >= end) { break; } let v = samples[j]; sumsq = sumsq + v * v; c = c + 1u; j = j + 1u; }\n" +
+    "  if (c == 0u) { out[i] = 0.0; } else { out[i] = sqrt(sumsq / f32(c)); }\n" +
+    "}";
+  var rsGpuDevice = null, rsGpuPipeline = null, rsGpuTried = false;
+  function rsGpuInit() {
+    if (rsGpuTried) return rsGpuDevice ? Promise.resolve(rsGpuDevice) : Promise.resolve(null);
+    rsGpuTried = true;
+    if (!navigator.gpu) return Promise.resolve(null);
+    return navigator.gpu.requestAdapter().then(function(a){ return a && a.requestDevice(); }).then(function(dev){
+      if (!dev) return null;
+      rsGpuDevice = dev;
+      rsGpuPipeline = dev.createComputePipeline({ layout: "auto", compute: { module: dev.createShaderModule({ code: RS_WGSL }), entryPoint: "main" } });
+      return dev;
+    }).catch(function(){ return null; });
+  }
+  function rsEnvelopeGPU(dev, samples) {
+    var n = samples.length, chunk = Math.max(1, Math.floor(n / RS_FRAMES));
+    var inBuf = dev.createBuffer({ size: samples.byteLength, usage: GPUBufferUsage.STORAGE, mappedAtCreation: true });
+    new Float32Array(inBuf.getMappedRange()).set(samples);
+    inBuf.unmap();
+    var outBuf = dev.createBuffer({ size: RS_FRAMES * 4, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC });
+    var readBuf = dev.createBuffer({ size: RS_FRAMES * 4, usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ });
+    var params = new Uint32Array([n, chunk, RS_FRAMES]);
+    var paramBuf = dev.createBuffer({ size: 16, usage: GPUBufferUsage.UNIFORM, mappedAtCreation: true });
+    new Uint32Array(paramBuf.getMappedRange()).set(params);
+    paramBuf.unmap();
+    var bind = dev.createBindGroup({ layout: rsGpuPipeline.getBindGroupLayout(0), entries: [
+      { binding: 0, resource: { buffer: inBuf } }, { binding: 1, resource: { buffer: outBuf } }, { binding: 2, resource: { buffer: paramBuf } }
+    ]});
+    var enc = dev.createCommandEncoder(), pass = enc.beginComputePass();
+    pass.setPipeline(rsGpuPipeline); pass.setBindGroup(0, bind); pass.dispatchWorkgroups(1); pass.end();
+    enc.copyBufferToBuffer(outBuf, 0, readBuf, 0, RS_FRAMES * 4);
+    dev.queue.submit([enc.finish()]);
+    return readBuf.mapAsync(GPUMapMode.READ).then(function(){
+      var out = new Float32Array(readBuf.getMappedRange().slice(0));
+      readBuf.unmap();
+      return out;
+    });
+  }
+  function rsEnvelope(samples) {
+    return rsGpuInit().then(function(dev){
+      return dev ? rsEnvelopeGPU(dev, samples).catch(function(){ return rsEnvelopeJS(samples); }) : rsEnvelopeJS(samples);
+    });
+  }
+  function rsNormalize(env) {
+    var max = 0; for (var i = 0; i < env.length; i++) max = Math.max(max, env[i]);
+    if (!max) return env;
+    var out = new Float32Array(env.length);
+    for (i = 0; i < env.length; i++) out[i] = env[i] / max;
+    return out;
+  }
+  function rsDecode(url) {
+    return fetch(url).then(function(r){ return r.arrayBuffer(); }).then(function(buf){ return rsAudioCtx().decodeAudioData(buf); });
+  }
+  el("rsOpenBtn").addEventListener("click", function(){
+    ensureWordData().then(function(){ rs.gen++; el("readSpeakModal").hidden = false; rsNewWord(); });
+  });
+  function rsClose() {
+    rs.gen++;
+    rsAudio.pause();
+    if (rs.recorder && rs.recorder.state === "recording") rs.recorder.stop();
+    if (rs.stream) rs.stream.getTracks().forEach(function(t){ t.stop(); });
+    el("readSpeakModal").hidden = true;
+  }
+  el("rsCloseBtn").addEventListener("click", rsClose);
+  el("rsBackdrop").addEventListener("click", rsClose);
+  el("rsDoneBtn").addEventListener("click", rsClose);
+  el("rsRate").addEventListener("input", function(){
+    el("rsRateLabel").textContent = Number(el("rsRate").value).toFixed(1) + "x";
+    rsAudio.playbackRate = Number(el("rsRate").value);
+  });
+  el("rsReplayBtn").addEventListener("click", rsPlayRef);
+  el("rsRecordBtn").addEventListener("click", function(){
+    if (rs.recorder && rs.recorder.state === "recording") { rs.recorder.stop(); return; }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream){
+      rs.stream = stream;
+      rs.chunks = [];
+      rs.recorder = new MediaRecorder(stream);
+      rs.recorder.ondataavailable = function(e){ rs.chunks.push(e.data); };
+      rs.recorder.onstop = function(){
+        stream.getTracks().forEach(function(t){ t.stop(); });
+        rs.rec = new Blob(rs.chunks, { type: "audio/webm" });
+        el("rsRecordBtn").textContent = "🎙️ 录制";
+        el("rsCheckBtn").hidden = false;
+        el("rsStatus").textContent = "录好了，点「识别」看结果，或再录一次。";
+      };
+      rs.recorder.start();
+      el("rsRecordBtn").textContent = "⏹ 停止";
+      el("rsStatus").textContent = "录音中…跟着刚才的发音读这个词。";
+    }).catch(function(){ el("rsStatus").textContent = "没拿到麦克风权限，无法录音。"; });
+  });
+  el("rsCheckBtn").addEventListener("click", function(){
+    if (!rs.rec) return;
+    var gen = rs.gen;
+    el("rsStatus").textContent = "识别中…";
+    Promise.all([rsDecode(rsAudio.src), rs.rec.arrayBuffer().then(function(buf){ return rsAudioCtx().decodeAudioData(buf); })])
+      .then(function(bufs){
+        if (gen !== rs.gen) return;
+        return Promise.all([rsEnvelope(bufs[0].getChannelData(0)), rsEnvelope(bufs[1].getChannelData(0))]);
+      })
+      .then(function(envs){
+        if (!envs || gen !== rs.gen) return;
+        var ref = rsNormalize(envs[0]), rec = rsNormalize(envs[1]);
+        var nSyl = rsSyllables(rs.word.word), per = Math.ceil(RS_FRAMES / nSyl), scores = [], totalDiff = 0;
+        for (var s = 0; s < nSyl; s++) {
+          var start = s * per, end = Math.min(RS_FRAMES, start + per), diff = 0, c = 0;
+          for (var i = start; i < end; i++) { diff += Math.abs(ref[i] - rec[i]); c++; }
+          diff = c ? diff / c : 0;
+          totalDiff += diff;
+          scores.push(Math.max(0, 1 - diff));
+        }
+        var overall = Math.max(0, 1 - totalDiff / nSyl);
+        var chunks = rsWordChunks(rs.word.word, nSyl);
+        el("rsSyls").innerHTML = chunks.map(function(c, i){
+          return "<span class=\"rs-syl " + (scores[i] >= RS_BAD ? "good" : "bad") + "\">" + c + "</span>";
+        }).join("");
+        el("rsScore").textContent = "整体相似度 " + Math.round(overall * 100) + "%" +
+          (scores.some(function(sc){ return sc < RS_BAD; }) ? "，红色音节读音和原音差得比较多，可以再听一遍原音练一下。" : "，读得很接近！");
+        el("rsResult").hidden = false;
+        el("rsStatus").textContent = "";
+        el("rsNextBtn").hidden = false;
+      })
+      .catch(function(){ if (gen === rs.gen) el("rsStatus").textContent = "识别失败，请重新录制。"; });
+  });
+  el("rsNextBtn").addEventListener("click", function(){ rs.gen++; rsNewWord(); });
+  // 按元音组把单词拼写切成 nSyl 段，仅用于把结果显示成"这几个字母算一段"，不是严格的音节划分
+  function rsWordChunks(word, nSyl) {
+    var len = word.length, per = Math.ceil(len / nSyl), out = [];
+    for (var i = 0; i < len; i += per) out.push(word.slice(i, i + per));
+    return out;
+  }
   el("ptCloseBtn").addEventListener("click", function(){ el("placementModal").hidden = true; });
   el("ptBackdrop").addEventListener("click", function(){ el("placementModal").hidden = true; });
   el("ptDoneBtn").addEventListener("click", function(){ el("placementModal").hidden = true; });
@@ -1242,6 +1483,127 @@
     prefetchNextWords(info.diff, info.unit, 0);
     el("placementModal").hidden = true;
   });
+
+  el("adminTabVisual").addEventListener("click", function(){
+    if (adminRefreshTimer) { clearInterval(adminRefreshTimer); adminRefreshTimer = null; }
+    showView("viewVisualAdmin");
+    loadVisualAdmin();
+  });
+
+  // ---------- 视觉专注力训练：整体复述录音批改（按当前管理员的推荐码，看自己学生的） ----------
+  var vaRows = [], vaTab = "pending";
+  function loadVisualAdmin() {
+    var list = el("visualAdminList");
+    if (!list.children.length) list.innerHTML = "<p class=\"hint\">加载中…</p>";
+    Promise.all([sbGet("visual_recordings", (state.adminIsSuper ? "" : "referral_code=eq." + state.referrer + "&") + "order=created_at.desc&limit=200"), vaLoadIndex()]).then(function(res){
+      var rows = res[0];
+      vaRows = Array.isArray(rows) ? rows : [];
+      if (!Array.isArray(rows)) list.innerHTML = "<p class=\"hint\">⚠ 数据库里还没有 visual_recordings 表，请先在 Supabase 建表。</p>";
+      vaTab = vaRows.some(function(r){ return !r.admin_status; }) ? "pending" : "graded";
+      renderVisualAdmin();
+    });
+  }
+  function renderVisualAdmin() {
+    var list = el("visualAdminList");
+    var pending = vaRows.filter(function(r){ return !r.admin_status; });
+    var graded = vaRows.filter(function(r){ return !!r.admin_status; });
+    el("vaTabPending").textContent = "待批改（" + pending.length + "）";
+    el("vaTabGraded").textContent = "已批改（" + graded.length + "）";
+    el("vaTabPending").classList.toggle("active", vaTab === "pending");
+    el("vaTabGraded").classList.toggle("active", vaTab === "graded");
+    var items = vaTab === "pending" ? pending : graded;
+    list.innerHTML = "";
+    if (!items.length) { list.innerHTML = "<p class=\"hint\" style=\"font-weight:700;\">" + (vaTab === "pending" ? "✅ 没有待批改的复述了" : "还没有批改过的复述") + "</p>"; return; }
+    items.forEach(function(rec){ list.appendChild(buildVisualEntry(rec)); });
+  }
+  // question_id 形如 gen1/7u-01/C1SX42-D（纯享版）或 gen2/8u-13/C2SX-13-Q01（交互版）；对照课程目录显示成人能看懂的名字
+  var vaIndex = null;
+  function vaLoadIndex() {
+    if (vaIndex) return Promise.resolve(vaIndex);
+    return fetch("visual_content/index.json").then(function(r){ return r.json(); }).then(function(j){ vaIndex = j; return j; }).catch(function(){ return null; });
+  }
+  function vaDescribe(qid) {
+    var p = qid.split("/"), dir = p[0] + "/" + p[1], mode = p[0] === "gen1" ? "纯享版" : "交互版";
+    if (vaIndex) for (var i = 0; i < vaIndex.courses.length; i++) {
+      var c = vaIndex.courses[i];
+      for (var j = 0; j < c.chapters.length; j++) if (c.chapters[j].dir === dir)
+        return { dir: dir, text: mode + " · " + c.grade + c.term + " · 第" + c.chapters[j].num + "章 " + c.chapters[j].title + " · " + p.slice(2).join("/") };
+    }
+    return { dir: dir, text: qid };
+  }
+  // 点开才加载：题目图 + 参考讲稿，方便老师对照着听学生的复述
+  function vaBuildReference(qid) {
+    var d = document.createElement("details");
+    d.style.margin = "8px 0";
+    d.innerHTML = "<summary style=\"cursor:pointer;font-weight:700;\">查看题目与参考讲稿</summary>";
+    var loaded = false;
+    d.addEventListener("toggle", function(){
+      if (!d.open || loaded) return;
+      loaded = true;
+      var info = vaDescribe(qid), id = qid.split("/").slice(2).join("/");
+      fetch("visual_content/" + info.dir + "/manifest.json").then(function(r){ return r.json(); }).then(function(m){
+        var q = m.questions.filter(function(x){ return x.id === id; })[0];
+        if (!q) { d.appendChild(document.createTextNode("找不到这道题的内容")); return; }
+        var body = document.createElement("div");
+        if (q.images) {       // 纯享版：题目图 + 解答图 + 讲稿
+          q.images.forEach(function(f){ var im = document.createElement("img"); im.src = "visual_content/" + info.dir + "/images/" + f; im.style.cssText = "max-width:100%;display:block;margin:6px 0;border-radius:8px;"; body.appendChild(im); });
+          var pre = document.createElement("pre"); pre.style.cssText = "white-space:pre-wrap;font:inherit;"; pre.textContent = q.script; body.appendChild(pre);
+        } else {              // 交互版：每个喇叭的识别文字
+          var pre2 = document.createElement("pre"); pre2.style.cssText = "white-space:pre-wrap;font:inherit;";
+          pre2.textContent = q.steps.map(function(s){ return (s.kind === "answer" ? "　回答：" : "问：") + (s.text || ""); }).join("\n");
+          body.appendChild(pre2);
+        }
+        d.appendChild(body);
+      }).catch(function(){ d.appendChild(document.createTextNode("加载失败")); });
+    });
+    return d;
+  }
+  function buildVisualEntry(rec) {
+    var box = document.createElement("div");
+    box.className = "rec-entry";
+    var head = document.createElement("div");
+    head.className = "fb-title";
+    head.innerHTML = "<span class=\"fb-chip\">" + vaDescribe(rec.question_id).text + "</span><span class=\"hint\">学生 " + rec.student_no + "</span>" +
+      "<span class=\"hint\" style=\"margin:0 0 0 auto;\">" + new Date(rec.created_at).toLocaleString() + "</span>";
+    box.appendChild(head);
+    box.appendChild(vaBuildReference(rec.question_id));
+    var audio = document.createElement("audio");
+    audio.controls = true; audio.style.width = "100%"; audio.src = "data:audio/webm;base64," + rec.audio_base64;
+    box.appendChild(audio);
+    var status = rec.admin_status || null;
+    var gradeRow = document.createElement("div");
+    gradeRow.className = "grade-row";
+    var passBtn = document.createElement("button");
+    passBtn.className = "grade-btn gb-pass" + (status === "pass" ? " active" : "");
+    passBtn.textContent = "✅ 通过";
+    var retryBtn = document.createElement("button");
+    retryBtn.className = "grade-btn gb-retry" + (status === "retry" ? " active" : "");
+    retryBtn.textContent = "🔁 需要重录";
+    passBtn.addEventListener("click", function(){ status = "pass"; passBtn.classList.add("active"); retryBtn.classList.remove("active"); });
+    retryBtn.addEventListener("click", function(){ status = "retry"; retryBtn.classList.add("active"); passBtn.classList.remove("active"); });
+    gradeRow.appendChild(passBtn); gradeRow.appendChild(retryBtn);
+    box.appendChild(gradeRow);
+    var fb = document.createElement("textarea");
+    fb.className = "rec-feedback";
+    fb.placeholder = "给学生的反馈，比如哪里说错了、漏了哪一步…";
+    fb.value = rec.admin_feedback || "";
+    box.appendChild(fb);
+    var saveRow = document.createElement("div");
+    saveRow.className = "admin-row";
+    var saveBtn = document.createElement("button"); saveBtn.textContent = "提交批改";
+    var msg = document.createElement("span"); msg.className = "rec-feedback-msg";
+    saveBtn.addEventListener("click", function(){
+      sbPatch("visual_recordings", "id=eq." + rec.id, { admin_feedback: fb.value, admin_status: status }).then(function(r){
+        msg.textContent = r.ok ? "已保存" : "保存失败";
+        if (r.ok) setTimeout(loadVisualAdmin, 700);
+      });
+    });
+    saveRow.appendChild(saveBtn); saveRow.appendChild(msg);
+    box.appendChild(saveRow);
+    return box;
+  }
+  el("vaTabPending").addEventListener("click", function(){ vaTab = "pending"; renderVisualAdmin(); });
+  el("vaTabGraded").addEventListener("click", function(){ vaTab = "graded"; renderVisualAdmin(); });
 
   el("adminTabAudio").addEventListener("click", function(){
     if (!canAudioAdmin()) return;

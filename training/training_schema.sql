@@ -126,3 +126,19 @@ alter table audio_flags enable row level security;
 drop policy if exists "anon all audio_flags" on audio_flags;
 create policy "anon all audio_flags" on audio_flags
   for all using (true) with check (true);
+
+-- 视觉专注力训练：整体复述录音，交给管理员人工批改（分段复述是当场用浏览器端语音识别自动打分，不用存）
+create table if not exists visual_recordings (
+  id uuid primary key default gen_random_uuid(),
+  referral_code text not null,
+  student_no text not null,
+  question_id text not null,          -- 题目 id，如 C2SX-13-Q01
+  audio_base64 text not null,         -- 录音内容(webm)，前端转 data URL 播放
+  admin_status text,                  -- 'pass' | 'retry'，管理员批改结果；空 = 待批改
+  admin_feedback text,
+  created_at timestamptz not null default now()
+);
+alter table visual_recordings enable row level security;
+drop policy if exists "anon all visual_recordings" on visual_recordings;
+create policy "anon all visual_recordings" on visual_recordings
+  for all using (true) with check (true);
