@@ -50,10 +50,15 @@
   .rs-syl.good{color:var(--green);background:#e6f6e8;}
   .rs-syl.bad{color:var(--red);background:#fdecec;}
   .sp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;}
-  .sp-flip{font:inherit;border:2px solid var(--border);border-radius:16px;background:#fdfcf9;padding:14px 8px;min-height:92px;cursor:pointer;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;}
+  .sp-flip{display:block;width:100%;font:inherit;border:0;background:none;padding:0;height:104px;cursor:pointer;perspective:800px;}
+  .sp-flip-inner{display:block;position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d;}
+  .sp-flip.flipped .sp-flip-inner{transform:rotateY(180deg);}
+  .sp-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:2px solid var(--border);border-radius:16px;background:#fdfcf9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px;box-sizing:border-box;}
+  .sp-face.back{transform:rotateY(180deg);border-color:var(--blue);background:#ddf4ff;}
   .sp-flip-zh{font-size:18px;font-weight:800;}
   .sp-flip-en{font-size:24px;font-weight:900;color:var(--blue);}
-  .sp-flip.open{border-color:var(--blue);background:#ddf4ff;}
+  .sp-flip-sub{font-size:13px;color:var(--muted);}
+  @media (prefers-reduced-motion:reduce){ .sp-flip-inner{transition:none;} }
   .sp-row{margin:0 0 18px;}
   .sp-row-zh{font-size:20px;font-weight:800;text-align:center;margin-bottom:6px;}
   .sp-slots{display:flex;justify-content:center;flex-wrap:wrap;gap:4px;}
@@ -508,7 +513,7 @@
     <div>
       <div id="spCards" hidden>
         <h2>闪卡</h2>
-        <p class="hint" style="margin:0 0 12px;">点一下卡片：翻出英文并朗读。把这几个词都背下来。</p>
+        <p class="hint" style="margin:0 0 12px;">点一下卡片翻面：看英文并朗读，再点翻回中文。把这几个词都背下来。</p>
         <div class="sp-grid" id="spCardGrid"></div>
         <button class="btn" id="spToQuizBtn" type="button" style="margin-top:14px;">背好了，开始拼写</button>
       </div>
@@ -1474,16 +1479,24 @@
       grid.appendChild(cell);
     });
   }
-  // 闪卡全部铺平：正面是中文，点一下翻出英文并朗读
+  // 闪卡全部铺平：正面是中文，点一下翻到背面(英文)并朗读，再点翻回来
   function spRenderCards() {
     var box = el("spCardGrid"); box.innerHTML = "";
     sp.words.forEach(function(w){
       var card = document.createElement("button");
       card.type = "button"; card.className = "sp-flip";
-      var zh = document.createElement("span"); zh.className = "sp-flip-zh"; zh.textContent = w.meaning;
-      var en = document.createElement("span"); en.className = "sp-flip-en";
-      card.appendChild(zh); card.appendChild(en);
-      card.addEventListener("click", function(){ card.classList.add("open"); en.textContent = w.word; spPlayWord(w); });
+      var inner = document.createElement("span"); inner.className = "sp-flip-inner";
+      var front = document.createElement("span"); front.className = "sp-face front";
+      var zh = document.createElement("span"); zh.className = "sp-flip-zh"; zh.textContent = w.meaning; front.appendChild(zh);
+      var back = document.createElement("span"); back.className = "sp-face back";
+      var en = document.createElement("span"); en.className = "sp-flip-en"; en.textContent = w.word;
+      var sub = document.createElement("span"); sub.className = "sp-flip-sub"; sub.textContent = w.meaning;
+      back.appendChild(en); back.appendChild(sub);
+      inner.appendChild(front); inner.appendChild(back); card.appendChild(inner);
+      card.addEventListener("click", function(){
+        card.classList.toggle("flipped");
+        if (card.classList.contains("flipped")) spPlayWord(w);
+      });
       box.appendChild(card);
     });
   }
