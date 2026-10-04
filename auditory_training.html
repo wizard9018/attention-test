@@ -67,9 +67,6 @@
   .sp-bad{color:var(--red);font-weight:800;}
   .batch-pill.bp-retry{border-color:var(--red);}
   .setup-side{display:flex;flex-direction:column;gap:24px;}
-  .rv-chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px;}
-  .rv-scroll{max-height:190px;overflow-y:auto;}
-  .rv-chip{padding:3px 10px;border-radius:10px;background:#ddf4ff;font-weight:800;font-size:14px;}
   .modal-panel.pt-panel{max-width:520px;}
   .pt-bar{height:8px;border-radius:6px;background:#eceae2;overflow:hidden;margin:6px 0 16px;}
   .pt-bar > i{display:block;height:100%;background:var(--blue);border-radius:6px;transition:width .25s;}
@@ -468,13 +465,11 @@
       <div class="card" id="reviewPanel">
         <h2>今日复习</h2>
         <p class="hint" id="reviewHint">加载中…</p>
-        <div class="rv-chips" id="reviewChips"></div>
         <button class="btn" id="reviewStartBtn" type="button" hidden>开始复习</button>
       </div>
       <div class="card" id="spellPanel">
         <h2>拼写练习</h2>
         <p class="hint" id="spellHint">加载中…</p>
-        <div class="rv-chips rv-scroll" id="spellChips"></div>
         <button class="btn btn-blue" id="spOpenBtn" type="button">✍️ 开始拼写练习</button>
       </div>
     </div>
@@ -1407,14 +1402,12 @@
   function loadReviewPanel() {
     if (!state.referrer || !state.studentNo) return;
     ensureWordData().then(memLoad).then(function(rows){
-      var hint = el("reviewHint"), chips = el("reviewChips"), btn = el("reviewStartBtn");
-      chips.innerHTML = ""; btn.hidden = true;
+      var hint = el("reviewHint"), btn = el("reviewStartBtn");
+      btn.hidden = true;
       if (!rows) { hint.textContent = "复习计划还没开通（需要先在数据库里建 word_memory 表）。"; el("spellHint").textContent = "拼写练习还没开通（需要先建 word_memory 表）。"; return; }
       var now = Date.now(), map = wordMap();
       var canSpell = rows.filter(function(r){ return r.learn_count >= 3 && map[r.word_id]; });
-      el("spellHint").textContent = canSpell.length ? "可练习 " + canSpell.length + " 个词（学过 3 次以上）：" : "还没有学过 3 次的词。每个词学完一遍、再复习两次，就能来这里练拼写了。";
-      var sc = el("spellChips"); sc.innerHTML = "";
-      canSpell.forEach(function(r){ var c = document.createElement("span"); c.className = "rv-chip"; c.textContent = map[r.word_id].word; sc.appendChild(c); });
+      el("spellHint").textContent = canSpell.length ? "可练习 " + canSpell.length + " 个词（学过 3 次以上）" : "还没有学过 3 次的词。每个词学完一遍、再复习两次，就能来这里练拼写了。";
       var due = rows.filter(function(r){ return map[r.word_id] && new Date(r.due_at).getTime() <= now; })
         .sort(function(a, b){ return new Date(a.due_at) - new Date(b.due_at); });
       state.reviewDue = due;
@@ -1423,10 +1416,7 @@
         return;
       }
       var n = Math.min(due.length, REVIEW_SIZE);
-      hint.textContent = "共 " + due.length + " 个词该复习了，这次先复习 " + n + " 个：";
-      due.slice(0, n).forEach(function(r){
-        var c = document.createElement("span"); c.className = "rv-chip"; c.textContent = map[r.word_id].word; chips.appendChild(c);
-      });
+      hint.textContent = "共 " + due.length + " 个词该复习了，这次先复习 " + n + " 个";
       btn.textContent = "开始复习（" + n + " 个词）"; btn.hidden = false;
     });
   }
