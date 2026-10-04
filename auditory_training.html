@@ -1424,7 +1424,10 @@
     var map = wordMap(), words = (state.reviewDue || []).slice(0, REVIEW_SIZE).map(function(r){ return map[r.word_id]; });
     if (!words.length) return;
     state.retryQueue = [];
-    state.session = { groupIndex: 0, startCursor: 0, words: words, steps: [], stepIndex: 0, repeatIndex: 0, paused: false, pass: 2, revealed: {}, reviewMode: true, ebbReview: true };
+    var first = words[0], diff = first.id.charAt(0) === "h" ? "senior" : "junior", unit = 0;
+    state.wordData[diff].units.forEach(function(u, i){ if (u.words.some(function(x){ return x.id === first.id; })) unit = i; });
+    state.difficulty = diff;   // 录音/进度条按第一个词所在级别记；回到课程选择后会按进度重新读回来
+    state.session = { groupIndex: unit, startCursor: -1, words: words, steps: [], stepIndex: 0, repeatIndex: 0, paused: false, pass: 2, revealed: {}, reviewMode: true, ebbReview: true };
     pushSteps(state.session);
     renderRoadmap();
     applyPassUI();
@@ -1525,11 +1528,13 @@
     sp.submitted = true;
     var wrong = 0;
     sp.rows.forEach(function(r){
-      var ok = r.inputs.map(function(i){ return i.value; }).join("").toLowerCase() === r.letters;
+      var ok = r.ok = r.inputs.map(function(i){ return i.value; }).join("").toLowerCase() === r.letters;
       r.inputs.forEach(function(i){ i.disabled = true; i.classList.add(ok ? "ok" : "bad"); });
       if (!ok) { wrong++; r.fix.textContent = "正确拼写：" + r.word.word; }
     });
     sp.allOk = wrong === 0;
+    sbPost("spell_results", [{ referral_code: state.referrer, student_no: state.studentNo, total: sp.rows.length, correct: sp.rows.length - wrong,
+      words: sp.rows.map(function(r){ return { id: r.word.id, word: r.word.word, ok: r.ok }; }) }]).catch(function(){});
     var fb = el("spFeedback");
     fb.textContent = sp.allOk ? "✓ 全部拼对！" : "还有 " + wrong + " 个没拼对，再背一遍这一组";
     fb.className = "hint " + (sp.allOk ? "sp-ok" : "sp-bad");
@@ -2087,11 +2092,12 @@
     el("adminProgressModal").hidden = false;
     Promise.all([
       ensureWordData(),
-      sbGet("training_batches", "referral_code=eq." + state.referrer + "&student_no=eq." + studentNo + "&select=difficulty&limit=5000")
+      sbGet("training_batches", "referral_code=eq." + state.referrer + "&student_no=eq." + studentNo + "&cursor_start=gte.0&select=difficulty&limit=5000")
     ]).then(function(res){
       var batches = Array.isArray(res[1]) ? res[1] : [];
       wrap.innerHTML = "";
-      if (!progressRows.length) { wrap.innerHTML = "<p class=\"hint\">这个学生还没有开始学习。</p>"; return; }
+      loadSpellRecords(studentNo, wrap);
+      if (!progressRows.length) { wrap.insertAdjacentHTML("afterbegin", "<p class=\"hint\">这个学生还没有开始学习。</p>"); return; }
       progressRows.forEach(function(p){
         var data = state.wordData[p.difficulty];
         var per = p.words_per_session || 3;
@@ -2134,7 +2140,7 @@
     var q = "referral_code=eq." + state.referrer + "&student_no=eq." + state.adminViewingStudent;
     Promise.all([
       sbGet("training_recordings", q + "&order=created_at.desc&limit=100"),
-      sbGet("training_batches", q + "&order=created_at.asc&select=difficulty,unit_index,words")
+      sbGet("training_batches", q + "&order=created_at.asc&select=difficulty,unit_index,cursor_start,words")
     ]).then(function(res){
         var rows = res[0];
         adminGroupNoOf = makeGroupNoFinder(Array.isArray(res[1]) ? res[1] : []);
@@ -2182,7 +2188,7 @@
     head.className = "fb-title";
     var diffLabel = rec.difficulty === "junior" ? "小学阶段" : "初中阶段";
     head.innerHTML = "<span class=\"fb-chip\">" + diffLabel + " " + unitName(rec.difficulty, rec.unit_index) + "</span>" +
-      (groupNo ? "<span class=\"fb-group\">第" + groupNo + "组</span>" : "") +
+      "<span class=\"fb-group\">" + (groupNo ? "第" + groupNo + "组" : "复习") + "</span>" +
       "<span class=\"hint\" style=\"margin:0 0 0 auto;\">" + new Date(rec.created_at).toLocaleString() + "</span>";
     box.appendChild(head);
 
@@ -2339,6 +2345,7 @@
   function makeGroupNoFinder(allBatches) {
     var unitCounters = {};
     var batchGroupNo = allBatches.map(function(b){
+      if (b.cursor_start < 0) return null;   // 今日复习的批次(cursor_start=-1)不占"第N组"
       var key = b.difficulty + "_" + b.unit_index;
       unitCounters[key] = (unitCounters[key] || 0) + 1;
       return unitCounters[key];
@@ -2358,7 +2365,7 @@
     var q = "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo;
     Promise.all([
       sbGet("training_recordings", q + "&admin_status=eq.retry&order=created_at.desc&limit=50"),
-      sbGet("training_batches", q + "&order=created_at.asc&select=difficulty,unit_index,words"),
+      sbGet("training_batches", q + "&order=created_at.asc&select=difficulty,unit_index,cursor_start,words"),
       sbGet("training_recordings", q + "&select=difficulty,unit_index,words,created_at&order=created_at.desc&limit=300")
     ]).then(function(results){
       var rows = Array.isArray(results[0]) ? results[0] : [];
@@ -2429,6 +2436,23 @@
   el("weeklyStatsCloseBtn").addEventListener("click", function(){ el("weeklyStatsModal").hidden = true; });
   el("weeklyStatsBackdrop").addEventListener("click", function(){ el("weeklyStatsModal").hidden = true; });
 
+  // 拼写练习记录（学生的"训练记录"弹窗和老师的学习进度弹窗共用）
+  function spellRecordsHtml(rows) {
+    if (!Array.isArray(rows) || !rows.length) return "";
+    var html = "<h3 style=\"margin:18px 0 8px;font-size:16px;\">拼写练习（最近 " + rows.length + " 次）</h3>";
+    rows.forEach(function(r){
+      var wrong = (r.words || []).filter(function(w){ return !w.ok; }).map(function(w){ return w.word; });
+      html += "<p style=\"margin:0 0 6px;font-size:14px;\">" + cstDate(r.created_at) + " " + cstTime(r.created_at).slice(0, 5) +
+        "　拼对 <b>" + r.correct + " / " + r.total + "</b>" + (wrong.length ? "　<span style=\"color:var(--red);\">拼错：" + wrong.join("、") + "</span>" : "　全对") + "</p>";
+    });
+    return html;
+  }
+  function loadSpellRecords(studentNo, into) {
+    sbGet("spell_results", "referral_code=eq." + state.referrer + "&student_no=eq." + studentNo + "&order=created_at.desc&limit=10&select=created_at,total,correct,words")
+      .then(function(rows){ var div = document.createElement("div"); div.innerHTML = spellRecordsHtml(rows); into.appendChild(div); })
+      .catch(function(){});
+  }
+
   function loadWeeklyStats() {
     var days = [];
     for (var i = 6; i >= 0; i--) days.push(beijingDateKey(new Date(Date.now() - i * 86400000).toISOString()));
@@ -2446,6 +2470,7 @@
         var labels = days.map(function(d){ var parts = d.split("-"); return parts[1] + "/" + parts[2]; });
         var values = days.map(function(d){ return byDay[d]; });
         el("weeklyChartWrap").innerHTML = buildWeeklyChart(labels, values);
+        loadSpellRecords(state.studentNo, el("weeklyChartWrap"));
       });
   }
 
@@ -2585,7 +2610,7 @@
   }
   function refreshPendingRecording() {
     var q = "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo;
-    sbGet("training_batches", q + "&order=created_at.desc&limit=1").then(function(rows){
+    sbGet("training_batches", q + "&cursor_start=gte.0&order=created_at.desc&limit=1").then(function(rows){
       var b = Array.isArray(rows) && rows[0];
       if (!b) { state.pendingRecording = null; state.pendingBatch = null; return; }
       return sbGet("training_recordings", q + "&created_at=gte." + encodeURIComponent(b.created_at) + "&select=difficulty,unit_index,words").then(function(recs){
@@ -2668,7 +2693,7 @@
     el("passHint").textContent = pass2
       ? "第二遍：默认还是不显示文字，点正在播放的圆点可以显示/再点一次隐藏这个词，点别的圆点会跳过去播放那个词"
       : "第一遍：先认真听，还不显示文字";
-    el("gotoRecordBtn").hidden = !pass2 || !!state.session.ebbReview;
+    el("gotoRecordBtn").hidden = !pass2;
   }
 
   // roadmap 每一步是一个圆点(中/英)，第二遍时圆点下面再加一个 👁 小按钮，
@@ -2774,13 +2799,15 @@
 
   function finishSession() {
     document.querySelectorAll("#roadmap .rm-node").forEach(function(n){ n.classList.add("done"); n.classList.remove("active"); });
-    var ebb = !!state.session.ebbReview;
-    el("startRecordBtn").hidden = ebb;
-    el("relistenBtn").hidden = ebb;
-    if (ebb) {
-      state.memPending = memTouch(state.session.words.map(function(w){ return w.id; }));
+    if (state.session.ebbReview) {
+      // 今日复习：记入复习计划 + 记进今天的进度条(roadmap)；录音后老师批改。只记一次(再听一次不重复记)
+      if (!state.session.logged) {
+        state.session.logged = true;
+        state.memPending = memTouch(state.session.words.map(function(w){ return w.id; }));
+        logBatch();
+      }
       el("doneTitle").textContent = "✅ 复习完成";
-      el("doneSummary").textContent = "这 " + state.session.words.length + " 个词已记入复习计划，下次复习时间按遗忘曲线自动安排。";
+      el("doneSummary").textContent = "这 " + state.session.words.length + " 个词已记入复习计划。准备好就点【开始录音】，把这几个词中英文的顺序说出来，交给老师批改。";
       showView("viewDone");
       return;
     }
@@ -2850,7 +2877,7 @@
         "&created_at=gte." + encodeURIComponent(todayStartIso()) + "&order=created_at.asc"),
       sbGet("training_recordings", "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo +
         "&created_at=gte." + encodeURIComponent(todayStartIso()) + "&select=difficulty,unit_index,words,admin_status,created_at&order=created_at.desc"),
-      sbGet("training_batches", "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo + "&order=created_at.asc&select=difficulty,unit_index,words")
+      sbGet("training_batches", "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo + "&order=created_at.asc&select=difficulty,unit_index,cursor_start,words")
     ]).then(function(results){
       state.todayBatches = Array.isArray(results[0]) ? results[0] : [];
       state.todayRecordings = Array.isArray(results[1]) ? results[1] : [];
@@ -2893,9 +2920,9 @@
     el("retryModal").hidden = true;
     el("retryBody").innerHTML = "";
   }
-  function showRetryFeedback(rec, groupNo, go) {
+  function showRetryFeedback(rec, label, go) {
     retryGo = go;
-    el("retryTitle").textContent = "第 " + groupNo + " 组 · 老师反馈";
+    el("retryTitle").textContent = label + " · 老师反馈";
     var body = el("retryBody");
     body.innerHTML = "";
     function addAudio(label, b64) {
@@ -2921,12 +2948,12 @@
     var olds = (state.retryRecs || []).filter(function(r){ return !todayKeys[batchKey(r.difficulty, r.unit_index, r.words)]; });
     if (!batches.length && !olds.length) { row.innerHTML = "<span class=\"hint\">今天还没开始学习</span>"; return; }
 
-    function addPill(batch, groupNo, isCurrent, isRetry) {
+    function addPill(batch, label, isCurrent, isRetry) {
       var pill = document.createElement("button");
       pill.className = "batch-pill" + (isCurrent ? " bp-current" : "") + (isRetry ? " bp-retry" : "");
       // 上面是组号，下面是状态（待批改 / 已通过 / 需重录）；没状态时留个占位，保证每个格子一样高
       var badge = isRetry ? "<span class=\"status-badge retry\">🔁需重录</span>" : (batchStatusBadge(batch) || "<span class=\"status-badge\" style=\"visibility:hidden\">·</span>");
-      pill.innerHTML = "<span>第" + groupNo + "组" + (isCurrent ? "（当前）" : "") + "</span>" + badge;
+      pill.innerHTML = "<span>" + label + (isCurrent ? "（当前）" : "") + "</span>" + badge;
       var key = batchKey(batch.difficulty, batch.unit_index, batch.words);
       var rec = isRetry ? (state.retryRecs || []).filter(function(r){ return batchKey(r.difficulty, r.unit_index, r.words) === key; })[0] : null;
       pill.addEventListener("click", function(){
@@ -2936,24 +2963,25 @@
             state.retryQueue = (state.retryItems || []).filter(function(it){ return batchKey(it.difficulty, it.unit_index, it.words) !== key; });
             enterBatchReview({ difficulty: batch.difficulty, unit_index: batch.unit_index, cursor_start: batch.cursor_start || 0, words: batch.words });
           };
-          if (rec && (rec.admin_feedback || rec.admin_feedback_audio)) showRetryFeedback(rec, groupNo, go); else go();
+          if (rec && (rec.admin_feedback || rec.admin_feedback_audio)) showRetryFeedback(rec, label, go); else go();
           return;
         }
         // 其它组：先弹出"重新学习 / 退出"让学生选
         pendingBatchChoice = batch;
-        el("batchChoiceTitle").textContent = "第 " + groupNo + " 组";
+        el("batchChoiceTitle").textContent = label;
         el("batchChoiceModal").hidden = false;
       });
       row.appendChild(pill);
     }
 
     olds.forEach(function(r){
-      addPill({ difficulty: r.difficulty, unit_index: r.unit_index, cursor_start: 0, words: r.words }, (state.retryGroupNo && state.retryGroupNo(r)) || "?", false, true);
+      var g = state.retryGroupNo && state.retryGroupNo(r);
+      addPill({ difficulty: r.difficulty, unit_index: r.unit_index, cursor_start: 0, words: r.words }, g ? "第" + g + "组" : "复习", false, true);
     });
     batches.forEach(function(b, i){
       var rec = findRecordingForBatch(b);
       var groupNo = (state.groupNoOf && state.groupNoOf(b)) || (i + 1);
-      addPill(b, groupNo, i === batches.length - 1, !!(rec && rec.admin_status === "retry"));
+      addPill(b, b.cursor_start < 0 ? "复习" : "第" + groupNo + "组", i === batches.length - 1, !!(rec && rec.admin_status === "retry"));
     });
   }
 

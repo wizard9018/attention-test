@@ -157,3 +157,19 @@ alter table word_memory enable row level security;
 drop policy if exists "anon all word_memory" on word_memory;
 create policy "anon all word_memory" on word_memory
   for all using (true) with check (true);
+
+-- 拼写练习结果：每次提交一条，words 里是 [{id, word, ok}]，显示在学生的"训练记录"和老师的学习进度里
+create table if not exists spell_results (
+  id bigint generated always as identity primary key,
+  referral_code text not null,
+  student_no text not null,
+  total int not null,
+  correct int not null,
+  words jsonb not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists spell_results_student on spell_results (referral_code, student_no, created_at desc);
+alter table spell_results enable row level security;
+drop policy if exists "anon all spell_results" on spell_results;
+create policy "anon all spell_results" on spell_results
+  for all using (true) with check (true);
