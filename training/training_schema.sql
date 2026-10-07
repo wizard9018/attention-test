@@ -173,3 +173,7 @@ alter table spell_results enable row level security;
 drop policy if exists "anon all spell_results" on spell_results;
 create policy "anon all spell_results" on spell_results
   for all using (true) with check (true);
+
+-- 拼写复习：每个词单独记拼写次数和下次拼写复习时间（和听读复习的 due_at 互不影响）
+alter table word_memory add column if not exists spell_count int not null default 0;
+alter table word_memory add column if not exists spell_due_at timestamptz;

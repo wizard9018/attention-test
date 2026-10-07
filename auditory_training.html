@@ -477,6 +477,11 @@
         <p class="hint" id="spellHint">加载中…</p>
         <button class="btn btn-blue" id="spOpenBtn" type="button">✍️ 开始拼写练习</button>
       </div>
+      <div class="card" id="spellReviewPanel">
+        <h2>拼写复习</h2>
+        <p class="hint" id="spellReviewHint">加载中…</p>
+        <button class="btn btn-blue" id="spReviewBtn" type="button" hidden>✍️ 开始拼写复习</button>
+      </div>
     </div>
   </div>
 
@@ -486,7 +491,7 @@
     <div class="modal-panel card pt-panel">
       <button class="modal-close" id="spCloseBtn" aria-label="关闭">✕</button>
       <div id="spStart">
-        <h2>拼写练习</h2>
+        <h2 id="spTitle">拼写练习</h2>
         <p class="hint" id="spAvail" style="margin-bottom:14px;"></p>
         <div class="field">
           <label>一组几个词（先一起学闪卡，学完一起考）</label>
@@ -1398,7 +1403,10 @@
   // 返回这个学生的 word_memory 行；表还没建时返回 null
   function memLoad() {
     return (state.memPending || Promise.resolve()).then(function(){
-      return sbGet("word_memory", memQuery() + "&select=word_id,learn_count,due_at&limit=5000");
+      return sbGet("word_memory", memQuery() + "&select=word_id,learn_count,due_at,spell_count,spell_due_at&limit=5000").then(function(rows){
+        // 还没加 spell_* 两列时退回旧查询，其余功能照常
+        return Array.isArray(rows) ? rows : sbGet("word_memory", memQuery() + "&select=word_id,learn_count,due_at&limit=5000");
+      });
     }).then(function(rows){
       if (!Array.isArray(rows)) return null;
       return rows.length ? rows : memBackfill();
@@ -1409,8 +1417,12 @@
     ensureWordData().then(memLoad).then(function(rows){
       var hint = el("reviewHint"), btn = el("reviewStartBtn");
       btn.hidden = true;
-      if (!rows) { hint.textContent = "复习计划还没开通（需要先在数据库里建 word_memory 表）。"; el("spellHint").textContent = "拼写练习还没开通（需要先建 word_memory 表）。"; return; }
+      if (!rows) { hint.textContent = "复习计划还没开通（需要先在数据库里建 word_memory 表）。"; el("spellHint").textContent = "拼写练习还没开通（需要先建 word_memory 表）。"; el("spellReviewHint").textContent = "拼写复习还没开通（需要先建 word_memory 表）。"; return; }
       var now = Date.now(), map = wordMap();
+      var sDue = spReviewPool(rows), sBtn = el("spReviewBtn");
+      el("spellReviewHint").textContent = sDue.length ? "可复习 " + sDue.length + " 个词（按艾宾浩斯 1/2/4/7/15/30 天安排）"
+        : "今天没有要拼写复习的词。做过拼写练习的词，会按遗忘曲线到期后出现在这里。";
+      sBtn.hidden = !sDue.length;
       var canSpell = rows.filter(function(r){ return r.learn_count >= 3 && map[r.word_id]; });
       el("spellHint").textContent = canSpell.length ? "可练习 " + canSpell.length + " 个词（学过 3 次以上）" : "还没有学过 3 次的词。每个词学完一遍、再复习两次，就能来这里练拼写了。";
       var due = rows.filter(function(r){ return map[r.word_id] && new Date(r.due_at).getTime() <= now; })
@@ -1452,23 +1464,58 @@
   }
   function spExit() { spAudio.pause(); el("spellModal").hidden = true; showView("viewSetup"); }
   function spPlayWord(w) { spAudio.pause(); spAudio.src = aaUrl(w.id, "en_" + state.gender); spAudio.play().catch(function(){}); }
-  function spOpen() {
+  // 拼写复习：练过拼写、且 spell_due_at 到期的词
+  function spReviewPool(rows) {
+    var now = Date.now(), map = wordMap();
+    return rows.filter(function(r){ return r.spell_due_at && new Date(r.spell_due_at).getTime() <= now && map[r.word_id]; });
+  }
+  // 每组第一次提交时排下次拼写复习：拼对 -> 次数+1，按 1/2/4/7/15/30 天；拼错 -> 次日再来(次数不变)
+  function spSchedule() {
+    var ids = sp.rows.map(function(r){ return r.word.id; });
+    var now = Date.now();
+    sbGet("word_memory", memQuery() + "&word_id=in.(" + ids.join(",") + ")&select=word_id,spell_count").then(function(have){
+      if (!Array.isArray(have)) return;
+      var cnt = {};
+      have.forEach(function(h){ cnt[h.word_id] = h.spell_count || 0; });
+      sp.rows.forEach(function(r){
+        var id = r.word.id;
+        if (!(id in cnt)) return;
+        var n = cnt[id] + (r.ok ? 1 : 0);
+        sbPatch("word_memory", memQuery() + "&word_id=eq." + id,
+          { spell_count: n, spell_due_at: r.ok ? memDue(n, now) : new Date(now + 86400000).toISOString() }).catch(function(){});
+      });
+    }).catch(function(){});
+  }
+  function spOpen(review) {
+    sp.review = review === true;
     el("spellModal").hidden = false;
     spShow("spStart");
+    el("spTitle").textContent = sp.review ? "拼写复习" : "拼写练习";
     el("spAvail").textContent = "加载中…";
     el("spBeginBtn").disabled = true;
     spRenderSize();
     ensureWordData().then(memLoad).then(function(rows){
       var map = wordMap();
-      sp.pool = (rows || []).filter(function(r){ return r.learn_count >= 3 && map[r.word_id]; }).map(function(r){ return map[r.word_id]; });
+      sp.pool = !rows ? [] : sp.review ? spReviewPool(rows).map(function(r){ return map[r.word_id]; })
+        : rows.filter(function(r){ return r.learn_count >= 3 && map[r.word_id]; }).map(function(r){ return map[r.word_id]; });
       el("spAvail").textContent = !rows ? "拼写练习还没开通（需要先在数据库里建 word_memory 表）。"
+        : sp.review ? (sp.pool.length ? "共 " + sp.pool.length + " 个词该拼写复习了。随机抽一组：先看闪卡回忆一下，再一起考，看中文拼写英文。" : "今天没有要拼写复习的词。")
         : sp.pool.length ? "可练习 " + sp.pool.length + " 个词（学过 3 次以上）。随机抽一组：先一起看闪卡背一背，学完一起考，看中文拼写英文。"
         : "还没有学过 3 次的词。每个词学完一遍、再复习两次，就能来这里练拼写了。";
       el("spBeginBtn").disabled = !sp.pool.length;
     });
   }
   function spStartCards(words) { sp.words = words; spRenderCards(); spShow("spCards"); }
-  function spNewGroup() { spStartCards(ptShuffle(sp.pool).slice(0, sp.size)); }
+  // 复习模式下，已经抽过的词不再出现在池里(下一组继续抽剩下的)；池空了就回到课程页
+  function spNewGroup() {
+    if (sp.review) {
+      if (!sp.pool.length) { loadReviewPanel(); spExit(); return; }
+    }
+    sp.scored = false;
+    var g = ptShuffle(sp.pool).slice(0, sp.size);
+    if (sp.review) sp.pool = sp.pool.filter(function(w){ return g.indexOf(w) < 0; });
+    spStartCards(g);
+  }
   function spRenderSize() {
     var grid = el("spSizeGrid"); grid.innerHTML = "";
     [3, 4, 5, 6].forEach(function(n){
@@ -1546,6 +1593,7 @@
       if (!ok) { wrong++; r.fix.textContent = "正确拼写：" + r.word.word; }
     });
     sp.allOk = wrong === 0;
+    if (!sp.scored) { sp.scored = true; spSchedule(); }
     sbPost("spell_results", [{ referral_code: state.referrer, student_no: state.studentNo, total: sp.rows.length, correct: sp.rows.length - wrong,
       words: sp.rows.map(function(r){ return { id: r.word.id, word: r.word.word, ok: r.ok }; }) }]).catch(function(){});
     var fb = el("spFeedback");
@@ -1554,7 +1602,8 @@
     el("spSubmitBtn").textContent = sp.allOk ? "下一组 →" : "再背一遍这一组 →";
   }
   function spClose() { spAudio.pause(); el("spellModal").hidden = true; }
-  el("spOpenBtn").addEventListener("click", spOpen);
+  el("spOpenBtn").addEventListener("click", function(){ spOpen(false); });
+  el("spReviewBtn").addEventListener("click", function(){ spOpen(true); });
   el("spCloseBtn").addEventListener("click", spClose);
   el("spBackdrop").addEventListener("click", spClose);
   el("spBackBtn").addEventListener("click", spExit);
