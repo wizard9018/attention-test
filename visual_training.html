@@ -87,6 +87,11 @@
   #curQuestion{min-height:1.6em;color:var(--blue);font-weight:800;background:#ddf4ff;border-radius:10px;padding:8px 12px;margin:10px 0}
   .segrec{display:flex;flex-direction:column;gap:4px;width:100%}.segrec button{width:100%}
   .segrec .st{font-size:12px;color:var(--muted);max-width:260px}
+  /* 画图保存图库 */
+  .draw-gallery{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .draw-thumb{position:relative;cursor:pointer;border:2px solid var(--border);border-radius:8px;overflow:hidden;width:80px;height:60px;flex-shrink:0}
+  .draw-thumb img{width:100%;height:100%;object-fit:contain;background:#fff}
+  .draw-thumb .dlbl{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.45);color:#fff;font-size:10px;text-align:center;padding:1px}
 </style>
 </head>
 <body>
@@ -156,6 +161,67 @@ const sbGet = (t, q) => fetch(SUPABASE_URL + "/rest/v1/" + t + "?" + q, { header
 const sbPost = (t, rows, extra) => fetch(SUPABASE_URL + "/rest/v1/" + t, { method: "POST", headers: sbHeaders(extra), body: JSON.stringify(rows) });
 const pad3 = n => String(n).padStart(3, "0");
 const url = p => CONTENT + p.split("/").map(encodeURIComponent).join("/");
+const bjToday = () => new Date(Date.now() + 8*3600000).toISOString().slice(0,10);
+const toBJDate = iso => new Date(new Date(iso).getTime() + 8*3600000).toISOString().slice(0,10);
+// 按讲稿分句（规则来自老师给的切分示例）
+function splitSents(text) {
+  const MARK = "\u0001";
+  let t = (text || "").replace(/(?<=[。！？!?；;])/g, MARK)
+    .replace(/(?=又因为|再根据|同理|来求得|(?<!乘上?)乙完成|-[角A-Za-z])/g, MARK)
+    .replace(/(?<![，,。么])(?=我们(?:发现|可得|可以|可知))/g, MARK);
+  let parts = t.split(MARK).filter(x => x.trim()), out = [];
+  for (let p of parts) {
+    for (;;) {                                   // 超 40 字的长句：连等式在第 3 个"等于"前断；"，那么/所以…"在逗号后断
+      if (p.length <= 40) break;
+      const eq = [...p.matchAll(/等于/g)].map(m => m.index);
+      let k = eq.length >= 3 ? eq[2] : -1;
+      if (k < 0) {
+        const c = [...p.matchAll(/(?<=[，,])(?=那么|所以|则|即|得到|可得|我们)/g)].map(m => m.index).sort((a, b) => Math.abs(a - p.length / 2) - Math.abs(b - p.length / 2));
+        k = c.length ? c[0] : -1;
+      }
+      if (k <= 0 || k >= p.length) break;
+      out.push(p.slice(0, k)); p = p.slice(k);
+    }
+    out.push(p);
+  }
+  const res = [];                                // 少于 8 字的碎片并入下一句（最后一句并入上一句）
+  for (const x of out) { if (res.length && res[res.length - 1].length < 8) res[res.length - 1] += x; else res.push(x); }
+  if (res.length > 1 && res[res.length - 1].length < 8) { const t2 = res.pop(); res[res.length - 1] += t2; }
+  return res;
+}
+// 按讲稿文字分句（见 splitSents），每句的时间按字数比例估算，再吸附到附近的停顿（±1.5s）；没有文字时只按停顿切
+async function sentenceCuts(src, text) {
+  const buf = await (await fetch(src)).arrayBuffer();
+  const ac = new (window.AudioContext || window.webkitAudioContext)(), d = (await ac.decodeAudioData(buf)).getChannelData(0), sr = ac.sampleRate; ac.close();
+  const W = Math.floor(sr * 0.02), rms = [];
+  for (let i = 0; i + W <= d.length; i += W) { let t = 0; for (let k = i; k < i + W; k++) t += d[k] * d[k]; rms.push(Math.sqrt(t / W)); }
+  const th = Math.max(0.005, Math.max(...rms) * 0.05), dur = d.length / sr, gaps = [];
+  for (let i = 0, st = -1; i <= rms.length; i++) {
+    const q = i < rms.length && rms[i] < th;
+    if (q && st < 0) st = i;
+    if (!q && st >= 0) { if ((i - st) * 0.02 >= 0.25) gaps.push((st + i) / 2 * 0.02); st = -1; }
+  }
+  const sents = splitSents(text);
+  let cuts;
+  if (sents.length > 1) {
+    const total = sents.reduce((n, x) => n + x.length, 0); let acc = 0;
+    cuts = sents.slice(0, -1).map(x => {
+      acc += x.length; const t = acc / total * dur;
+      const near = gaps.filter(g => Math.abs(g - t) <= 1.5).sort((p, q) => Math.abs(p - t) - Math.abs(q - t))[0];
+      return near ?? t;
+    });
+  } else cuts = gaps.filter(c => c > 1 && dur - c > 1);
+  const out = []; let a = 0;
+  for (const c of cuts.sort((p, q) => p - q)) if (c > a + 0.3) { out.push([a, c]); a = c; }
+  out.push([a, dur]);
+  return out;
+}
+const drawKey = () => `vt_draw_${user.referrer}_${user.studentNo}_${bjToday()}`;
+function loadDrawings() { try { return JSON.parse(localStorage.getItem(drawKey()) || "[]"); } catch(e) { return []; } }
+function saveDrawing(dataUrl, qid, qNum) {
+  try { const saves = loadDrawings(); saves.push({qid, qNum, dataUrl, ts: Date.now()}); localStorage.setItem(drawKey(), JSON.stringify(saves)); return saves; } catch(e) { return []; }
+}
+
 
 let user = null, index = null, status = {};   // status: question_id -> {status, feedback, created_at}（最新一条）
 let sel = { stage: "初中", mode: "gen1", subject: "数学", grade: "初一", term: "上" };
@@ -201,20 +267,26 @@ async function enterCourse() {
   await loadStatus();
   renderCourse();
 }
-const GRADES = { 小学: ["一年级", "二年级", "三年级", "四年级", "五年级", "六年级"], 初中: ["初一", "初二", "初三"] };
+const GRADES = { 小学: ["一年级", "二年级", "三年级", "四年级", "五年级", "六年级"], 初中: ["初一", "初二", "初三"], 高中: ["高一", "高二", "高三"] };
 function chip(parent, text, active, empty, onclick) {
   const b = document.createElement("button"); b.className = "tab" + (active ? " active" : "") + (empty ? " empty" : ""); b.textContent = text; b.onclick = onclick; parent.appendChild(b);
 }
 const courseOf = () => index.courses.find(c => c.mode === sel.mode && c.grade === sel.grade && c.term === sel.term && c.subject === sel.subject);
 function renderCourse() {
-  $("stageTabs").innerHTML = ""; ["小学", "初中"].forEach(s => chip($("stageTabs"), s, s === sel.stage, false, () => { sel.stage = s; sel.grade = GRADES[s][0]; sel.term = "上"; renderCourse(); }));
+  $("stageTabs").innerHTML = ""; ["小学", "初中", "高中"].forEach(s => chip($("stageTabs"), s, s === sel.stage, false, () => { sel.stage = s; sel.grade = GRADES[s][0]; sel.term = "上"; renderCourse(); }));
   $("modeTabs").innerHTML = ""; ["gen1", "gen2"].forEach(m => chip($("modeTabs"), MODE_NAME[m], m === sel.mode, false, () => { sel.mode = m; renderCourse(); }));
   $("modeHint").textContent = MODE_HINT[sel.mode];
-  $("subjectTabs").innerHTML = ""; chip($("subjectTabs"), "数学", true, false, () => {}); chip($("subjectTabs"), "物理（即将上线）", false, true, () => {});
+  $("subjectTabs").innerHTML = "";
+  const allSubs = sel.stage === "初中" ? ["数学", "物理", "化学"] : sel.stage === "高中" ? ["数学", "物理"] : ["数学"];
+  if (!allSubs.includes(sel.subject)) sel.subject = allSubs[0];
+  allSubs.forEach(sub => {
+    const has = index.courses.some(c => (c.stage || "初中") === sel.stage && (c.subject || "数学") === sub);
+    chip($("subjectTabs"), sub, sub === sel.subject, !has, () => { sel.subject = sub; renderCourse(); });
+  });
   $("gradeTabs").innerHTML = "";
   const terms = sel.stage === "小学" ? ["上", "下", "专题"] : ["上", "下"];   // 专题 = 奥数 / 错题笔记
   GRADES[sel.stage].forEach(g => terms.forEach(t => {
-    const has = index.courses.some(c => c.mode === sel.mode && c.grade === g && c.term === t);
+    const has = index.courses.some(c => c.mode === sel.mode && c.grade === g && c.term === t && (c.subject || "数学") === sel.subject);
     chip($("gradeTabs"), g + (t === "专题" ? "专题" : t + "册"), g === sel.grade && t === sel.term, !has, () => { sel.grade = g; sel.term = t; renderCourse(); });
   }));
   const list = $("chapterList"); list.innerHTML = "";
@@ -262,16 +334,19 @@ async function openChapter(course, ch, startQid) {
 $("backBtn").onclick = () => { stopMedia(); enterCourse(); };
 function unlocked(i) { const qs = cur.manifest.questions; return i === 0 || !!status[qidOf(cur.chapter.dir, qs[i - 1])]; }
 function renderPills() {
+  const today = bjToday();
   const box = $("pills"); box.innerHTML = "";
   cur.manifest.questions.forEach((q, i) => {
     const s = status[qidOf(cur.chapter.dir, q)], ok = unlocked(i);
+    const todayS = s && s.created_at && toBJDate(s.created_at) === today ? s : null;
     const b = document.createElement("button");
-    b.className = "pill" + (i === cur.qi ? " cur" : "") + (s ? " " + s.status : "");
-    b.textContent = !ok ? "🔒" : s ? ({ pass: "✅", retry: "🔁", pending: "⏳" }[s.status]) + (i + 1) : String(i + 1);
+    b.className = "pill" + (i === cur.qi ? " cur" : "") + (todayS ? " " + todayS.status : "");
+    b.textContent = !ok ? "🔒" : todayS ? ({ pass: "✅", retry: "🔁", pending: "⏳" }[todayS.status]) + (i + 1) : String(i + 1);
     b.disabled = !ok; b.onclick = () => loadQuestion(i);
     box.appendChild(b);
   });
 }
+
 let mediaEls = [];
 function stopMedia() { mediaEls.forEach(m => { try { m.pause(); } catch (e) {} }); mediaEls = []; }
 function loadQuestion(i) {
@@ -308,7 +383,12 @@ function makeSubmitter(qid, onSubmitted) {
   const main = document.createElement("button"), st = document.createElement("div"), review = document.createElement("div");
   st.className = "status"; el.append(main, st, review);
   let enabled = true, lockText = "", mr, chunks = [], recording = false, blob = null;
-  const idle = () => { main.textContent = enabled ? (status[qid] ? "🎙 重新录一遍" : "🎙 开始复述") : lockText; main.disabled = !enabled; main.className = "main btn-green"; };
+  let _onRecStart = null, _onRecEnd = null;
+  const sent = () => status[qid] && status[qid].status !== "retry";   // 交过且老师没让重录 → 锁定
+  const idle = () => {
+    main.textContent = sent() ? (status[qid].status === "pass" ? "☑️ 老师已通过" : "⏳ 已提交，等待老师批改") : enabled ? (status[qid] ? "🎙 重新录一遍" : "🎙 开始复述") : lockText;
+    main.disabled = sent() || !enabled; main.className = "main btn-green";
+  };
   idle();
   main.onclick = async () => {
     if (!recording) {
@@ -316,7 +396,8 @@ function makeSubmitter(qid, onSubmitted) {
       mr = new MediaRecorder(stream); chunks = []; review.innerHTML = "";
       mr.ondataavailable = e => chunks.push(e.data); mr.onstop = onStop;
       mr.start(); recording = true; main.textContent = "■ 说完了，点这里停止"; main.className = "main btn-red"; st.textContent = "录音中…";
-    } else { mr.stop(); recording = false; idle(); }
+      if (_onRecStart) _onRecStart();
+    } else { mr.stop(); recording = false; idle(); if (_onRecEnd) _onRecEnd(); }
   };
   function onStop() {
     blob = new Blob(chunks, { type: "audio/webm" });
@@ -333,14 +414,15 @@ function makeSubmitter(qid, onSubmitted) {
         const r = await sbPost("visual_recordings", [{ referral_code: user.referrer, student_no: user.studentNo, question_id: qid, audio_base64: await blobToBase64(blob) }]);
         if (!r.ok) throw new Error("HTTP " + r.status);
         status[qid] = { status: "pending", feedback: null, created_at: new Date().toISOString() };
-        review.innerHTML = ""; st.innerHTML = "✅ 已提交，<b>等待老师批改</b>。可以继续下一题；想改的话也可以重新录一遍再提交。";
+        review.innerHTML = ""; st.innerHTML = "✅ 已提交，<b>等待老师批改</b>。可以继续下一题。";
         idle(); onSubmitted();
       } catch (e) { st.textContent = "⚠ 提交失败：" + e.message + "，录音还在，请再点一次提交"; sub.disabled = redo.disabled = false; }
     };
     acts.append(redo, sub); review.append(a, acts);
   }
-  return { el, setEnabled(on, text) { enabled = on; lockText = text || ""; if (!recording && !review.children.length) idle(); } };
+  return { el, setEnabled(on, text) { enabled = on; lockText = text || ""; if (!recording && !review.children.length) idle(); }, setRecordCallbacks(onStart, onEnd) { _onRecStart = onStart; _onRecEnd = onEnd; } };
 }
+
 
 // ---------- 纯享版：左题目、右视频，看完视频才能录音 ----------
 function renderGen1(host, q, submitter) {
@@ -349,6 +431,15 @@ function renderGen1(host, q, submitter) {
   const left = document.createElement("div"); left.className = "card";
   left.innerHTML = "<h3>题目</h3>";
   const img = document.createElement("img"); img.src = url(base + "images/" + q.images[0]); left.appendChild(img);
+  // 录音时隐藏/查看题目
+  const peekBtn = document.createElement("button"); peekBtn.hidden = true; peekBtn.style.marginTop = "8px";
+  let imgVisible = true;
+  peekBtn.onclick = () => { imgVisible = !imgVisible; img.hidden = !imgVisible; peekBtn.textContent = imgVisible ? "🙈 再次隐藏" : "👁 查看题目"; };
+  left.appendChild(peekBtn);
+  submitter.setRecordCallbacks(
+    () => { img.hidden = true; peekBtn.hidden = false; imgVisible = false; peekBtn.textContent = "👁 查看题目"; },
+    () => { img.hidden = false; peekBtn.hidden = true; imgVisible = true; }
+  );
   if (q.images.length > 1) {
     const ans = document.createElement("div"); ans.hidden = true;
     q.images.slice(1).forEach(f => { const a = document.createElement("img"); a.src = url(base + "images/" + f); a.style.marginTop = "10px"; ans.appendChild(a); });
@@ -366,14 +457,51 @@ function renderGen1(host, q, submitter) {
     [...parts.children].forEach((b, k) => { b.className = "tab" + (k === part ? " active" : ""); b.textContent = "第" + (k + 1) + "段" + (watched[k] ? " ✓" : ""); });
     submitter.setEnabled(watched.every(Boolean), vids.length > 1 ? "🎙 先看完全部视频，再开始复述" : "🎙 先看完视频，再开始复述");
   };
-  const play = k => { part = k; player.src = url(base + vids[k].src); player.load(); refresh(); };
+  const play = k => { part = k; player.src = url(base + vids[k].src); player.load(); refresh(); buildGroups(); };
+  // ---- 分句听 + 按组录（需要视频有 words 时间戳；没有就只显示整段播放）----
+  const sentBox = document.createElement("div"); sentBox.style.marginTop = "10px";
+  let sentMode = false, gsize = 1, gi = 0, groups = [];
+  const tabRow = (items, cur, on) => { const r = document.createElement("div"); r.className = "row"; items.forEach(([name, v]) => { const t = document.createElement("button");
+    t.className = "tab" + (v === cur ? " active" : ""); t.textContent = name; t.onclick = () => on(v); r.appendChild(t); }); return r; };
+  function buildGroups() {
+    const w = vids[part].words || []; groups = []; gi = 0; player.ontimeupdate = null;
+    if (w.length) {
+      const sents = splitSents(w.map(x => x[1]).join("")), wOff = []; let c = 0, off = 0; w.forEach(x => { wOff.push(c); c += x[1].length; });
+      const starts = sents.map(x => { const k = Math.max(0, wOff.findLastIndex(o => o <= off)); off += x.length; return w[k][0]; });
+      for (let i = 0; i < sents.length; i += gsize) groups.push({ text: sents.slice(i, i + gsize).join(""), start: starts[i], end: starts[i + gsize] ?? Infinity });
+    }
+    renderSent();
+  }
+  function playGroup() {
+    const g = groups[gi]; player.pause(); player.currentTime = g.start; player.play();
+    player.ontimeupdate = () => { if (player.currentTime >= g.end) { player.pause(); player.ontimeupdate = null; } };
+    if (gi === groups.length - 1) { watched[part] = true; refresh(); }
+    renderSent(true);
+  }
+  function renderSent(keepRec) {
+    if (!groups.length) { sentBox.replaceChildren(); return; }
+    const kids = [tabRow([["整段播放", false], ["分句播放", true]], sentMode, v => { sentMode = v; player.ontimeupdate = null; renderSent(); })];
+    if (sentMode) {
+      kids.push(tabRow([1, 2, 3, 4].map(n => [n + "句一起", n]), gsize, n => { gsize = n; buildGroups(); }));
+      const ctl = document.createElement("div"); ctl.className = "row";
+      const mk = (t, f, dis) => { const x = document.createElement("button"); x.textContent = t; x.onclick = f; x.disabled = !!dis; return x; };
+      const label = document.createElement("span"); label.textContent = " 第 " + (gi + 1) + " / " + groups.length + " 组 ";
+      ctl.append(mk("▶ 播放这一组", playGroup), mk("⏮ 上一组", () => { gi--; playGroup(); }, gi <= 0), mk("下一组 ⏭", () => { gi++; playGroup(); }, gi >= groups.length - 1), label);
+      const rec = segRecorder(() => groups[gi].text, "按组录：第 " + (gi + 1) + " 组");
+      rec.querySelector("button").addEventListener("click", () => player.pause());
+      kids.push(ctl, rec);
+    }
+    sentBox.replaceChildren(...kids);
+  }
   if (vids.length > 1) vids.forEach((v, k) => { const b = document.createElement("button"); b.onclick = () => play(k); parts.appendChild(b); });
   player.onended = () => { watched[part] = true; if (part < vids.length - 1) play(part + 1); else refresh(); };
   if (vids.length > 1) right.appendChild(parts);
-  right.append(player, submitter.el);
+  const finalHint = document.createElement("div"); finalHint.style.cssText = "margin-top:12px;font-size:13px;color:var(--muted)"; finalHint.textContent = "最后一起录：整题复述一遍，交给老师批改";
+  right.append(player, sentBox, finalHint, submitter.el);
   host.append(left, right);
   play(0);
 }
+
 
 // ---------- 交互版：喇叭逐句听 + 分段复述自动打分 + 整体复述交给老师 ----------
 let pinyinFn = null, asrPipe = null;
@@ -445,8 +573,11 @@ function renderStage(container, group, base) {
 }
 function renderGen2(host, q, submitter) {
   const base = cur.chapter.dir + "/";
+  const qid = qidOf(cur.chapter.dir, q), qNum = cur.qi + 1;
   host.innerHTML = '<div class="split"><div class="card"><h3>1. 题目</h3><div class="stage"></div></div>' +
-    '<div class="card" style="flex:0 0 auto;min-width:0"><h3>2. 默画图形</h3><canvas width="320" height="240"></canvas><br><br><button class="clr">清空</button></div></div>' +
+    '<div class="card" style="flex:0 0 auto;min-width:0"><h3>2. 默画图形</h3><canvas width="320" height="240"></canvas><br><br>' +
+    '<div style="display:flex;gap:8px;margin-top:4px"><button class="clr">清空</button><button class="save">💾 保存这张图</button></div>' +
+    '<div class="draw-gallery" style="display:none"></div></div></div>' +
     '<h3 style="margin-top:20px">3. 依次听讲解</h3><div class="row tabsrow"></div><div id="curQuestion"></div><div class="segments"></div>' +
     '<h3 style="margin-top:20px">4. 全部听完后，完整复述一遍（交给老师批改）</h3><div class="finalbox"></div>' +
     '<h3 style="margin-top:20px">5. 参考讲解</h3><button class="reveal tab">听不懂？点这里看参考讲解</button><div class="card backcard" style="display:none;margin-top:10px"><div class="back"></div></div>';
@@ -454,26 +585,82 @@ function renderGen2(host, q, submitter) {
   renderStage($q(".stage"), q.fronts[0], base); renderStage($q(".back"), q.backs[0], base);
   $q(".finalbox").appendChild(submitter.el);
   $q(".reveal").onclick = () => { const c = $q(".backcard"), s = c.style.display === "none"; c.style.display = s ? "block" : "none"; $q(".reveal").textContent = s ? "收起参考讲解" : "听不懂？点这里看参考讲解"; };
+  // 题目隐藏/查看
+  const stageDiv = $q(".stage");
+  const peekBtn = document.createElement("button"); peekBtn.hidden = true; peekBtn.style.marginTop = "8px";
+  let stageVisible = true;
+  peekBtn.onclick = () => { stageVisible = !stageVisible; stageDiv.hidden = !stageVisible; peekBtn.textContent = stageVisible ? "🙈 再次隐藏" : "👁 查看题目"; };
+  stageDiv.after(peekBtn);
+  submitter.setRecordCallbacks(
+    () => { stageDiv.hidden = true; peekBtn.hidden = false; stageVisible = false; peekBtn.textContent = "👁 查看题目"; },
+    () => { stageDiv.hidden = false; peekBtn.hidden = true; stageVisible = true; }
+  );
+  // 画板
   const cv = $q("canvas"), ctx = cv.getContext("2d"); let drawing = false;
   const pos = e => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
   cv.onpointerdown = e => { drawing = true; ctx.beginPath(); ctx.moveTo(...pos(e)); };
   cv.onpointermove = e => { if (drawing) { ctx.lineTo(...pos(e)); ctx.stroke(); } };
   window.addEventListener("pointerup", () => drawing = false);
   $q(".clr").onclick = () => ctx.clearRect(0, 0, cv.width, cv.height);
+  // 画图保存 & 图库
+  const galleryDiv = $q(".draw-gallery");
+  function refreshGallery() {
+    const saves = loadDrawings(); galleryDiv.style.display = saves.length ? "flex" : "none"; galleryDiv.innerHTML = "";
+    saves.forEach(s => {
+      const thumb = document.createElement("div"); thumb.className = "draw-thumb";
+      const tImg = document.createElement("img"); tImg.src = s.dataUrl;
+      const lbl = document.createElement("div"); lbl.className = "dlbl"; lbl.textContent = "Q" + s.qNum;
+      thumb.append(tImg, lbl); thumb.onclick = () => window.open(s.dataUrl); galleryDiv.appendChild(thumb);
+    });
+  }
+  refreshGallery();
+  $q(".save").onclick = () => {
+    saveDrawing(cv.toDataURL(), qid, qNum); refreshGallery();
+    const btn = $q(".save"); if (!btn) return; btn.textContent = "✅ 已保存";
+    setTimeout(() => { const b = $q(".save"); if (b) b.textContent = "💾 保存这张图"; }, 1500);
+  };
   const audio = new Audio(); mediaEls.push(audio);
   const byPair = {}; q.steps.forEach(s => (byPair[s.pair] ??= []).push(s));
   const columns = Object.values(byPair), qText = $q("#curQuestion"), segs = $q(".segments"), REVEAL = 5;
+  let sentMode = false;
   function colEl(pair, n) {
     const w = document.createElement("div"); w.className = "col";
-    pair.forEach(s => {
-      const b = document.createElement("button"); b.textContent = s.kind === "prompt" ? "❓ " + n : s.kind === "answer" ? "💡" : "🔊 " + n; s._plays = 0;
+    const prompts = pair.filter(s => s.kind !== "answer");
+    const answers = pair.filter(s => s.kind === "answer");
+    // 问号/旁白在上
+    prompts.forEach(s => {
+      const b = document.createElement("button"); b.textContent = s.kind === "prompt" ? "❓ " + n : "🔊 " + n; s._plays = 0;
       b.onclick = () => {
         audio.pause(); audio.src = url(base + "audio/" + s.audio); audio.play();
         segs.querySelectorAll("button").forEach(x => x.classList.remove("on")); b.classList.add("on", "done");
-        if (s.kind !== "answer") { s._plays++; qText.textContent = s._plays >= REVEAL ? (s.text || "") : "🔊 已听 " + s._plays + " / " + REVEAL + " 遍，听不懂就多听几遍，满" + REVEAL + "遍会显示文字"; }
+        s._plays++; qText.textContent = s._plays >= REVEAL ? (s.text || "") : "🔊 已听 " + s._plays + " / " + REVEAL + " 遍，听不懂就多听几遍，满" + REVEAL + "遍会显示文字";
       };
       w.appendChild(b);
     });
+    // 灯泡在下（支持多个）
+    if (answers.length) {
+      const aBox = document.createElement("div"); aBox.style.cssText = "display:flex;flex-direction:column;gap:6px;margin-top:6px";
+      answers.forEach(s => {
+        const b = document.createElement("button"), ctl = document.createElement("div");
+        b.textContent = "💡"; s._plays = 0; ctl.className = "row"; ctl.style.display = "none";
+        b.onclick = async () => {
+          audio.pause(); audio.ontimeupdate = null; audio.src = url(base + "audio/" + s.audio);
+          segs.querySelectorAll("button").forEach(x => x.classList.remove("on")); b.classList.add("on", "done");
+          if (!sentMode) { ctl.style.display = "none"; audio.play(); return; }
+          const cuts = s._cuts ??= await sentenceCuts(audio.src, s.text); let i = 0;
+          const label = document.createElement("span"), mk = (t, f) => { const x = document.createElement("button"); x.textContent = t; x.onclick = f; return x; };
+          const prev = mk("⏮ 上一句", () => { i--; play(); }), again = mk("🔁 重听", () => play()), next = mk("下一句 ⏭", () => { i++; play(); });
+          const play = () => {
+            audio.pause(); audio.currentTime = cuts[i][0]; audio.play();
+            audio.ontimeupdate = () => { if (audio.currentTime >= cuts[i][1]) { audio.pause(); audio.ontimeupdate = null; } };
+            label.textContent = " 第 " + (i + 1) + " / " + cuts.length + " 句 "; prev.disabled = i <= 0; next.disabled = i >= cuts.length - 1;
+          };
+          ctl.replaceChildren(prev, again, next, label); ctl.style.display = ""; play();
+        };
+        aBox.append(b, ctl);
+      });
+      w.appendChild(aBox);
+    }
     return w;
   }
   function renderGroups(n) {
@@ -486,11 +673,16 @@ function renderGen2(host, q, submitter) {
       segs.appendChild(seg);
     }
   }
+  const modeRow = document.createElement("div"); modeRow.className = "row";
+  [["整句播放", false], ["分句播放", true]].forEach(([name, v]) => { const t = document.createElement("button"); t.className = "tab" + (!v ? " active" : ""); t.textContent = name;
+    t.onclick = () => { sentMode = v; modeRow.querySelectorAll(".tab").forEach(x => x.classList.remove("active")); t.classList.add("active"); renderGroups(+$q(".tabsrow .active").textContent[0]); }; modeRow.appendChild(t); });
+  $q(".tabsrow").after(modeRow);
   const tabs = $q(".tabsrow");
   [1, 2, 3, 4].forEach(n => { const t = document.createElement("button"); t.className = "tab" + (n === 1 ? " active" : ""); t.textContent = n === 1 ? "1组一起" : n + "组一起";
     t.onclick = () => { tabs.querySelectorAll(".tab").forEach(x => x.classList.remove("active")); t.classList.add("active"); renderGroups(n); }; tabs.appendChild(t); });
   renderGroups(1);
 }
+
 
 // ---------- 启动：刷新页面时恢复登录 ----------
 try { const u = sessionStorage.getItem("vt_user"); if (u) { user = JSON.parse(u); enterCourse(); } } catch (e) {}
