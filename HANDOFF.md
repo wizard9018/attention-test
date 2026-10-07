@@ -178,3 +178,13 @@ copy .env.example .env
 ---
 
 *文档已纳入版本控制，在新电脑上拉取仓库后可直接根据本指南继续无缝开发！*
+
+---
+
+## 六、听觉训练站进度记录（auditory_training.html）
+
+**2026-10-07**
+- 新增「拼写复习」卡片（放在「拼写练习」下面）：按艾宾浩斯 1/2/4/7/15/30 天排拼写复习，拼错次日再来。提交 `251cc8e`，已推送 GitHub（GitHub Pages 在线版已是这一版）。
+- 数据库：`word_memory` 增加 `spell_count`、`spell_due_at` 两列（SQL 见 `training/training_schema.sql` 末尾，已在 Supabase 执行）。
+- 腾讯云 COS 上的听觉训练页仍是 2026-09-30 的旧版，**未同步**；用户说"推送"后再用 `upload_to_tencent_cloud.py` 上传。
+- 待办：`spell_results` 表若未建需在 Supabase 建（同一 SQL 文件）；本地点测拼写复习全流程。
