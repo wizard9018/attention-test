@@ -1508,9 +1508,7 @@
   function spStartCards(words) { sp.words = words; spRenderCards(); spShow("spCards"); }
   // 复习模式下，已经抽过的词不再出现在池里(下一组继续抽剩下的)；池空了就回到课程页
   function spNewGroup() {
-    if (sp.review) {
-      if (!sp.pool.length) { loadReviewPanel(); spExit(); return; }
-    }
+    if (sp.review && !sp.pool.length) { loadReviewPanel(); spExit(); return; }
     sp.scored = false;
     var g = ptShuffle(sp.pool).slice(0, sp.size);
     if (sp.review) sp.pool = sp.pool.filter(function(w){ return g.indexOf(w) < 0; });
