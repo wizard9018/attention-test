@@ -262,7 +262,7 @@ async function loadStatus() {
 }
 async function enterCourse() {
   $("who").textContent = "推荐码 " + user.referrer + " · 学生 " + user.studentNo;
-  if (!index) index = await (await fetch(CONTENT + "index.json")).json();
+  if (!index) index = await (await fetch(CONTENT + "index.json", { cache: "no-cache" })).json();
   show("viewCourse");
   await loadStatus();
   renderCourse();
@@ -323,7 +323,7 @@ function renderFeedback() {
 
 // ---------- 学习界面 ----------
 async function openChapter(course, ch, startQid) {
-  const manifest = await (await fetch(CONTENT + ch.dir + "/manifest.json")).json();
+  const manifest = await (await fetch(CONTENT + ch.dir + "/manifest.json", { cache: "no-cache" })).json();
   cur = { course, chapter: ch, manifest, qi: 0 };
   if (startQid) { const i = manifest.questions.findIndex(q => q.id === startQid); if (i >= 0) cur.qi = i; }
   else { const i = manifest.questions.findIndex(q => !status[qidOf(ch.dir, q)]); cur.qi = i < 0 ? 0 : i; }   // 默认进到第一道还没提交的题
