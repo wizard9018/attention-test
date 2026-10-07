@@ -186,5 +186,9 @@ copy .env.example .env
 **2026-10-07**
 - 新增「拼写复习」卡片（放在「拼写练习」下面）：按艾宾浩斯 1/2/4/7/15/30 天排拼写复习，拼错次日再来。提交 `251cc8e`，已推送 GitHub（GitHub Pages 在线版已是这一版）。
 - 数据库：`word_memory` 增加 `spell_count`、`spell_due_at` 两列（SQL 见 `training/training_schema.sql` 末尾，已在 Supabase 执行）。
-- 腾讯云 COS 上的听觉训练页仍是 2026-09-30 的旧版，**未同步**；用户说"推送"后再用 `upload_to_tencent_cloud.py` 上传。
-- 待办：`spell_results` 表若未建需在 Supabase 建（同一 SQL 文件）；本地点测拼写复习全流程。
+- **发布规则（2026-10-08 起）：只推 GitHub（GitHub Pages），不再传腾讯云**；腾讯云 COS 上的听觉训练页停在 2026-09-30 的旧版，不再同步。
+- 拼写复习已在本地点测通过（闪卡 → 拼写 → 错题重背 → 下一组；拼对按 1/2/4/7/15/30 天排，拼错次日再来）。待办：`spell_results` 表若未建需在 Supabase 建（同一 SQL 文件）。
+
+**2026-10-08**
+- 视觉训练 `visual_training.html` 已推送 GitHub（提交 `9d3eb59`）：录音时藏题、画图本地保存、多回答布局、分句播放/按组录音、只显示当天进度、高中和物理化学入口。线上目前开放 4 题：纯享版 C1SX42-D、C1SX05-C，交互版 C2SX-13-Q01、Q02。
+- 未验证：线上流程（登录 → 录音 → 提交 → 批改）没用真实麦克风点过。
