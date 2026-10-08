@@ -470,6 +470,7 @@
       <div class="card" id="reviewPanel">
         <h2>今日复习</h2>
         <p class="hint" id="reviewHint">加载中…</p>
+        <div class="count-grid" id="rvSizeGrid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;" hidden></div>
         <button class="btn" id="reviewStartBtn" type="button" hidden>开始复习</button>
       </div>
       <div class="card" id="spellPanel">
@@ -1362,7 +1363,7 @@
 
   // ---------- 艾宾浩斯复习 + 拼写练习：word_memory 表记每个词学过几次、下次该复习的时间 ----------
   var EBB_DAYS = [1, 2, 4, 7, 15, 30];   // 学完第 n 次后，隔几天再复习；第 6 次以后一直是 30 天
-  var REVIEW_SIZE = 10;                  // 每次复习几个词
+  var REVIEW_SIZE = 5;                   // 每组复习几个词(3-5，学生在卡片上选)；一组录完再来下一组
   function memQuery() { return "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo; }
   function memDue(count, fromMs) { return new Date(fromMs + EBB_DAYS[Math.min(count, EBB_DAYS.length) - 1] * 86400000).toISOString(); }
   function wordMap() {
@@ -1416,7 +1417,7 @@
     if (!state.referrer || !state.studentNo) return;
     ensureWordData().then(memLoad).then(function(rows){
       var hint = el("reviewHint"), btn = el("reviewStartBtn");
-      btn.hidden = true;
+      btn.hidden = true; el("rvSizeGrid").hidden = true;
       if (!rows) { hint.textContent = "复习计划还没开通（需要先在数据库里建 word_memory 表）。"; el("spellHint").textContent = "拼写练习还没开通（需要先建 word_memory 表）。"; el("spellReviewHint").textContent = "拼写复习还没开通（需要先建 word_memory 表）。"; return; }
       var now = Date.now(), map = wordMap();
       var sDue = spReviewPool(rows), sBtn = el("spReviewBtn");
@@ -1432,10 +1433,24 @@
         hint.textContent = rows.length ? "今天没有要复习的词，继续学新词吧。" : "学完第一组词后，这里会按艾宾浩斯遗忘曲线（1/2/4/7/15/30 天）安排复习。";
         return;
       }
-      var n = Math.min(due.length, REVIEW_SIZE);
-      hint.textContent = "共 " + due.length + " 个词该复习了，这次先复习 " + n + " 个";
-      btn.textContent = "开始复习（" + n + " 个词）"; btn.hidden = false;
+      rvRender();
     });
+  }
+  // 复习分组：每组 3-5 个词，点开始抽最该复习的一组；录完提交后剩下的词还在这里，接着来下一组
+  function rvRender() {
+    var due = state.reviewDue || [], grid = el("rvSizeGrid"), btn = el("reviewStartBtn");
+    grid.innerHTML = "";
+    [3, 4, 5].forEach(function(n){
+      var cell = document.createElement("div");
+      cell.className = "count-cell" + (n === REVIEW_SIZE ? " selected" : "");
+      cell.textContent = n;
+      cell.addEventListener("click", function(){ REVIEW_SIZE = n; rvRender(); });
+      grid.appendChild(cell);
+    });
+    grid.hidden = btn.hidden = !due.length;
+    var n = Math.min(due.length, REVIEW_SIZE);
+    el("reviewHint").textContent = "共 " + due.length + " 个词该复习了。每组几个词（3–5）：选好后一组一组复习，每组都可以录音交老师批改";
+    btn.textContent = "开始复习（这一组 " + n + " 个词）";
   }
   el("reviewStartBtn").addEventListener("click", function(){
     var map = wordMap(), words = (state.reviewDue || []).slice(0, REVIEW_SIZE).map(function(r){ return map[r.word_id]; });
