@@ -869,10 +869,21 @@
   var AUDIO_ADMIN_ACCOUNT = "55168";   // 音频管理除总管理员外，也放在这个管理员账号下
   function canAudioAdmin() { return !!state.adminIsSuper || (!state.studentNo && state.referrer === AUDIO_ADMIN_ACCOUNT); }   // 总管理员先保留，同时 55168 也有
   var AMBIENT_VIEWS = { viewSetup: 1, viewPlayer: 1, viewDone: 1, viewRecord: 1, viewSpell: 1 };   // 只有学生训练界面有背景视频
+  // 浏览器"返回"键：学生在播放/完成/录音/拼写页时，等同于点该页的退出按钮，回到课程选择页，而不是退出网站
+  var SUB_VIEW_EXIT = { viewPlayer: "exitSessionBtn", viewDone: "backToGroupsFromDoneBtn", viewRecord: "recordBackToGroupsBtn", viewSpell: "spBackBtn" };
+  var curView = null, ignorePop = false;
+  window.addEventListener("popstate", function(){
+    if (ignorePop) { ignorePop = false; return; }
+    var b = SUB_VIEW_EXIT[curView]; if (b) el(b).click();
+  });
   function showView(id) {
     ["viewLogin","viewAdmin","viewAdminStudent","viewSuperAdmin","viewAudioAdmin","viewVisualAdmin","viewAdminRecords","viewSetup","viewPlayer","viewDone","viewRecord","viewSpell"].forEach(function(v){
       el(v).hidden = (v !== id);
     });
+    var inSub = !!(history.state && history.state.sub);
+    if (SUB_VIEW_EXIT[id] && !inSub) history.pushState({ sub: 1 }, "");
+    else if (id === "viewSetup" && inSub && !ignorePop) { ignorePop = true; history.back(); }   // 用页面按钮回到课程页时，把多出来的历史记录退掉
+    curView = id;
     var ambient = !!AMBIENT_VIEWS[id];
     document.body.classList.toggle("no-ambient", !ambient);
     if (ambient) loadAmbientVideo();
