@@ -84,7 +84,25 @@
   .seg{display:flex;flex-direction:column;gap:10px;padding:10px;border-radius:14px;background:#fbfaf6}
   .seg .colsRow{display:flex;gap:10px}
   .seg + .seg{border-left:2px dashed var(--border);padding-left:20px}
-  #curQuestion{min-height:1.6em;color:var(--blue);font-weight:800;background:#ddf4ff;border-radius:10px;padding:8px 12px;margin:10px 0}
+  #curQuestion{min-height:1.6em;color:var(--blue);font-weight:800;background:#ddf4ff;border-radius:10px;padding:6px 12px;flex:1 1 220px}
+  /* 交互版紧凑版面：题目+画板并排，听讲解一张卡，最后录音+参考讲解一行，尽量一屏放下 */
+  .g2top{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}
+  .g2top > .card, .g2listen{padding:10px 12px}
+  .g2q{flex:1 1 360px;min-width:0}.g2d{flex:0 0 auto}
+  .g2h{font-weight:800;font-size:14px;color:var(--muted);margin-bottom:6px}
+  .g2d canvas{width:240px;height:180px;display:block}
+  .g2d .g2btns{display:flex;gap:8px;margin-top:6px}.g2d .g2btns button{padding:6px 12px}
+  .g2listen{margin-top:10px}
+  .g2listen .tabsrow{margin-bottom:6px}.g2listen .tab{padding:5px 14px}
+  .ctlline{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+  .sentctl{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.sentctl button{padding:6px 12px}
+  .g2listen .segments{gap:10px;margin-bottom:0}.g2listen .seg{padding:6px;gap:6px}.g2listen .seg + .seg{padding-left:10px}
+  .g2listen .col button{padding:5px 6px;min-width:52px}.g2listen .col{gap:4px}
+  .g2f{flex:1 1 240px;display:flex;flex-direction:column;gap:8px}
+  #curQuestion:empty{display:none}#curQuestion{margin-bottom:6px}
+  .g2d canvas{width:200px;height:150px}
+  .g2listen .segrec{gap:2px}.g2listen .segrec button{padding:6px 10px}
+  #viewLearn .learn-top{margin-bottom:6px}#pills{margin-bottom:8px}.wrap{padding-top:10px;padding-bottom:24px}.top{margin-bottom:8px}
   .segrec{display:flex;flex-direction:column;gap:4px;width:100%}.segrec button{width:100%}
   .segrec .st{font-size:12px;color:var(--muted);max-width:260px}
   /* 画图保存图库 */
@@ -577,11 +595,11 @@ function segRecorder(getRef, label) {
   }
   return box;
 }
-function renderStage(container, group, base) {
+function renderStage(container, group, base, maxH) {
   container.innerHTML = "";
   if (!group) return;
   const [x0, y0, cx, cy] = group.bbox;
-  container.style.cssText = "position:relative;width:100%;aspect-ratio:" + (cx / cy).toFixed(4);
+  container.style.cssText = "position:relative;width:100%;aspect-ratio:" + (cx / cy).toFixed(4) + (maxH ? ";max-width:" + Math.round(maxH * cx / cy) + "px" : "");
   group.layers.forEach(layer => {
     const stack = layer.slice().reverse(); let top = stack.length - 1;
     const imgs = stack.map(it => {
@@ -596,23 +614,24 @@ function renderStage(container, group, base) {
 function renderGen2(host, q, submitter) {
   const base = cur.chapter.dir + "/";
   const qid = qidOf(cur.chapter.dir, q), qNum = cur.qi + 1;
-  host.innerHTML = '<div class="split"><div class="card"><h3>1. 题目</h3><div class="stage"></div></div>' +
-    '<div class="card" style="flex:0 0 auto;min-width:0"><h3>2. 默画图形</h3><canvas width="320" height="240"></canvas><br><br>' +
-    '<div style="display:flex;gap:8px;margin-top:4px"><button class="clr">清空</button><button class="save">💾 保存这张图</button></div>' +
-    '<div class="draw-gallery" style="display:none"></div></div></div>' +
-    '<h3 style="margin-top:20px">3. 依次听讲解</h3><div class="row tabsrow"></div><div id="curQuestion"></div><div class="segments"></div>' +
-    '<h3 style="margin-top:20px">4. 全部听完后，完整复述一遍（交给老师批改）</h3><div class="finalbox"></div>' +
-    '<h3 style="margin-top:20px">5. 参考讲解</h3><button class="reveal tab">听不懂？点这里看参考讲解</button><div class="card backcard" style="display:none;margin-top:10px"><div class="back"></div></div>';
+  host.innerHTML = '<div class="g2top"><div class="card g2q"><div class="g2h">1. 题目</div><div class="stage"></div></div>' +
+    '<div class="card g2d"><div class="g2h">2. 默画图形</div><canvas width="320" height="240"></canvas>' +
+    '<div class="g2btns"><button class="clr">清空</button><button class="save">💾 保存这张图</button></div>' +
+    '<div class="draw-gallery" style="display:none"></div></div>' +
+    '<div class="card g2f"><div class="finalbox"></div><button class="reveal tab">5. 听不懂？看参考讲解</button></div></div>' +
+    '<div class="card g2listen"><div class="g2h">3. 依次听讲解</div><div class="row tabsrow"></div><div id="curQuestion"></div><div class="segments"></div></div>' +
+    '<div class="card backcard" style="display:none;margin-top:10px"><div class="back"></div></div>';
   const $q = s => host.querySelector(s);
-  renderStage($q(".stage"), q.fronts[0], base); renderStage($q(".back"), q.backs[0], base);
-  $q(".finalbox").appendChild(submitter.el);
-  $q(".reveal").onclick = () => { const c = $q(".backcard"), s = c.style.display === "none"; c.style.display = s ? "block" : "none"; $q(".reveal").textContent = s ? "收起参考讲解" : "听不懂？点这里看参考讲解"; };
+  renderStage($q(".stage"), q.fronts[0], base, 190); renderStage($q(".back"), q.backs[0], base);
+  const finalLbl = document.createElement("div"); finalLbl.className = "g2h"; finalLbl.textContent = "4. 全部听完后，完整复述一遍（交给老师批改）";
+  $q(".finalbox").append(finalLbl, submitter.el);
+  $q(".reveal").onclick = () => { const c = $q(".backcard"), s = c.style.display === "none"; c.style.display = s ? "block" : "none"; $q(".reveal").textContent = s ? "收起参考讲解" : "5. 听不懂？看参考讲解"; };
   // 题目隐藏/查看
   const stageDiv = $q(".stage");
   stageDiv.after(hideWhileRecording(stageDiv, submitter));
   // 画板
   const cv = $q("canvas"), ctx = cv.getContext("2d"); let drawing = false;
-  const pos = e => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  const pos = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * cv.width / r.width, (e.clientY - r.top) * cv.height / r.height]; };   // 画布显示比 320×240 小，按比例换算
   cv.onpointerdown = e => { drawing = true; ctx.beginPath(); ctx.moveTo(...pos(e)); };
   cv.onpointermove = e => { if (drawing) { ctx.lineTo(...pos(e)); ctx.stroke(); } };
   window.addEventListener("pointerup", () => drawing = false);
@@ -646,7 +665,7 @@ function renderGen2(host, q, submitter) {
     prompts.forEach(s => {
       const b = document.createElement("button"); b.textContent = s.kind === "prompt" ? "❓ " + n : "🔊 " + n; s._plays = 0;
       b.onclick = () => {
-        audio.pause(); audio.src = url(base + "audio/" + s.audio); audio.play();
+        audio.pause(); audio.ontimeupdate = null; $q(".sentctl").replaceChildren(); audio.src = url(base + "audio/" + s.audio); audio.play();   // 清掉上一个分句的"到句尾就停"
         segs.querySelectorAll("button").forEach(x => x.classList.remove("on")); b.classList.add("on", "done");
         s._plays++; qText.textContent = s._plays >= REVEAL ? (s.text || "") : "🔊 已听 " + s._plays + " / " + REVEAL + " 遍，听不懂就多听几遍，满" + REVEAL + "遍会显示文字";
       };
@@ -656,12 +675,12 @@ function renderGen2(host, q, submitter) {
     if (answers.length) {
       const aBox = document.createElement("div"); aBox.style.cssText = "display:flex;flex-direction:column;gap:6px;margin-top:6px";
       answers.forEach(s => {
-        const b = document.createElement("button"), ctl = document.createElement("div");
-        b.textContent = "💡"; s._plays = 0; ctl.className = "row"; ctl.style.display = "none";
+        const b = document.createElement("button"), ctl = $q(".sentctl");      // 分句控制条所有回答共用一条，不再撑高每一列
+        b.textContent = "💡"; s._plays = 0;
         b.onclick = async () => {
           audio.pause(); audio.ontimeupdate = null; audio.src = url(base + "audio/" + s.audio);
           segs.querySelectorAll("button").forEach(x => x.classList.remove("on")); b.classList.add("on", "done");
-          if (!sentMode) { ctl.style.display = "none"; audio.play(); return; }
+          if (!sentMode) { ctl.replaceChildren(); audio.play(); return; }
           const cuts = s._cuts ??= s.words?.length ? wordCuts(s.words) : await sentenceCuts(audio.src, s.text); let i = 0;
           const label = document.createElement("span"), mk = (t, f) => { const x = document.createElement("button"); x.textContent = t; x.onclick = f; return x; };
           const prev = mk("⏮ 上一句", () => { i--; play(); }), again = mk("🔁 重听", () => play()), next = mk("下一句 ⏭", () => { i++; play(); });
@@ -670,15 +689,16 @@ function renderGen2(host, q, submitter) {
             audio.ontimeupdate = () => { if (audio.currentTime >= cuts[i][1]) { audio.pause(); audio.ontimeupdate = null; } };
             label.textContent = " 第 " + (i + 1) + " / " + cuts.length + " 句 "; prev.disabled = i <= 0; next.disabled = i >= cuts.length - 1;
           };
-          ctl.replaceChildren(prev, again, next, label); ctl.style.display = ""; play();
+          ctl.replaceChildren(prev, again, next, label); play();
         };
-        aBox.append(b, ctl);
+        aBox.append(b);
       });
       w.appendChild(aBox);
     }
     return w;
   }
   function renderGroups(n) {
+    audio.ontimeupdate = null; $q(".sentctl").replaceChildren();
     segs.innerHTML = "";
     for (let i = 0; i < columns.length; i += n) {
       const chunk = columns.slice(i, i + n), seg = document.createElement("div"); seg.className = "seg";
@@ -688,13 +708,13 @@ function renderGen2(host, q, submitter) {
       segs.appendChild(seg);
     }
   }
-  const modeRow = document.createElement("div"); modeRow.className = "row";
-  [["整句播放", false], ["分句播放", true]].forEach(([name, v]) => { const t = document.createElement("button"); t.className = "tab" + (!v ? " active" : ""); t.textContent = name;
-    t.onclick = () => { sentMode = v; modeRow.querySelectorAll(".tab").forEach(x => x.classList.remove("active")); t.classList.add("active"); renderGroups(+$q(".tabsrow .active").textContent[0]); }; modeRow.appendChild(t); });
-  $q(".tabsrow").after(modeRow);
-  const tabs = $q(".tabsrow");
-  [1, 2, 3, 4].forEach(n => { const t = document.createElement("button"); t.className = "tab" + (n === 1 ? " active" : ""); t.textContent = n === 1 ? "1组一起" : n + "组一起";
-    t.onclick = () => { tabs.querySelectorAll(".tab").forEach(x => x.classList.remove("active")); t.classList.add("active"); renderGroups(n); }; tabs.appendChild(t); });
+  const tabs = $q(".tabsrow");   // 一行放下：几组一起 ｜ 整句/分句播放（两组各自有"选中"状态）
+  [1, 2, 3, 4].forEach(n => { const t = document.createElement("button"); t.className = "tab gtab" + (n === 1 ? " active" : ""); t.textContent = n === 1 ? "1组一起" : n + "组一起";
+    t.onclick = () => { tabs.querySelectorAll(".gtab").forEach(x => x.classList.remove("active")); t.classList.add("active"); renderGroups(n); }; tabs.appendChild(t); });
+  const sep = document.createElement("span"); sep.textContent = "｜"; sep.style.color = "var(--border)"; tabs.appendChild(sep);
+  [["整句播放", false], ["分句播放", true]].forEach(([name, v]) => { const t = document.createElement("button"); t.className = "tab mtab" + (!v ? " active" : ""); t.textContent = name;
+    t.onclick = () => { sentMode = v; tabs.querySelectorAll(".mtab").forEach(x => x.classList.remove("active")); t.classList.add("active"); renderGroups(+tabs.querySelector(".gtab.active").textContent[0]); }; tabs.appendChild(t); });
+  const sc = document.createElement("div"); sc.className = "sentctl"; sc.style.marginLeft = "auto"; tabs.appendChild(sc);   // 分句控制条放在选项同一行右侧，不占新的一行
   renderGroups(1);
 }
 
