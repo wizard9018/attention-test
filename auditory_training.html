@@ -650,7 +650,7 @@
     </div>
     <div class="btn-row">
       <button class="btn btn-ghost" id="pausePlayBtn">暂停</button>
-      <button class="btn btn-blue" id="gotoRecordBtn" hidden>🎙️ 跳过，直接开始录音</button>
+      <button class="btn btn-blue" id="gotoRecordBtn">🎙️ 跳过，直接开始录音</button>
     </div>
     <button class="btn btn-ghost" id="exitSessionBtn" style="margin-top:10px;">退出本组</button>
   </div>
@@ -2881,7 +2881,11 @@
   el("backToGroupsFromDoneBtn").addEventListener("click", backToCourseSelect);
   el("relistenBtn").addEventListener("click", startRelisten);
   el("startRecordBtn").addEventListener("click", enterRecording);
-  el("gotoRecordBtn").addEventListener("click", enterRecording);
+  el("gotoRecordBtn").addEventListener("click", function(){
+    // 第一遍就跳过：先按"听完"处理（存进度、记进复习计划），再去录音；第二遍和复习本来就记过了，直接去
+    if (state.session.pass === 1) { globalGen++; playerEl.pause(); finishSession(); }
+    enterRecording();
+  });
   el("recordBackToGroupsBtn").addEventListener("click", backToCourseSelect);
 
   // 一组没录音不能进入下一组：pendingRecording 记着"已听完但还没提交录音"的那一组
@@ -2973,7 +2977,6 @@
     el("passHint").textContent = pass2
       ? "第二遍：默认还是不显示文字，点正在播放的圆点可以显示/再点一次隐藏这个词，点别的圆点会跳过去播放那个词"
       : "第一遍：先认真听，还不显示文字";
-    el("gotoRecordBtn").hidden = !pass2;
   }
 
   // roadmap 每一步是一个圆点(中/英)，第二遍时圆点下面再加一个 👁 小按钮，
