@@ -138,6 +138,30 @@
   .count-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:20px;}
   .count-cell{border:1.5px solid var(--border);border-radius:12px;padding:14px 0;text-align:center;font-weight:800;cursor:pointer;background:#fdfcf9;}
   .count-cell.selected{border-color:var(--green);background:#eafbe0;}
+  .plan-cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin-bottom:12px;}
+  .plan-dow{text-align:center;font-size:12px;color:var(--muted);padding:2px 0;}
+  .plan-cell{min-height:76px;border:1.5px solid var(--border);border-radius:10px;padding:4px;background:#fdfcf9;cursor:pointer;overflow:hidden;font-size:11px;}
+  .plan-cell.out{border-color:transparent;background:none;cursor:default;}
+  .plan-cell.today{border-color:var(--blue);}
+  .plan-cell.sel{background:#e8f6ff;}
+  .plan-cell .dn{font-weight:800;margin-bottom:2px;}
+  .plan-chip{display:block;border-radius:6px;padding:1px 4px;margin-top:2px;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#dff1ff;color:#16679b;}
+  .plan-chip.sp{background:#efe6ff;color:#6a3fb5;}
+  .plan-more{font-size:10px;color:var(--muted);margin-top:2px;}
+  .plan-chip.ok{background:#eafbe0;color:#2a6a00;}
+  .plan-streak{display:flex;gap:6px 18px;flex-wrap:wrap;padding:10px 14px;border-radius:12px;background:#fff4e0;margin-bottom:6px;font-weight:800;font-size:14px;}
+  .plan-year{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-bottom:12px;}
+  .ym-title{font-weight:800;font-size:13px;margin-bottom:4px;}
+  .ym-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+  .yd{aspect-ratio:1;font-size:10px;display:flex;align-items:center;justify-content:center;border-radius:4px;color:var(--muted);cursor:pointer;}
+  .yd.out{visibility:hidden;cursor:default;}
+  .yd.learn{background:#cdeeb4;color:#2a6a00;}
+  .yd.done{background:var(--green);color:#fff;}
+  .yd.plan{box-shadow:inset 0 0 0 1.5px var(--blue);}
+  .yd.today{outline:2px solid var(--ink);}
+  .yd.sel{outline:2px solid var(--blue);}
+  .plan-detail{border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;background:#fdfcf9;font-size:14px;}
+  .plan-detail p{margin:8px 0 0;line-height:1.7;}
   .roadmap{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;justify-content:center;}
   .rm-col{display:flex;flex-direction:column;align-items:center;gap:6px;}
   .rm-node{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;border:2px solid var(--border);color:var(--muted);background:#fdfcf9;}
@@ -468,7 +492,10 @@
 
     <div class="setup-side">
       <div class="card" id="reviewPanel">
-        <h2>今日复习</h2>
+        <div class="admin-tabs" style="margin-bottom:12px;">
+          <button class="admin-tab active" type="button">今日复习</button>
+          <button class="admin-tab" id="planOpenBtn" type="button" hidden>📅 复习计划</button>
+        </div>
         <p class="hint" id="reviewHint">加载中…</p>
         <div class="count-grid" id="rvSizeGrid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;" hidden></div>
         <button class="btn" id="reviewStartBtn" type="button" hidden>开始复习</button>
@@ -662,6 +689,14 @@
     </div>
 
     <button class="btn btn-ghost" id="recordBackToGroupsBtn" style="margin-top:10px;">返回课程选择</button>
+  </div>
+
+  <!-- 复习计划：未来 30 天每天要复习的词 -->
+  <div class="card" id="viewPlan" hidden>
+    <h2>📅 复习计划（未来 30 天）</h2>
+    <p class="hint">按艾宾浩斯 1/2/4/7/15/30 天推算，假设每次都按时复习；今天包含已经到期、还没复习的词。点一天，在下面看这一天的详情。</p>
+    <div id="planList"></div>
+    <button class="btn btn-ghost" id="planBackBtn" type="button" style="margin-top:14px;">← 返回课程选择</button>
   </div>
 </div>
 
@@ -868,16 +903,16 @@
   pickScene(sceneKey);
   var AUDIO_ADMIN_ACCOUNT = "55168";   // 音频管理除总管理员外，也放在这个管理员账号下
   function canAudioAdmin() { return !!state.adminIsSuper || (!state.studentNo && state.referrer === AUDIO_ADMIN_ACCOUNT); }   // 总管理员先保留，同时 55168 也有
-  var AMBIENT_VIEWS = { viewSetup: 1, viewPlayer: 1, viewDone: 1, viewRecord: 1, viewSpell: 1 };   // 只有学生训练界面有背景视频
+  var AMBIENT_VIEWS = { viewSetup: 1, viewPlayer: 1, viewDone: 1, viewRecord: 1, viewSpell: 1, viewPlan: 1 };   // 只有学生训练界面有背景视频
   // 浏览器"返回"键：学生在播放/完成/录音/拼写页时，等同于点该页的退出按钮，回到课程选择页，而不是退出网站
-  var SUB_VIEW_EXIT = { viewPlayer: "exitSessionBtn", viewDone: "backToGroupsFromDoneBtn", viewRecord: "recordBackToGroupsBtn", viewSpell: "spBackBtn" };
+  var SUB_VIEW_EXIT = { viewPlayer: "exitSessionBtn", viewDone: "backToGroupsFromDoneBtn", viewRecord: "recordBackToGroupsBtn", viewSpell: "spBackBtn", viewPlan: "planBackBtn" };
   var curView = null, ignorePop = false;
   window.addEventListener("popstate", function(){
     if (ignorePop) { ignorePop = false; return; }
     var b = SUB_VIEW_EXIT[curView]; if (b) el(b).click();
   });
   function showView(id) {
-    ["viewLogin","viewAdmin","viewAdminStudent","viewSuperAdmin","viewAudioAdmin","viewVisualAdmin","viewAdminRecords","viewSetup","viewPlayer","viewDone","viewRecord","viewSpell"].forEach(function(v){
+    ["viewLogin","viewAdmin","viewAdminStudent","viewSuperAdmin","viewAudioAdmin","viewVisualAdmin","viewAdminRecords","viewSetup","viewPlayer","viewDone","viewRecord","viewSpell","viewPlan"].forEach(function(v){
       el(v).hidden = (v !== id);
     });
     var inSub = !!(history.state && history.state.sub);
@@ -1428,7 +1463,9 @@
     if (!state.referrer || !state.studentNo) return;
     ensureWordData().then(memLoad).then(function(rows){
       var hint = el("reviewHint"), btn = el("reviewStartBtn");
-      btn.hidden = true; el("rvSizeGrid").hidden = true;
+      btn.hidden = true; el("rvSizeGrid").hidden = true; el("planOpenBtn").hidden = true;
+      state.memRows = rows;
+      if (rows) el("planOpenBtn").hidden = false;
       if (!rows) { hint.textContent = "复习计划还没开通（需要先在数据库里建 word_memory 表）。"; el("spellHint").textContent = "拼写练习还没开通（需要先建 word_memory 表）。"; el("spellReviewHint").textContent = "拼写复习还没开通（需要先建 word_memory 表）。"; return; }
       var now = Date.now(), map = wordMap();
       var sDue = spReviewPool(rows), sBtn = el("spReviewBtn");
@@ -1463,6 +1500,165 @@
     el("reviewHint").textContent = "共 " + due.length + " 个词该复习了。每组几个词（3–5）：选好后一组一组复习，每组都可以录音交老师批改";
     btn.textContent = "开始复习（这一组 " + n + " 个词）";
   }
+  // 复习计划：从 word_memory 往后推 30 天。假设每次都按时复习，复习一次次数 +1，再按 EBB_DAYS 排下一次；已逾期的算今天
+  function planBuild() {
+    var map = wordMap(), t0 = new Date(), days = [], starts = [];
+    for (var i = 0; i < 30; i++) {
+      var d = new Date(t0.getFullYear(), t0.getMonth(), t0.getDate() + i);
+      days.push({ date: d, listen: [], spell: [] }); starts.push(d.getTime());
+    }
+    var end = new Date(t0.getFullYear(), t0.getMonth(), t0.getDate() + 30).getTime();
+    function dayOf(t) { for (var k = 29; k > 0; k--) if (starts[k] <= t) return k; return 0; }
+    function chain(kind, w, count, due) {
+      var t = Math.max(due, starts[0]), c = count;   // 已逾期的按今天复习算，后面的间隔从今天起
+      while (t < end) {
+        days[dayOf(t)][kind].push(w); c++;
+        var nx = new Date(t); nx.setDate(nx.getDate() + EBB_DAYS[Math.min(c, EBB_DAYS.length) - 1]); t = nx.getTime();   // 按日历加天数，跨夏令时不错位
+      }
+    }
+    (state.memRows || []).forEach(function(r){
+      var w = map[r.word_id]; if (!w) return;
+      if (r.due_at) chain("listen", w, r.learn_count || 1, new Date(r.due_at).getTime());
+      if (r.spell_due_at) chain("spell", w, r.spell_count || 0, new Date(r.spell_due_at).getTime());
+    });
+    return days;
+  }
+  // 每个词归到"当时背的那一组"：training_batches 里最近一次包含它的学习批次；组名 = 学习日期 + 当天第几组
+  // 同时统计每天做了几组复习(cursor_start<0)、学了几组新词，给"复习完成"标记和打卡天数用
+  function dk(d) { return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
+  function planLoadBatches() {
+    return sbGet("training_batches", memQuery() + "&order=created_at.asc&select=words,created_at,cursor_start&limit=5000").then(function(bs){
+      var pb = { of: {}, label: {}, short: {}, review: {}, learn: {} }, perDay = {};
+      (Array.isArray(bs) ? bs : []).forEach(function(b){
+        var d = new Date(b.created_at), k = dk(d);
+        if (b.cursor_start < 0) { pb.review[k] = (pb.review[k] || 0) + 1; return; }
+        pb.learn[k] = (pb.learn[k] || 0) + 1;
+        perDay[k] = (perDay[k] || 0) + 1;
+        pb.label[b.created_at] = (d.getMonth() + 1) + "月" + d.getDate() + "日第" + perDay[k] + "组";
+        pb.short[b.created_at] = (d.getMonth() + 1) + "/" + d.getDate() + "·第" + perDay[k] + "组";
+        (b.words || []).forEach(function(w){ pb.of[w.id] = b.created_at; });
+      });
+      return pb;
+    }).catch(function(){ return { of: {}, label: {}, short: {}, review: {}, learn: {} }; });
+  }
+  // 一天里的词按组分开：先学的组在前，没有组记录的词放最后，只写个数
+  function planGroups(words, pb) {
+    var g = {}, order = [];
+    words.forEach(function(w){ var k = pb.of[w.id] || ""; if (!(k in g)) { g[k] = []; order.push(k); } g[k].push(w); });
+    order.sort(function(a, b){ return a === "" ? 1 : b === "" ? -1 : a < b ? -1 : 1; });
+    return order.map(function(k){ return { name: k ? pb.label[k] : "", short: k ? pb.short[k] : g[k].length + " 个词", words: g[k] }; });
+  }
+  // 打卡 = 当天做了复习或学了新词；连续天数从今天往前数，今天还没做不算断(从昨天数起)
+  function planStreak(pb) {
+    var act = {};
+    [pb.review, pb.learn].forEach(function(m){ Object.keys(m).forEach(function(k){ act[k] = 1; }); });
+    var d = new Date(); d.setHours(0, 0, 0, 0);
+    if (!act[dk(d)]) d.setDate(d.getDate() - 1);
+    var cur = 0;
+    while (act[dk(d)]) { cur++; d.setDate(d.getDate() - 1); }
+    var nums = Object.keys(act).map(function(k){ var q = k.split("-"); return Math.round(new Date(+q[0], q[1] - 1, +q[2]).getTime() / 86400000); }).sort(function(x, y){ return x - y; });
+    var best = 0, run = 0, prev = null;
+    nums.forEach(function(n){ run = (prev !== null && n - prev === 1) ? run + 1 : 1; if (run > best) best = run; prev = n; });
+    var yr = String(new Date().getFullYear());
+    return { cur: cur, best: best, year: Object.keys(act).filter(function(k){ return k.split("-")[0] === yr; }).length };
+  }
+  // 复习计划页：打卡天数 + 两个视图(未来 30 天日历 / 整年日历) + 点一天看详情
+  function planRender(pb) {
+    var box = el("planList"), cellsByKey = {};
+    box.innerHTML = "";
+    var days = planBuild().map(function(d){
+      return { date: d.date, kinds: [["听读复习", "", planGroups(d.listen, pb)], ["拼写复习", "sp", planGroups(d.spell, pb)]].filter(function(p){ return p[2].length; }) };
+    });
+    var st = planStreak(pb), todayKey = dk(new Date());
+    var streak = document.createElement("div"); streak.className = "plan-streak";
+    streak.textContent = "🔥 连续打卡 " + st.cur + " 天　最长 " + st.best + " 天　今年累计 " + st.year + " 天";
+    var streakHint = document.createElement("p"); streakHint.className = "hint"; streakHint.textContent = "打卡 = 当天做了复习或学了新词。";
+    var tabs = document.createElement("div"); tabs.className = "admin-tabs"; tabs.style.margin = "12px 0";
+    var b30 = document.createElement("button"), byr = document.createElement("button");
+    b30.className = byr.className = "admin-tab"; b30.type = byr.type = "button"; b30.textContent = "未来 30 天"; byr.textContent = "整年日历";
+    tabs.append(b30, byr);
+    var legend = document.createElement("p"); legend.className = "hint";
+    var body = document.createElement("div"), detail = document.createElement("div"); detail.className = "plan-detail";
+
+    function showDay(date) {
+      var key = dk(date);
+      Object.keys(cellsByKey).forEach(function(k){ cellsByKey[k].classList.toggle("sel", k === key); });
+      detail.innerHTML = "";
+      var h = document.createElement("b");
+      h.textContent = (date.getMonth() + 1) + "月" + date.getDate() + "日 周" + "日一二三四五六".charAt(date.getDay()) + (key === todayKey ? "（今天）" : "");
+      detail.appendChild(h);
+      var rv = pb.review[key] || 0, ln = pb.learn[key] || 0;
+      var d = days.filter(function(x){ return dk(x.date) === key; })[0], left = !!(d && d.kinds.length);
+      var lines = [];
+      if (rv) lines.push(left ? "已复习 " + rv + " 组，下面还有没复习的：" : "✅ 复习完成：做了 " + rv + " 组复习");
+      if (ln) lines.push("学了 " + ln + " 组新词");
+      if (left) d.kinds.forEach(function(p){
+        p[2].forEach(function(g){
+          lines.push(p[0] + " · " + (g.name ? g.name + "（" + g.words.length + " 个词）" : g.words.length + " 个词") + "：" + g.words.map(function(w){ return w.word + " " + w.meaning; }).join("、"));
+        });
+      });
+      if (!lines.length) lines.push(date.getTime() < new Date().setHours(0, 0, 0, 0) ? "这天没有记录。" : "这天没有要复习的词。");
+      lines.forEach(function(t){ var p = document.createElement("p"); p.className = "hint"; p.textContent = t; detail.appendChild(p); });
+    }
+    // 周一开头，从今天所在的那一周排到第 30 天；格子里是这天要复习的组
+    function render30() {
+      var cal = document.createElement("div"); cal.className = "plan-cal";
+      "一二三四五六日".split("").forEach(function(c){ var h = document.createElement("div"); h.className = "plan-dow"; h.textContent = c; cal.appendChild(h); });
+      var lead = (days[0].date.getDay() + 6) % 7;
+      for (var b = 0; b < lead; b++) { var o = document.createElement("div"); o.className = "plan-cell out"; cal.appendChild(o); }
+      days.forEach(function(d, i){
+        var key = dk(d.date), c = document.createElement("div"); c.className = "plan-cell" + (i === 0 ? " today" : "");
+        var dn = document.createElement("div"); dn.className = "dn"; dn.textContent = (i === 0 || d.date.getDate() === 1) ? (d.date.getMonth() + 1) + "/" + d.date.getDate() : d.date.getDate();
+        c.appendChild(dn);
+        var chips = [], rv = pb.review[key] || 0;
+        if (rv) chips.push({ cls: "ok", text: d.kinds.length ? "已复习 " + rv + " 组" : "✅ 复习完成" });
+        d.kinds.forEach(function(p){ p[2].forEach(function(g){ chips.push({ cls: p[1], text: (p[1] ? "✍" : "") + g.short }); }); });
+        chips.slice(0, 5).forEach(function(x){ var s = document.createElement("span"); s.className = "plan-chip " + x.cls; s.textContent = x.text; c.appendChild(s); });
+        if (chips.length > 5) { var m = document.createElement("div"); m.className = "plan-more"; m.textContent = "还有 " + (chips.length - 5) + " 组"; c.appendChild(m); }
+        c.addEventListener("click", function(){ showDay(d.date); });
+        cellsByKey[key] = c; cal.appendChild(c);
+      });
+      return cal;
+    }
+    // 整年：12 个月的小日历。深绿 = 复习完成，浅绿 = 只学了新词，蓝框 = 计划里有复习
+    function renderYear() {
+      var wrap = document.createElement("div"); wrap.className = "plan-year";
+      var y = new Date().getFullYear(), planned = {};
+      days.forEach(function(d){ if (d.kinds.length) planned[dk(d.date)] = 1; });
+      for (var m = 0; m < 12; m++) {
+        var mm = document.createElement("div"), t = document.createElement("div"), g = document.createElement("div");
+        t.className = "ym-title"; t.textContent = (m + 1) + "月"; g.className = "ym-grid";
+        var lead = (new Date(y, m, 1).getDay() + 6) % 7, n = new Date(y, m + 1, 0).getDate();
+        for (var b = 0; b < lead; b++) { var o = document.createElement("div"); o.className = "yd out"; g.appendChild(o); }
+        for (var dd = 1; dd <= n; dd++) (function(date){
+          var key = dk(date), c = document.createElement("div");
+          c.className = "yd" + (pb.review[key] ? " done" : pb.learn[key] ? " learn" : "") + (planned[key] ? " plan" : "") + (key === todayKey ? " today" : "");
+          c.textContent = date.getDate();
+          c.addEventListener("click", function(){ showDay(date); });
+          cellsByKey[key] = c; g.appendChild(c);
+        })(new Date(y, m, dd));
+        mm.append(t, g); wrap.appendChild(mm);
+      }
+      return wrap;
+    }
+    function setMode(m) {
+      cellsByKey = {};
+      b30.classList.toggle("active", m === "30"); byr.classList.toggle("active", m === "year");
+      legend.textContent = m === "30" ? "蓝色是听读复习，紫色是拼写复习，绿色是已经复习完成。点一天看具体的词。"
+        : "深绿 = 当天完成了复习，浅绿 = 只学了新词，蓝框 = 计划里有复习（未来 30 天内）。";
+      body.innerHTML = ""; body.appendChild(m === "30" ? render30() : renderYear());
+      showDay(new Date());
+    }
+    b30.addEventListener("click", function(){ setMode("30"); });
+    byr.addEventListener("click", function(){ setMode("year"); });
+    box.append(streak, streakHint, tabs, legend, body, detail);
+    setMode("30");
+  }
+  el("planOpenBtn").addEventListener("click", function(){
+    el("planList").textContent = "加载中…"; showView("viewPlan");
+    planLoadBatches().then(planRender);
+  });
+  el("planBackBtn").addEventListener("click", function(){ showView("viewSetup"); });
   el("reviewStartBtn").addEventListener("click", function(){
     var map = wordMap(), words = (state.reviewDue || []).slice(0, REVIEW_SIZE).map(function(r){ return map[r.word_id]; });
     if (!words.length) return;
