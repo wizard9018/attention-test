@@ -146,8 +146,6 @@
   .plan-cell.sel{background:#e8f6ff;}
   .plan-cell .dn{font-weight:800;margin-bottom:2px;}
   .plan-chip{display:block;border-radius:6px;padding:1px 4px;margin-top:2px;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#dff1ff;color:#16679b;}
-  .plan-chip.sp{background:#efe6ff;color:#6a3fb5;}
-  .plan-more{font-size:10px;color:var(--muted);margin-top:2px;}
   .plan-chip.ok{background:#eafbe0;color:#2a6a00;}
   .plan-streak{display:flex;gap:6px 18px;flex-wrap:wrap;padding:10px 14px;border-radius:12px;background:#fff4e0;margin-bottom:6px;font-weight:800;font-size:14px;}
   .plan-year{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-bottom:12px;}
@@ -1528,25 +1526,24 @@
   function dk(d) { return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
   function planLoadBatches() {
     return sbGet("training_batches", memQuery() + "&order=created_at.asc&select=words,created_at,cursor_start&limit=5000").then(function(bs){
-      var pb = { of: {}, label: {}, short: {}, review: {}, learn: {} }, perDay = {};
+      var pb = { of: {}, label: {}, review: {}, learn: {} }, perDay = {};
       (Array.isArray(bs) ? bs : []).forEach(function(b){
         var d = new Date(b.created_at), k = dk(d);
         if (b.cursor_start < 0) { pb.review[k] = (pb.review[k] || 0) + 1; return; }
         pb.learn[k] = (pb.learn[k] || 0) + 1;
         perDay[k] = (perDay[k] || 0) + 1;
         pb.label[b.created_at] = (d.getMonth() + 1) + "月" + d.getDate() + "日第" + perDay[k] + "组";
-        pb.short[b.created_at] = (d.getMonth() + 1) + "/" + d.getDate() + "·第" + perDay[k] + "组";
         (b.words || []).forEach(function(w){ pb.of[w.id] = b.created_at; });
       });
       return pb;
-    }).catch(function(){ return { of: {}, label: {}, short: {}, review: {}, learn: {} }; });
+    }).catch(function(){ return { of: {}, label: {}, review: {}, learn: {} }; });
   }
   // 一天里的词按组分开：先学的组在前，没有组记录的词放最后，只写个数
   function planGroups(words, pb) {
     var g = {}, order = [];
     words.forEach(function(w){ var k = pb.of[w.id] || ""; if (!(k in g)) { g[k] = []; order.push(k); } g[k].push(w); });
     order.sort(function(a, b){ return a === "" ? 1 : b === "" ? -1 : a < b ? -1 : 1; });
-    return order.map(function(k){ return { name: k ? pb.label[k] : "", short: k ? pb.short[k] : g[k].length + " 个词", words: g[k] }; });
+    return order.map(function(k){ return { name: k ? pb.label[k] : "", words: g[k] }; });
   }
   // 打卡 = 当天做了复习或学了新词；连续天数从今天往前数，今天还没做不算断(从昨天数起)
   function planStreak(pb) {
@@ -1612,9 +1609,10 @@
         c.appendChild(dn);
         var chips = [], rv = pb.review[key] || 0;
         if (rv) chips.push({ cls: "ok", text: d.kinds.length ? "已复习 " + rv + " 组" : "✅ 复习完成" });
-        d.kinds.forEach(function(p){ p[2].forEach(function(g){ chips.push({ cls: p[1], text: (p[1] ? "✍" : "") + g.short }); }); });
-        chips.slice(0, 5).forEach(function(x){ var s = document.createElement("span"); s.className = "plan-chip " + x.cls; s.textContent = x.text; c.appendChild(s); });
-        if (chips.length > 5) { var m = document.createElement("div"); m.className = "plan-more"; m.textContent = "还有 " + (chips.length - 5) + " 组"; c.appendChild(m); }
+        var seen = {}, total = 0;   // 这天一共要复习几个词(听读和拼写里重复的词只算一次)
+        d.kinds.forEach(function(p){ p[2].forEach(function(g){ g.words.forEach(function(w){ if (!seen[w.id]) { seen[w.id] = 1; total++; } }); }); });
+        if (total) chips.push({ cls: "", text: total + " 个词" });
+        chips.forEach(function(x){ var s = document.createElement("span"); s.className = "plan-chip " + x.cls; s.textContent = x.text; c.appendChild(s); });
         c.addEventListener("click", function(){ showDay(d.date); });
         cellsByKey[key] = c; cal.appendChild(c);
       });
@@ -1644,7 +1642,7 @@
     function setMode(m) {
       cellsByKey = {};
       b30.classList.toggle("active", m === "30"); byr.classList.toggle("active", m === "year");
-      legend.textContent = m === "30" ? "蓝色是听读复习，紫色是拼写复习，绿色是已经复习完成。点一天看具体的词。"
+      legend.textContent = m === "30" ? "蓝色是这天要复习的词数，绿色是已经复习完成。点一天，在下面看具体的复习内容。"
         : "深绿 = 当天完成了复习，浅绿 = 只学了新词，蓝框 = 计划里有复习（未来 30 天内）。";
       body.innerHTML = ""; body.appendChild(m === "30" ? render30() : renderYear());
       showDay(new Date());
