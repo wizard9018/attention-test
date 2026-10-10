@@ -93,6 +93,7 @@
   .g2d canvas{width:240px;height:180px;display:block}
   .g2d .g2btns{display:flex;gap:8px;margin-top:6px}.g2d .g2btns button{padding:6px 12px}
   .g2listen{margin-top:10px}
+  .sentedit{min-height:44px;margin-bottom:6px;padding:4px 8px;border-radius:10px;background:#fff7e0}.sentedit button{padding:5px 10px}   /* 管理员编辑条：固定占位，点喇叭时版面不跳 */
   .g2listen .tabsrow{margin-bottom:6px}.g2listen .tab{padding:5px 14px}
   .ctlline{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
   .sentctl{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:flex-end;min-width:360px;min-height:44px}.sentctl button{padding:6px 12px}   /* 空着也占位：点喇叭时喇叭不会被顶动 */
@@ -134,7 +135,7 @@
       <div class="field"><label>密码</label><input id="loginPassword" type="password" placeholder="默认 123456"></div>
       <div class="err" id="loginErr"></div>
       <button class="btn btn-blue" id="loginBtn" style="width:100%">登录</button>
-      <div class="hint" style="margin-top:10px">账号和听觉专注力训练相同。管理员请从主页顶部的"管理员登录"进入。</div>
+      <div class="hint" style="margin-top:10px">账号和听觉专注力训练相同。管理员：推荐码填管理员账号（如 admin）、学生账号不用填、密码填管理员密码，登录后可手动调整分句位置。</div>
     </div>
   </div>
 
@@ -218,6 +219,40 @@ function wordCuts(words) {
   const starts = sents.map(x => { const k = Math.max(0, wOff.findLastIndex(o => o <= off)); off += x.length; return words[k][0]; });
   return starts.map((st, i) => [st, starts[i + 1] ?? Infinity]);
 }
+// ---------- 管理员手动调整分句位置：改过的"每句起点(秒)"存在 visual_cuts 表，学生端优先用它 ----------
+let cutOv = {};   // id -> starts[]；id = 章节目录 + "/audio/文件名"(交互版回答) 或 "/video/文件名"(纯享版视频)
+const isAdmin = () => !!(user && user.admin);
+async function loadCuts(dir) {
+  cutOv = {};
+  try { const rows = await sbGet("visual_cuts", "select=id,starts&id=like." + encodeURIComponent(dir + "/") + "*"); if (Array.isArray(rows)) rows.forEach(r => cutOv[r.id] = r.starts); } catch (e) {}   // 表没建/断网：就用自动分句
+}
+const saveCuts = (id, starts) => sbPost("visual_cuts", [{ id, starts, updated_by: user.referrer, updated_at: new Date().toISOString() }], { Prefer: "resolution=merge-duplicates" });
+const resetCuts = id => fetch(SUPABASE_URL + "/rest/v1/visual_cuts?id=eq." + encodeURIComponent(id), { method: "DELETE", headers: sbHeaders() });
+const startsToCuts = st => st.map((s, i) => [s, st[i + 1] ?? Infinity]);
+// 编辑条：starts 是会被直接修改的升序数组；auto 是自动分句的起点（用来还原）；time() 当前播放秒；idx()/setIdx() 当前句序号；changed() 改完后重算并刷新；replay() 从当前句重播
+function cutBar({ id, starts, auto, time, idx, setIdx, changed, replay, msg }) {
+  const st = document.createElement("span"); st.style.cssText = "font-size:12px;color:var(--muted)"; st.textContent = msg.t || "";
+  const say = t => { msg.t = t; st.textContent = t; };
+  const mk = (t, f) => { const b = document.createElement("button"); b.textContent = t; b.onclick = f; return b; };
+  const touch = t => { say(t || "已修改，还没保存"); changed(); };
+  const split = mk("✂ 在播放位置切开", () => {
+    const t = +time().toFixed(2), j = starts.findLastIndex(x => x <= t);
+    if (j < 0 || t - starts[j] < 0.4 || (starts[j + 1] !== undefined && starts[j + 1] - t < 0.4)) return say("离句子边界太近，换个位置再切（先播放，到要切的地方点这个）");
+    starts.splice(j + 1, 0, t); setIdx(j + 1); touch();
+  });
+  const merge = mk("⇤ 并入上一句", () => { const i = idx(); if (i <= 0) return say("已经是第一句"); starts.splice(i, 1); setIdx(i - 1); touch(); });
+  const nudge = d => mk(d < 0 ? "起点 −0.3秒" : "起点 +0.3秒", () => {
+    const i = idx(), lo = i > 0 ? starts[i - 1] + 0.3 : 0, hi = starts[i + 1] !== undefined ? starts[i + 1] - 0.3 : Infinity;
+    starts[i] = +Math.min(hi, Math.max(lo, starts[i] + d)).toFixed(2); touch(); replay();
+  });
+  const save = mk("💾 保存", async () => {
+    say("保存中…");
+    try { const r = await saveCuts(id, starts); if (!r.ok) throw new Error(r.status === 404 ? "visual_cuts 表还没建" : "状态 " + r.status); cutOv[id] = starts.slice(); say("✅ 已保存，学生端会用这个分句"); }
+    catch (e) { say("⚠ 保存失败：" + e.message); }
+  });
+  const reset = mk("↺ 还原自动", async () => { starts.splice(0, starts.length, ...auto); try { await resetCuts(id); } catch (e) {} delete cutOv[id]; setIdx(0); touch("已还原为自动分句"); });
+  return [split, merge, nudge(-0.3), nudge(0.3), save, reset, st];
+}
 // 按讲稿文字分句（见 splitSents），每句的时间按字数比例估算，再吸附到附近的停顿（±1.5s）；没有文字时只按停顿切
 async function sentenceCuts(src, text) {
   const buf = await (await fetch(src)).arrayBuffer();
@@ -271,6 +306,12 @@ $("loginBtn").onclick = async () => {
   const err = $("loginErr"); err.style.display = "none";
   const ref = $("loginReferrer").value.trim(), n = parseInt($("loginStudentNo").value.trim(), 10), pwd = $("loginPassword").value;
   const fail = m => { err.textContent = m; err.style.display = "block"; };
+  if (pwd === "admin123" && (ref === "admin" || /^\d{5}$/.test(ref))) {   // 管理员：规则和听觉训练页的管理员登录一致；进来后能手动调整分句位置、所有题都不锁
+    user = { referrer: ref, studentNo: "000", admin: true };
+    try { sessionStorage.setItem("vt_user", JSON.stringify(user)); } catch (e) {}
+    try { await enterCourse(); } catch (e) { user = null; fail("课程内容加载失败（" + e.message + "）。"); }
+    return;
+  }
   if (!/^\d{5}$/.test(ref)) return fail("推荐码需为5位数字");
   if (!n || n < 1 || n > 999) return fail("学生账号需为 001-999");
   await Promise.all([ensureProvisioned(ref), sbPost("training_quota", [{ referral_code: ref, total_minutes: 9999 * 60 }], { Prefer: "resolution=ignore-duplicates" })]);
@@ -290,7 +331,7 @@ async function loadStatus() {
   (Array.isArray(rows) ? rows : []).forEach(r => { if (!status[r.question_id]) status[r.question_id] = { status: r.admin_status || "pending", feedback: r.admin_feedback, created_at: r.created_at }; });
 }
 async function enterCourse() {
-  $("who").textContent = "推荐码 " + user.referrer + " · 学生 " + user.studentNo;
+  $("who").textContent = isAdmin() ? "管理员 " + user.referrer + "（编辑模式）" : "推荐码 " + user.referrer + " · 学生 " + user.studentNo;
   if (!index) index = await (await fetch(CONTENT + "index.json", { cache: "no-cache" })).json();
   show("viewCourse");
   await loadStatus();
@@ -354,6 +395,7 @@ function renderFeedback() {
 async function openChapter(course, ch, startQid) {
   const manifest = await (await fetch(CONTENT + ch.dir + "/manifest.json", { cache: "no-cache" })).json();
   cur = { course, chapter: ch, manifest, qi: 0 };
+  await loadCuts(ch.dir);   // 管理员手动改过的分句
   if (startQid) { const i = manifest.questions.findIndex(q => q.id === startQid); if (i >= 0) cur.qi = i; }
   else { const i = manifest.questions.findIndex(q => !status[qidOf(ch.dir, q)]); cur.qi = i < 0 ? 0 : i; }   // 默认进到第一道还没提交的题
   show("viewLearn");
@@ -361,7 +403,7 @@ async function openChapter(course, ch, startQid) {
   loadQuestion(cur.qi);
 }
 $("backBtn").onclick = () => { stopMedia(); enterCourse(); };
-function unlocked(i) { const qs = cur.manifest.questions; return i === 0 || !!status[qidOf(cur.chapter.dir, qs[i - 1])]; }
+function unlocked(i) { const qs = cur.manifest.questions; return i === 0 || isAdmin() || !!status[qidOf(cur.chapter.dir, qs[i - 1])]; }
 function renderPills() {
   const today = bjToday();
   const box = $("pills"); box.innerHTML = "";
@@ -491,6 +533,7 @@ function renderGen1(host, q, submitter) {
   // ---- 分句听 + 按组录（需要视频有 words 时间戳；没有就只显示整段播放）----
   const sentBox = document.createElement("div"); sentBox.style.marginTop = "10px";
   let sentMode = false, gsize = 1, gi = 0, groups = [];
+  let ustarts = [], autoStarts = [], ukey = "", umsg = { t: "" }, pendIdx = null;   // 每句起点（可被管理员改）、自动分句起点、当前视频的 id、编辑提示、待定的当前句序号
   const tabRow = (items, cur, on) => { const r = document.createElement("div"); r.className = "row"; items.forEach(([name, v]) => { const t = document.createElement("button");
     t.className = "tab" + (v === cur ? " active" : ""); t.textContent = name; t.onclick = () => on(v); r.appendChild(t); }); return r; };
   function buildGroups() {
@@ -503,9 +546,17 @@ function renderGen1(host, q, submitter) {
       const total = player.duration || w[w.length - 1][0] + 3, units = sents.map((t, i) => ({ text: t, start: starts[i] }));
       for (let i = 0; i < units.length - 1;) { if ((units[i + 1].start - units[i].start) < 5) { units[i + 1] = { text: units[i].text + units[i + 1].text, start: units[i].start }; units.splice(i, 1); } else i++; }
       if (units.length > 1 && total - units[units.length - 1].start < 5) { const l = units.pop(); units[units.length - 1].text += l.text; }
-      for (let i = 0; i < units.length; i += gsize) groups.push({ text: units.slice(i, i + gsize).map(u => u.text).join(""), start: units[i].start, end: units[i + gsize]?.start ?? Infinity });
+      // 起点：管理员手动改过的(visual_cuts)优先，没有就用自动分句；每组的文字按起点从 words 里取
+      autoStarts = units.map(u => u.start); ukey = cur.chapter.dir + "/" + vids[part].src;
+      ustarts = cutOv[ukey] ? cutOv[ukey].slice() : autoStarts.slice(); umsg = { t: cutOv[ukey] ? "已用人工分句" : "自动分句" };
+      regroup();
     }
     renderSent();
+  }
+  const textBetween = (w, a, b) => w.filter(x => x[0] >= a - 1e-6 && x[0] < b).map(x => x[1]).join("");
+  function regroup() {
+    const w = vids[part].words || []; groups = [];
+    for (let i = 0; i < ustarts.length; i += gsize) groups.push({ text: textBetween(w, ustarts[i], ustarts[i + gsize] ?? Infinity), start: ustarts[i], end: ustarts[i + gsize] ?? Infinity });
   }
   const gProg = document.createElement("progress"); gProg.max = 1; gProg.value = 0; gProg.style.cssText = "width:100%;height:10px;margin:6px 0";   // 当前这一组的播放进度
   function playGroup() {
@@ -522,14 +573,21 @@ function renderGen1(host, q, submitter) {
     if (!groups.length) { sentBox.replaceChildren(); return; }
     const kids = [tabRow([["整段播放", false], ["分句播放", true]], sentMode, v => { sentMode = v; player.ontimeupdate = null; renderSent(); })];
     if (sentMode) {
-      kids.push(tabRow([1, 2, 3, 4].map(n => [n + "句一起", n]), gsize, n => { gsize = n; buildGroups(); }));
+      kids.push(tabRow([1, 2, 3, 4].map(n => [n + "句一起", n]), gsize, n => { gsize = n; gi = 0; player.ontimeupdate = null; regroup(); renderSent(); }));
       const ctl = document.createElement("div"); ctl.className = "row";
       const mk = (t, f, dis) => { const x = document.createElement("button"); x.textContent = t; x.onclick = f; x.disabled = !!dis; return x; };
       const label = document.createElement("span"); label.textContent = " 第 " + (gi + 1) + " / " + groups.length + " 组 ";
       ctl.append(mk("▶ 播放这一组", playGroup), mk("⏮ 上一组", () => { gi--; playGroup(); }, gi <= 0), mk("下一组 ⏭", () => { gi++; playGroup(); }, gi >= groups.length - 1), label);
       const rec = segRecorder(() => groups[gi].text, "按组录：第 " + (gi + 1) + " 组");
       rec.querySelector("button").addEventListener("click", () => player.pause());
-      kids.push(ctl, gProg, rec);
+      kids.push(ctl, gProg);
+      if (isAdmin()) {   // 管理员编辑条：改的是"每句起点"，组按起点重新分
+        const bar = document.createElement("div"); bar.className = "row sentedit";
+        bar.append(...cutBar({ id: ukey, starts: ustarts, auto: autoStarts, msg: umsg, time: () => player.currentTime, idx: () => pendIdx ?? gi * gsize, setIdx: k => { pendIdx = k; }, replay: () => playGroup(),
+          changed: () => { const k = pendIdx ?? gi * gsize; pendIdx = null; regroup(); gi = Math.max(0, Math.min(Math.floor(k / gsize), groups.length - 1)); renderSent(); } }));
+        kids.push(bar);
+      }
+      kids.push(rec);
     }
     sentBox.replaceChildren(...kids);
   }
@@ -619,7 +677,7 @@ function renderGen2(host, q, submitter) {
     '<div class="g2btns"><button class="clr">清空</button><button class="save">💾 保存这张图</button></div>' +
     '<div class="draw-gallery" style="display:none"></div></div>' +
     '<div class="card g2f"><div class="finalbox"></div><button class="reveal tab">5. 听不懂？看参考讲解</button></div></div>' +
-    '<div class="card g2listen"><div class="g2h">3. 依次听讲解</div><div class="row tabsrow"></div><div id="curQuestion"></div><div class="segments"></div></div>' +
+    '<div class="card g2listen"><div class="g2h">3. 依次听讲解</div><div class="row tabsrow"></div>' + (isAdmin() ? '<div class="row sentedit"></div>' : '') + '<div id="curQuestion"></div><div class="segments"></div></div>' +
     '<div class="card backcard" style="display:none;margin-top:10px"><div class="back"></div></div>';
   const $q = s => host.querySelector(s);
   renderStage($q(".stage"), q.fronts[0], base, 190); renderStage($q(".back"), q.backs[0], base);
@@ -680,16 +738,23 @@ function renderGen2(host, q, submitter) {
         b.onclick = async () => {
           audio.pause(); audio.ontimeupdate = null; audio.src = url(base + "audio/" + s.audio);
           segs.querySelectorAll("button").forEach(x => x.classList.remove("on")); b.classList.add("on", "done");
-          if (!sentMode) { ctl.replaceChildren(); audio.play(); return; }
-          const cuts = s._cuts ??= s.words?.length ? wordCuts(s.words) : await sentenceCuts(audio.src, s.text); let i = 0;
+          if (!sentMode) { ctl.replaceChildren(); $q(".sentedit")?.replaceChildren(); audio.play(); return; }
+          // 起点：管理员手动改过的(visual_cuts)优先，没有就用自动分句
+          const key = base + "audio/" + s.audio;
+          const auto = s._auto ??= (s.words?.length ? wordCuts(s.words) : await sentenceCuts(audio.src, s.text)).map(c => c[0]);
+          const starts = s._starts = cutOv[key] ? cutOv[key].slice() : auto.slice();
+          let cuts = startsToCuts(starts), i = 0;
           const label = document.createElement("span"), mk = (t, f) => { const x = document.createElement("button"); x.textContent = t; x.onclick = f; return x; };
           const prev = mk("⏮ 上一句", () => { i--; play(); }), again = mk("🔁 重听", () => play()), next = mk("下一句 ⏭", () => { i++; play(); });
+          const upd = () => { label.textContent = " 第 " + (i + 1) + " / " + cuts.length + " 句 "; prev.disabled = i <= 0; next.disabled = i >= cuts.length - 1; };
           const play = () => {
             audio.pause(); audio.currentTime = cuts[i][0]; audio.play();
             audio.ontimeupdate = () => { if (audio.currentTime >= cuts[i][1]) { audio.pause(); audio.ontimeupdate = null; } };
-            label.textContent = " 第 " + (i + 1) + " / " + cuts.length + " 句 "; prev.disabled = i <= 0; next.disabled = i >= cuts.length - 1;
+            upd();
           };
           ctl.replaceChildren(prev, again, next, label); play();
+          if (isAdmin()) $q(".sentedit").replaceChildren(...cutBar({ id: key, starts, auto, msg: s._msg ??= { t: cutOv[key] ? "已用人工分句" : "自动分句" }, time: () => audio.currentTime, idx: () => i, setIdx: k => { i = k; },
+            changed: () => { cuts = startsToCuts(starts); i = Math.min(i, cuts.length - 1); upd(); }, replay: () => play() }));
         };
         aBox.append(b);
       });
@@ -698,7 +763,7 @@ function renderGen2(host, q, submitter) {
     return w;
   }
   function renderGroups(n) {
-    audio.ontimeupdate = null; $q(".sentctl").replaceChildren();
+    audio.ontimeupdate = null; $q(".sentctl").replaceChildren(); $q(".sentedit")?.replaceChildren();
     segs.innerHTML = "";
     for (let i = 0; i < columns.length; i += n) {
       const chunk = columns.slice(i, i + n), seg = document.createElement("div"); seg.className = "seg";
