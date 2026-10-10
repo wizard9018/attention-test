@@ -93,6 +93,18 @@
   .g2d canvas{width:240px;height:180px;display:block}
   .g2d .g2btns{display:flex;gap:8px;margin-top:6px}.g2d .g2btns button{padding:6px 12px}
   .g2listen{margin-top:10px}
+  /* 分句编辑器（管理员）：整屏弹层，只放视频/音频、整条波形和切割点 */
+  .cutEd{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:flex;align-items:center;justify-content:center;outline:none}
+  .cutEd .panel{background:var(--card);width:min(1180px,97vw);max-height:96vh;overflow:auto;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+  .cutEd .row{margin-bottom:0}.cutEd button{padding:6px 12px}
+  .cutSc{overflow-x:auto;overflow-y:hidden;border:2px solid var(--border);border-radius:12px;background:#fff}
+  .cutIn{position:relative;height:150px;padding-top:26px;box-sizing:border-box;cursor:text}.cutIn canvas{display:block}
+  .cutLayer{position:absolute;inset:0;pointer-events:none}
+  .cm{position:absolute;top:0;bottom:0;width:0;border-left:2px solid #ff9600;pointer-events:none}.cm.sel{border-left-color:#e53935}
+  .cm .ch{position:absolute;top:0;left:-1px;min-width:22px;height:22px;line-height:22px;text-align:center;background:#ff9600;color:#fff;font-weight:800;font-size:12px;border-radius:0 6px 6px 0;cursor:ew-resize;pointer-events:auto;user-select:none;touch-action:none}
+  .cm.sel .ch{background:#e53935}
+  .cutPh{position:absolute;top:0;bottom:0;width:0;border-left:2px solid #1d1d1d;pointer-events:none}
+  .cutTxt{font-size:13px;color:var(--muted);min-height:2.4em}.cutSt{font-size:12px;color:var(--muted)}
   .sentedit{min-height:44px;margin-bottom:6px;padding:4px 8px;border-radius:10px;background:#fff7e0}.sentedit button{padding:5px 10px}   /* 管理员编辑条：固定占位，点喇叭时版面不跳 */
   .g2listen .tabsrow{margin-bottom:6px}.g2listen .tab{padding:5px 14px}
   .ctlline{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
@@ -229,29 +241,88 @@ async function loadCuts(dir) {
 const saveCuts = (id, starts) => sbPost("visual_cuts", [{ id, starts, updated_by: user.referrer, updated_at: new Date().toISOString() }], { Prefer: "resolution=merge-duplicates" });
 const resetCuts = id => fetch(SUPABASE_URL + "/rest/v1/visual_cuts?id=eq." + encodeURIComponent(id), { method: "DELETE", headers: sbHeaders() });
 const startsToCuts = st => st.map((s, i) => [s, st[i + 1] ?? Infinity]);
-// 编辑条：starts 是会被直接修改的升序数组；auto 是自动分句的起点（用来还原）；time() 当前播放秒；idx()/setIdx() 当前句序号；changed() 改完后重算并刷新；replay() 从当前句重播
-function cutBar({ id, starts, auto, time, idx, setIdx, changed, replay, msg }) {
-  const st = document.createElement("span"); st.style.cssText = "font-size:12px;color:var(--muted)"; st.textContent = msg.t || "";
-  const say = t => { msg.t = t; st.textContent = t; };
-  const mk = (t, f) => { const b = document.createElement("button"); b.textContent = t; b.onclick = f; return b; };
-  const touch = t => { say(t || "已修改，还没保存"); changed(); };
-  const split = mk("✂ 在播放位置切开", () => {
-    const t = +time().toFixed(2), j = starts.findLastIndex(x => x <= t);
-    if (j < 0 || t - starts[j] < 0.4 || (starts[j + 1] !== undefined && starts[j + 1] - t < 0.4)) return say("离句子边界太近，换个位置再切（先播放，到要切的地方点这个）");
-    starts.splice(j + 1, 0, t); setIdx(j + 1); touch();
+// 分句编辑器（管理员，类似剪映的时间轴）：整屏只放 视频/音频 + 整条声音波形 + 每句的切割点。
+// 拖动切割点移动位置，"＋切割点"在播放位置新增，选中后"删除"移除，保存后学生端用这个分句。
+// starts 会被直接修改（升序的每句起点秒数）；auto 是自动分句起点（用来还原）；words 用来显示选中句子的文字。
+const textBetween = (w, a, b) => (w || []).filter(x => x[0] >= a - 1e-6 && x[0] < b).map(x => x[1]).join("");
+const peakCache = {};
+async function loadPeaks(src) {
+  if (peakCache[src]) return peakCache[src];
+  const buf = await (await fetch(src)).arrayBuffer(), ac = new (window.AudioContext || window.webkitAudioContext)();
+  let ab; try { ab = await ac.decodeAudioData(buf); } finally { ac.close(); }
+  const d = ab.getChannelData(0), PER = 200, n = Math.ceil(ab.duration * PER), step = d.length / n, pk = new Float32Array(n);   // 每秒 200 个峰值
+  for (let i = 0; i < n; i++) { let m = 0; for (let k = Math.floor(i * step), e = Math.min(d.length, Math.floor((i + 1) * step)); k < e; k += 4) m = Math.max(m, Math.abs(d[k])); pk[i] = m; }
+  const mx = pk.reduce((a, b) => Math.max(a, b), 0) || 1; for (let i = 0; i < n; i++) pk[i] /= mx;
+  return peakCache[src] = { pk, dur: ab.duration, PER };
+}
+async function openCutEditor({ src, isVideo, title, id, starts, auto, words, onDone }) {
+  const root = document.createElement("div"); root.className = "cutEd"; root.tabIndex = -1;
+  const panel = document.createElement("div"); panel.className = "panel"; root.appendChild(panel);
+  const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt) e.textContent = txt; return e; };
+  const btn = (t, f) => { const b = el("button", "", t); b.onclick = f; return b; };
+  const media = el(isVideo ? "video" : "audio"); media.src = src; media.preload = "auto"; mediaEls.push(media);
+  if (isVideo) media.style.cssText = "width:100%;max-height:36vh;background:#000;border-radius:10px";
+  const status = el("span", "cutSt", "加载波形中…");
+  const say = t => { status.textContent = t; };
+  let pk, dur = 0, PER = 200, pps = 40, sel = -1, dirty = false, raf = 0, closed = false;
+  const sc = el("div", "cutSc"), inner = el("div", "cutIn"), cv = el("canvas"), layer = el("div", "cutLayer"), ph = el("div", "cutPh");
+  inner.append(cv, layer, ph); sc.appendChild(inner);
+  const txt = el("div", "cutTxt", "拖动橙色切割点调整位置；点波形空白处可定位播放头");
+  const playBtn = btn("▶ 播放", () => { media.paused ? media.play() : media.pause(); });
+  media.onplay = () => playBtn.textContent = "⏸ 暂停"; media.onpause = () => playBtn.textContent = "▶ 播放";
+  const touch = t => { dirty = true; say(t || "已修改，还没保存"); };
+  const showTxt = () => { txt.textContent = sel < 0 ? "拖动橙色切割点调整位置；点波形空白处可定位播放头" : "第 " + (sel + 1) + " 句：" + (textBetween(words, starts[sel], starts[sel + 1] ?? Infinity) || "（没有文字）"); };
+  const px = t => t * pps, clampT = (t, i) => Math.min(starts[i + 1] !== undefined ? starts[i + 1] - 0.3 : dur - 0.3, Math.max(i > 0 ? starts[i - 1] + 0.3 : 0, t));
+  function drawWave() {
+    const W = Math.min(30000, Math.max(1, Math.ceil(dur * pps))), H = 120; cv.width = W; cv.height = H; cv.style.width = px(dur) + "px"; cv.style.height = H + "px"; inner.style.width = px(dur) + "px";
+    const c = cv.getContext("2d"); c.clearRect(0, 0, W, H); c.fillStyle = "#1cb0f6";
+    for (let x = 0; x < W; x++) { const i0 = Math.floor(x / W * dur * PER), i1 = Math.max(i0 + 1, Math.ceil((x + 1) / W * dur * PER)); let m = 0; for (let i = i0; i < i1 && i < pk.length; i++) m = Math.max(m, pk[i]); const h = Math.max(1, m * (H - 8)); c.fillRect(x, (H - h) / 2, 1, h); }
+  }
+  function drawMarks() {
+    layer.replaceChildren();
+    starts.forEach((s, i) => {
+      const m = el("div", "cm" + (i === sel ? " sel" : "")), h = el("div", "ch", String(i + 1)); m.style.left = px(s) + "px"; m.appendChild(h);
+      h.onpointerdown = e => {
+        e.preventDefault(); sel = i; try { h.setPointerCapture(e.pointerId); } catch (_) {} const rect = inner.getBoundingClientRect(); [...layer.children].forEach((c, k) => c.classList.toggle("sel", k === i)); showTxt();
+        h.onpointermove = ev => { starts[i] = +clampT((ev.clientX - rect.left) / pps, i).toFixed(2); m.style.left = px(starts[i]) + "px"; touch(); showTxt(); };
+        h.onpointerup = () => { h.onpointermove = h.onpointerup = null; media.currentTime = starts[i]; media.play(); };   // 放手后从这个切割点播放，听是否准
+      };
+      layer.appendChild(m);
+    });
+  }
+  const redraw = () => { drawWave(); drawMarks(); showTxt(); };
+  inner.onpointerdown = e => { if (e.target === cv || e.target === inner) media.currentTime = Math.max(0, Math.min(dur, (e.clientX - inner.getBoundingClientRect().left) / pps)); };
+  const zoom = f => { const c = media.currentTime; pps = Math.max(8, Math.min(240, pps * f)); redraw(); sc.scrollLeft = px(c) - sc.clientWidth / 2; };
+  const add = btn("＋ 切割点", () => {
+    const t = +media.currentTime.toFixed(2);
+    if (starts.some(s => Math.abs(s - t) < 0.3)) return say("离已有切割点太近，换个位置");
+    starts.push(t); starts.sort((a, b) => a - b); sel = starts.indexOf(t); touch(); redraw();
   });
-  const merge = mk("⇤ 并入上一句", () => { const i = idx(); if (i <= 0) return say("已经是第一句"); starts.splice(i, 1); setIdx(i - 1); touch(); });
-  const nudge = d => mk(d < 0 ? "起点 −0.3秒" : "起点 +0.3秒", () => {
-    const i = idx(), lo = i > 0 ? starts[i - 1] + 0.3 : 0, hi = starts[i + 1] !== undefined ? starts[i + 1] - 0.3 : Infinity;
-    starts[i] = +Math.min(hi, Math.max(lo, starts[i] + d)).toFixed(2); touch(); replay();
+  const del = btn("🗑 删除", () => {
+    if (sel < 0) return say("先点选一个切割点");
+    if (sel === 0) return say("第 1 个是开头，不能删；可以拖动它");
+    starts.splice(sel, 1); sel = -1; touch(); redraw();
   });
-  const save = mk("💾 保存", async () => {
+  const save = btn("💾 保存", async () => {
     say("保存中…");
-    try { const r = await saveCuts(id, starts); if (!r.ok) throw new Error(r.status === 404 ? "visual_cuts 表还没建" : "状态 " + r.status); cutOv[id] = starts.slice(); say("✅ 已保存，学生端会用这个分句"); }
+    try { const r = await saveCuts(id, starts); if (!r.ok) throw new Error(r.status === 404 ? "visual_cuts 表还没建" : "状态 " + r.status); cutOv[id] = starts.slice(); dirty = false; say("✅ 已保存，学生端会用这个分句"); }
     catch (e) { say("⚠ 保存失败：" + e.message); }
   });
-  const reset = mk("↺ 还原自动", async () => { starts.splice(0, starts.length, ...auto); try { await resetCuts(id); } catch (e) {} delete cutOv[id]; setIdx(0); touch("已还原为自动分句"); });
-  return [split, merge, nudge(-0.3), nudge(0.3), save, reset, st];
+  const reset = btn("↺ 还原自动", async () => { starts.splice(0, starts.length, ...auto); sel = -1; try { await resetCuts(id); } catch (e) {} delete cutOv[id]; dirty = false; say("已还原为自动分句"); redraw(); });
+  const close = () => { if (dirty && !confirm("改动还没保存，确定关闭吗？")) return; closed = true; cancelAnimationFrame(raf); media.pause(); root.remove(); onDone(); };
+  const top = el("div", "row"); top.append(el("b", "", title), btn("✕ 关闭", close)); top.style.justifyContent = "space-between";
+  const bar = el("div", "row"); bar.append(playBtn, add, del, btn("放大", () => zoom(1.5)), btn("缩小", () => zoom(1 / 1.5)), save, reset, status);
+  panel.append(top, ...(isVideo ? [media] : []), bar, sc, txt);
+  root.onkeydown = e => { if (e.key === "Delete" || e.key === "Backspace") del.onclick(); if (e.key === " ") { e.preventDefault(); playBtn.onclick(); } };
+  document.body.appendChild(root); root.focus();
+  try { ({ pk, dur, PER } = await loadPeaks(src)); } catch (e) { say("⚠ 波形加载失败：" + e.message); return; }
+  say(cutOv[id] ? "已用人工分句" : "自动分句"); redraw();
+  const tick = () => {
+    if (closed) return; const x = px(media.currentTime); ph.style.left = x + "px";
+    if (!media.paused && (x < sc.scrollLeft || x > sc.scrollLeft + sc.clientWidth - 40)) sc.scrollLeft = x - 80;
+    raf = requestAnimationFrame(tick);
+  };
+  tick();
 }
 // 按讲稿文字分句（见 splitSents），每句的时间按字数比例估算，再吸附到附近的停顿（±1.5s）；没有文字时只按停顿切
 async function sentenceCuts(src, text) {
@@ -533,7 +604,7 @@ function renderGen1(host, q, submitter) {
   // ---- 分句听 + 按组录（需要视频有 words 时间戳；没有就只显示整段播放）----
   const sentBox = document.createElement("div"); sentBox.style.marginTop = "10px";
   let sentMode = false, gsize = 1, gi = 0, groups = [];
-  let ustarts = [], autoStarts = [], ukey = "", umsg = { t: "" }, pendIdx = null;   // 每句起点（可被管理员改）、自动分句起点、当前视频的 id、编辑提示、待定的当前句序号
+  let ustarts = [], autoStarts = [], ukey = "";   // 每句起点（可被管理员改）、自动分句起点、当前视频的 id
   const tabRow = (items, cur, on) => { const r = document.createElement("div"); r.className = "row"; items.forEach(([name, v]) => { const t = document.createElement("button");
     t.className = "tab" + (v === cur ? " active" : ""); t.textContent = name; t.onclick = () => on(v); r.appendChild(t); }); return r; };
   function buildGroups() {
@@ -548,12 +619,11 @@ function renderGen1(host, q, submitter) {
       if (units.length > 1 && total - units[units.length - 1].start < 5) { const l = units.pop(); units[units.length - 1].text += l.text; }
       // 起点：管理员手动改过的(visual_cuts)优先，没有就用自动分句；每组的文字按起点从 words 里取
       autoStarts = units.map(u => u.start); ukey = cur.chapter.dir + "/" + vids[part].src;
-      ustarts = cutOv[ukey] ? cutOv[ukey].slice() : autoStarts.slice(); umsg = { t: cutOv[ukey] ? "已用人工分句" : "自动分句" };
+      ustarts = cutOv[ukey] ? cutOv[ukey].slice() : autoStarts.slice();
       regroup();
     }
     renderSent();
   }
-  const textBetween = (w, a, b) => w.filter(x => x[0] >= a - 1e-6 && x[0] < b).map(x => x[1]).join("");
   function regroup() {
     const w = vids[part].words || []; groups = [];
     for (let i = 0; i < ustarts.length; i += gsize) groups.push({ text: textBetween(w, ustarts[i], ustarts[i + gsize] ?? Infinity), start: ustarts[i], end: ustarts[i + gsize] ?? Infinity });
@@ -581,11 +651,13 @@ function renderGen1(host, q, submitter) {
       const rec = segRecorder(() => groups[gi].text, "按组录：第 " + (gi + 1) + " 组");
       rec.querySelector("button").addEventListener("click", () => player.pause());
       kids.push(ctl, gProg);
-      if (isAdmin()) {   // 管理员编辑条：改的是"每句起点"，组按起点重新分
+      if (isAdmin()) {   // 管理员：打开时间轴编辑器调整分句（拖动/新增/删除切割点）
         const bar = document.createElement("div"); bar.className = "row sentedit";
-        bar.append(...cutBar({ id: ukey, starts: ustarts, auto: autoStarts, msg: umsg, time: () => player.currentTime, idx: () => pendIdx ?? gi * gsize, setIdx: k => { pendIdx = k; }, replay: () => playGroup(),
-          changed: () => { const k = pendIdx ?? gi * gsize; pendIdx = null; regroup(); gi = Math.max(0, Math.min(Math.floor(k / gsize), groups.length - 1)); renderSent(); } }));
-        kids.push(bar);
+        const b = document.createElement("button"); b.textContent = "🎬 调整分句位置（时间轴）";
+        b.onclick = () => { player.pause(); openCutEditor({ src: url(base + vids[part].src), isVideo: true, title: "调整分句：" + vids[part].src, id: ukey, starts: ustarts, auto: autoStarts, words: vids[part].words,
+          onDone: () => { regroup(); gi = Math.max(0, Math.min(gi, groups.length - 1)); renderSent(); } }); };
+        const st = document.createElement("span"); st.style.cssText = "font-size:12px;color:var(--muted)"; st.textContent = cutOv[ukey] ? "已用人工分句" : "自动分句";
+        bar.append(b, st); kids.push(bar);
       }
       kids.push(rec);
     }
@@ -753,8 +825,12 @@ function renderGen2(host, q, submitter) {
             upd();
           };
           ctl.replaceChildren(prev, again, next, label); play();
-          if (isAdmin()) $q(".sentedit").replaceChildren(...cutBar({ id: key, starts, auto, msg: s._msg ??= { t: cutOv[key] ? "已用人工分句" : "自动分句" }, time: () => audio.currentTime, idx: () => i, setIdx: k => { i = k; },
-            changed: () => { cuts = startsToCuts(starts); i = Math.min(i, cuts.length - 1); upd(); }, replay: () => play() }));
+          if (isAdmin()) {   // 管理员：打开时间轴编辑器调整这个回答的分句
+            const eb = document.createElement("button"); eb.textContent = "🎬 调整分句位置（时间轴）";
+            eb.onclick = () => { audio.pause(); openCutEditor({ src: audio.src, isVideo: false, title: "调整分句：" + s.audio, id: key, starts, auto, words: s.words,
+              onDone: () => { cuts = startsToCuts(starts); i = Math.min(i, cuts.length - 1); upd(); } }); };
+            $q(".sentedit").replaceChildren(eb, Object.assign(document.createElement("span"), { textContent: cutOv[key] ? "已用人工分句" : "自动分句", style: "font-size:12px;color:var(--muted)" }));
+          }
         };
         aBox.append(b);
       });
