@@ -226,11 +226,24 @@ function splitSents(text) {
 }
 // 有 FunASR 的字级时间(words)时：用文字语义分句，每句起点取这句第一个字的时间，播到下一句的起点；最后一句播到结尾
 function wordCuts(words) {
-  const sents = splitSents(words.map(x => x[1]).join("")), wOff = []; let c = 0, off = 0;
-  words.forEach(x => { wOff.push(c); c += x[1].length; });
-  const starts = sents.map(x => { const k = Math.max(0, wOff.findLastIndex(o => o <= off)); off += x.length; return words[k][0]; });
+  const starts = sentStarts(words, splitSents(words.map(x => x[1]).join("")));
   return starts.map((st, i) => [st, starts[i + 1] ?? Infinity]);
 }
+// 每句的起点秒数：words 的每个片段(≤4字)只有首字的时间，句子可能从片段中间开始，所以在片段内按字数线性插值
+function sentStarts(words, sents) {
+  const wOff = []; let c = 0, off = 0; words.forEach(x => { wOff.push(c); c += x[1].length; });
+  return sents.map(x => {
+    const k = Math.max(0, wOff.findLastIndex(o => o <= off)), len = words[k][1].length, t0 = words[k][0], t1 = words[k + 1]?.[0] ?? t0 + len * 0.2;
+    const t = t0 + (t1 - t0) * (off - wOff[k]) / len; off += x.length; return +t.toFixed(2);
+  });
+}
+// 到句尾就停。不用 timeupdate（每 250 毫秒才触发一次，会多读进下一句的头两个字），改成每一帧检查，并在句尾前 0.12 秒停
+function stopAtEnd(media, end, onEnd) {
+  const tok = media._stopTok = {};
+  const tick = () => { if (media._stopTok !== tok) return; if (media.currentTime >= end - 0.12 || media.ended) { media.pause(); media._stopTok = null; if (onEnd) onEnd(); return; } requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+}
+const cancelStop = media => { media._stopTok = null; media.ontimeupdate = null; };
 // ---------- 管理员手动调整分句位置：改过的"每句起点(秒)"存在 visual_cuts 表，学生端优先用它 ----------
 let cutOv = {};   // id -> starts[]；id = 章节目录 + "/audio/文件名"(交互版回答) 或 "/video/文件名"(纯享版视频)
 const isAdmin = () => !!(user && user.admin);
@@ -608,11 +621,10 @@ function renderGen1(host, q, submitter) {
   const tabRow = (items, cur, on) => { const r = document.createElement("div"); r.className = "row"; items.forEach(([name, v]) => { const t = document.createElement("button");
     t.className = "tab" + (v === cur ? " active" : ""); t.textContent = name; t.onclick = () => on(v); r.appendChild(t); }); return r; };
   function buildGroups() {
-    const w = vids[part].words || []; groups = []; gi = 0; player.ontimeupdate = null;
+    const w = vids[part].words || []; groups = []; gi = 0; cancelStop(player);
     if (w.length) {
-      const txt = w.map(x => x[1]).join(""), sents = txt.includes("\n") ? txt.split(/(?<=\n)/).filter(x => x.trim()) : splitSents(txt), wOff = [];   // PPT 讲稿按行断句，没有换行的（识别文字）用规则断句
-      let c = 0, off = 0; w.forEach(x => { wOff.push(c); c += x[1].length; });
-      const starts = sents.map(x => { const k = Math.max(0, wOff.findLastIndex(o => o <= off)); off += x.length; return w[k][0]; });
+      const txt = w.map(x => x[1]).join(""), sents = txt.includes("\n") ? txt.split(/(?<=\n)/).filter(x => x.trim()) : splitSents(txt);   // PPT 讲稿按行断句，没有换行的（识别文字）用规则断句
+      const starts = sentStarts(w, sents);
       // 短于 5 秒的句子并入后一句（最后一句太短就并入前一句）
       const total = player.duration || w[w.length - 1][0] + 3, units = sents.map((t, i) => ({ text: t, start: starts[i] }));
       for (let i = 0; i < units.length - 1;) { if ((units[i + 1].start - units[i].start) < 5) { units[i + 1] = { text: units[i].text + units[i + 1].text, start: units[i].start }; units.splice(i, 1); } else i++; }
@@ -634,16 +646,16 @@ function renderGen1(host, q, submitter) {
     player.ontimeupdate = () => {
       const end = isFinite(g.end) ? g.end : player.duration;
       gProg.value = Math.min(1, Math.max(0, (player.currentTime - g.start) / (end - g.start)));
-      if (player.currentTime >= g.end) { player.pause(); player.ontimeupdate = null; gProg.value = 1; }
     };
+    if (isFinite(g.end)) stopAtEnd(player, g.end, () => { gProg.value = 1; });   // 停点用每帧检查，不靠 timeupdate
     if (gi === groups.length - 1) { watched[part] = true; refresh(); }
     renderSent(true);
   }
   function renderSent(keepRec) {
     if (!groups.length) { sentBox.replaceChildren(); return; }
-    const kids = [tabRow([["整段播放", false], ["分句播放", true]], sentMode, v => { sentMode = v; player.ontimeupdate = null; renderSent(); })];
+    const kids = [tabRow([["整段播放", false], ["分句播放", true]], sentMode, v => { sentMode = v; cancelStop(player); renderSent(); })];
     if (sentMode) {
-      kids.push(tabRow([1, 2, 3, 4].map(n => [n + "句一起", n]), gsize, n => { gsize = n; gi = 0; player.ontimeupdate = null; regroup(); renderSent(); }));
+      kids.push(tabRow([1, 2, 3, 4].map(n => [n + "句一起", n]), gsize, n => { gsize = n; gi = 0; cancelStop(player); regroup(); renderSent(); }));
       const ctl = document.createElement("div"); ctl.className = "row";
       const mk = (t, f, dis) => { const x = document.createElement("button"); x.textContent = t; x.onclick = f; x.disabled = !!dis; return x; };
       const label = document.createElement("span"); label.textContent = " 第 " + (gi + 1) + " / " + groups.length + " 组 ";
@@ -795,7 +807,7 @@ function renderGen2(host, q, submitter) {
     prompts.forEach(s => {
       const b = document.createElement("button"); b.textContent = s.kind === "prompt" ? "❓ " + n : "🔊 " + n; s._plays = 0;
       b.onclick = () => {
-        audio.pause(); audio.ontimeupdate = null; $q(".sentctl").replaceChildren(); audio.src = url(base + "audio/" + s.audio); audio.play();   // 清掉上一个分句的"到句尾就停"
+        audio.pause(); cancelStop(audio); $q(".sentctl").replaceChildren(); audio.src = url(base + "audio/" + s.audio); audio.play();   // 清掉上一个分句的"到句尾就停"
         segs.querySelectorAll("button").forEach(x => x.classList.remove("on")); b.classList.add("on", "done");
         s._plays++; qText.textContent = s._plays >= REVEAL ? (s.text || "") : "🔊 已听 " + s._plays + " / " + REVEAL + " 遍，听不懂就多听几遍，满" + REVEAL + "遍会显示文字";
       };
@@ -808,7 +820,7 @@ function renderGen2(host, q, submitter) {
         const b = document.createElement("button"), ctl = $q(".sentctl");      // 分句控制条所有回答共用一条，不再撑高每一列
         b.textContent = "💡"; s._plays = 0;
         b.onclick = async () => {
-          audio.pause(); audio.ontimeupdate = null; audio.src = url(base + "audio/" + s.audio);
+          audio.pause(); cancelStop(audio); audio.src = url(base + "audio/" + s.audio);
           segs.querySelectorAll("button").forEach(x => x.classList.remove("on")); b.classList.add("on", "done");
           if (!sentMode) { ctl.replaceChildren(); $q(".sentedit")?.replaceChildren(); audio.play(); return; }
           // 起点：管理员手动改过的(visual_cuts)优先，没有就用自动分句
@@ -821,7 +833,7 @@ function renderGen2(host, q, submitter) {
           const upd = () => { label.textContent = " 第 " + (i + 1) + " / " + cuts.length + " 句 "; prev.disabled = i <= 0; next.disabled = i >= cuts.length - 1; };
           const play = () => {
             audio.pause(); audio.currentTime = cuts[i][0]; audio.play();
-            audio.ontimeupdate = () => { if (audio.currentTime >= cuts[i][1]) { audio.pause(); audio.ontimeupdate = null; } };
+            cancelStop(audio); if (isFinite(cuts[i][1])) stopAtEnd(audio, cuts[i][1]);
             upd();
           };
           ctl.replaceChildren(prev, again, next, label); play();
@@ -839,7 +851,7 @@ function renderGen2(host, q, submitter) {
     return w;
   }
   function renderGroups(n) {
-    audio.ontimeupdate = null; $q(".sentctl").replaceChildren(); $q(".sentedit")?.replaceChildren();
+    cancelStop(audio); $q(".sentctl").replaceChildren(); $q(".sentedit")?.replaceChildren();
     segs.innerHTML = "";
     for (let i = 0; i < columns.length; i += n) {
       const chunk = columns.slice(i, i + n), seg = document.createElement("div"); seg.className = "seg";
