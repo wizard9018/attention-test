@@ -513,13 +513,12 @@ async function openChapter(course, ch, startQid) {
   loadQuestion(cur.qi);
 }
 $("backBtn").onclick = () => { stopMedia(); enterCourse(); };
-function unlocked(i) { const qs = cur.manifest.questions; return i === 0 || isAdmin() || !!status[qidOf(cur.chapter.dir, qs[i - 1])]; }
+function unlocked() { return true; }   // 每个单元的所有题目直接解锁，不用先交上一题
 function renderPills() {
-  const today = bjToday();
   const box = $("pills"); box.innerHTML = "";
   cur.manifest.questions.forEach((q, i) => {
     const s = status[qidOf(cur.chapter.dir, q)], ok = unlocked(i);
-    const todayS = s && s.created_at && toBJDate(s.created_at) === today ? s : null;
+    const todayS = s || null;   // 提交过的题都显示状态（通过/重录/待批），不再只显示当天提交的
     const b = document.createElement("button");
     b.className = "pill" + (i === cur.qi ? " cur" : "") + (todayS ? " " + todayS.status : "");
     b.textContent = !ok ? "🔒" : todayS ? ({ pass: "✅", retry: "🔁", pending: "⏳" }[todayS.status]) + (i + 1) : String(i + 1);
@@ -545,7 +544,7 @@ function loadQuestion(i) {
   }
   const host = document.createElement("div"); body.appendChild(host);
   const last = i === cur.manifest.questions.length - 1;
-  const nextBar = document.createElement("div"); nextBar.className = "nextbar"; nextBar.hidden = !s;
+  const nextBar = document.createElement("div"); nextBar.className = "nextbar";   // 所有题都解锁，"下一题"一直显示
   const nb = document.createElement("button"); nb.className = "btn-green"; nb.textContent = last ? "本章完成，返回课程 ▶" : "下一题 ▶";
   nb.onclick = () => { if (last) { stopMedia(); enterCourse(); } else loadQuestion(i + 1); };
   nextBar.appendChild(nb);
