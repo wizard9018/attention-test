@@ -34,7 +34,26 @@
   .setup-grid{display:grid;grid-template-columns:1fr;gap:24px;align-items:start;}
   .setup-grid.has-feedback{grid-template-columns:1.3fr 1fr;}
   @media (max-width:760px){ .setup-grid.has-feedback{grid-template-columns:1fr;} }
-  .wrap:has(#viewSetup.has-feedback:not([hidden])){max-width:900px;}
+  .wrap:has(#viewSetup.has-feedback:not([hidden])), .wrap:has(#viewSpellTab:not([hidden])), .wrap:has(#viewSentTab:not([hidden])){max-width:900px;}
+  .setup-grid.two{grid-template-columns:1fr 1fr;}
+  @media (max-width:760px){ .setup-grid.two{grid-template-columns:1fr;} }
+  .sent-zh{font-size:20px;font-weight:800;text-align:center;margin:18px 0 14px;line-height:1.5;}
+  .sent-words{display:flex;flex-wrap:wrap;gap:8px 10px;justify-content:center;margin:12px 0 16px;}
+  .sw{text-align:center;min-width:46px;padding:6px 8px;border-radius:10px;border:1.5px solid var(--border);background:#fdfcf9;}
+  .sw .en{font-size:20px;font-weight:800;min-height:28px;}
+  .sw .zh{font-size:12px;color:var(--muted);}
+  .sw.ok{border-color:var(--green);background:#eafbe0;}
+  .sw.bad{border-color:var(--red);background:#ffeaea;}
+  .sw.cur{border-color:var(--blue);}
+  .sw{cursor:pointer;}
+  .sw .en{display:flex;align-items:flex-end;justify-content:center;}
+  .sl{width:24px;height:32px;padding:0;margin:0 1px;text-align:center;font:inherit;font-size:20px;font-weight:800;color:var(--ink);border:none;border-bottom:2px solid var(--ink);border-radius:0;background:transparent;outline:none;}
+  .sl:focus{border-bottom-color:var(--blue);background:#eaf6ff;}
+  .sl:disabled{opacity:1;}
+  .fx{font-size:20px;font-weight:800;line-height:32px;}
+  .sent-fb{margin:12px 0;padding:10px 14px;border-radius:12px;line-height:1.7;font-size:15px;}
+  .sent-fb.ok{background:#eafbe0;color:#2a6a00;}
+  .sent-fb.bad{background:#ffeaea;color:#a02020;}
   .wrap:has(#viewAdminStudent:not([hidden])){max-width:1100px;}
   .wrap:has(#viewAdminRecords:not([hidden])),
   .wrap:has(#viewAdmin:not([hidden])),
@@ -44,6 +63,10 @@
   .setup-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;margin:0 0 18px;}
   .setup-head h2{margin:0;}
   .setup-tools{display:flex;flex-wrap:wrap;gap:6px;}
+  .tab-count{margin-left:4px;font-size:13px;font-weight:800;color:var(--muted);white-space:nowrap;}
+  .tab-count.done{color:var(--green);}
+  .sub-tools{display:flex;gap:10px;grid-column:1/-1;}
+  .sub-tools .pt-open{flex:1;padding:12px 8px;font-size:15px;}
   .pt-open{padding:7px 12px;border-radius:12px;border:2px solid var(--blue);background:#ddf4ff;color:var(--ink);font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
   .rs-syls{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:10px;}
   .rs-syl{font-size:26px;font-weight:900;padding:2px 6px;border-radius:8px;}
@@ -218,6 +241,7 @@
   #batchRoadmapBar{padding:14px 16px;}
   .batch-pill-row{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;}
   .batch-pill{display:inline-flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;white-space:nowrap;padding:8px 12px;border-radius:16px;border:1.5px solid var(--border);background:#f7f5ef;font-size:13px;font-weight:700;cursor:pointer;color:var(--muted);}
+  .batch-pill.bp-plan{border-style:dashed;background:#fdfcf9;}
   .batch-pill.bp-current{border-color:var(--gold);background:#faf3e6;color:var(--ink);}
   .batch-pill.bp-review{border-color:var(--blue);}
   .rm-node{cursor:default;}
@@ -273,6 +297,13 @@
       <button class="header-btn" id="headerAdminPwdBtn" hidden>🔑 改密码</button>
       <button class="header-btn" id="headerLogoutBtn" hidden>退出登录</button>
     </div>
+  </div>
+
+  <!-- 学生三个 tab：听读单词 / 拼写单词 / 拼写句子（只在这三个主页面显示） -->
+  <div class="admin-tabs" id="studentTabs" hidden>
+    <button class="admin-tab" type="button" data-tab="listen">🎧 听读单词</button>
+    <button class="admin-tab" type="button" data-tab="spell">✍️ 拼写单词 <span class="tab-count"></span></button>
+    <button class="admin-tab" type="button" data-tab="sent">⌨️ 拼写句子 <span class="tab-count"></span></button>
   </div>
 
   <!-- 管理员两个 tab：专注力训练管理 / 专注力测试记录（登录后才出现，入口处不选） -->
@@ -436,15 +467,44 @@
 
   <!-- 学习设置：难度 + Unit + 每次学几个词，都在一个界面里选；右边一列放老师反馈 -->
   <div class="setup-grid has-feedback" id="viewSetup" hidden>
-    <div class="card">
-      <div class="setup-head">
-        <h2>选好难度、Unit、每次学几个词</h2>
-        <div class="setup-tools">
-          <button class="pt-open" id="ptOpenBtn" type="button">📝 单词分级测试</button>
-          <button class="pt-open" id="rsOpenBtn" type="button">🗣️ 英文跟读</button>
-        </div>
-      </div>
+    <!-- 听读单词的三个子版块：课程选择 / 分级测试 / 英文跟读（平时不用改课程，所以只放入口，主页放今天要学的） -->
+    <div class="sub-tools">
+      <button class="pt-open" id="courseOpenBtn" type="button">📚 课程选择</button>
+      <button class="pt-open" id="ptOpenBtn" type="button">📝 分级测试</button>
+      <button class="pt-open" id="rsOpenBtn" type="button">🗣️ 英文跟读</button>
+    </div>
 
+    <div class="card" id="todayPanel">
+      <h2>今天要学的听读</h2>
+      <p class="hint" id="todaySummary">加载中…</p>
+      <div class="field" style="margin:4px 0 14px;">
+        <label>今日目标：准备学几组</label>
+        <div class="count-grid" id="goalGrid" style="grid-template-columns:repeat(6,1fr);"></div>
+        <p class="hint" id="goalNote" style="margin:6px 0 0;"></p>
+      </div>
+      <button class="btn" id="startSessionBtn">开始学习</button>
+      <button class="btn btn-ghost" id="logoutBtn" style="margin-top:10px;">退出登录</button>
+    </div>
+
+    <div class="setup-side">
+      <div class="card" id="reviewPanel">
+        <div class="admin-tabs" style="margin-bottom:12px;">
+          <button class="admin-tab active" type="button">今日复习</button>
+          <button class="admin-tab" id="planOpenBtn" type="button" hidden>📅 复习计划</button>
+        </div>
+        <p class="hint" id="reviewHint">加载中…</p>
+        <div class="count-grid" id="rvSizeGrid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;" hidden></div>
+        <button class="btn" id="reviewStartBtn" type="button" hidden>开始复习</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 课程选择（弹窗）：难度 + 年级 + 每次学几个词 + 朗读声音 + 背景 -->
+  <div class="modal-overlay" id="courseModal" hidden>
+    <div class="modal-backdrop" id="courseBackdrop"></div>
+    <div class="modal-panel card">
+      <button class="modal-close" id="courseCloseBtn" type="button" aria-label="关闭">✕</button>
+      <h2>课程选择</h2>
       <div class="field">
         <label class="has-scene">课程难度
           <span class="scene-picker" id="scenePicker" title="学习时的背景视频"><span class="scene-chip" data-scene="classroom">教室</span><span class="scene-chip" data-scene="cafe">咖啡馆</span><span class="scene-chip" data-scene="beach">海边</span><span class="scene-chip" data-scene="attic">阁楼</span></span>
@@ -484,31 +544,42 @@
         </button>
       </div>
 
-      <button class="btn" id="startSessionBtn">开始学习</button>
-      <button class="btn btn-ghost" id="logoutBtn" style="margin-top:10px;">退出登录</button>
+      <button class="btn" id="courseOkBtn" type="button">确定</button>
     </div>
+  </div>
 
-    <div class="setup-side">
-      <div class="card" id="reviewPanel">
-        <div class="admin-tabs" style="margin-bottom:12px;">
-          <button class="admin-tab active" type="button">今日复习</button>
-          <button class="admin-tab" id="planOpenBtn" type="button" hidden>📅 复习计划</button>
-        </div>
-        <p class="hint" id="reviewHint">加载中…</p>
-        <div class="count-grid" id="rvSizeGrid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;" hidden></div>
-        <button class="btn" id="reviewStartBtn" type="button" hidden>开始复习</button>
-      </div>
-      <div class="card" id="spellPanel">
-        <h2>拼写练习</h2>
-        <p class="hint" id="spellHint">加载中…</p>
-        <button class="btn btn-blue" id="spOpenBtn" type="button">✍️ 开始拼写练习</button>
-      </div>
-      <div class="card" id="spellReviewPanel">
-        <h2>拼写复习</h2>
-        <p class="hint" id="spellReviewHint">加载中…</p>
-        <button class="btn btn-blue" id="spReviewBtn" type="button" hidden>✍️ 开始拼写复习</button>
-      </div>
+  <!-- 拼写单词 tab：拼写练习 + 拼写复习 -->
+  <div class="setup-grid two" id="viewSpellTab" hidden>
+    <div class="card" id="spellPanel">
+      <h2>拼写练习</h2>
+      <p class="hint" id="spellHint">加载中…</p>
+      <button class="btn btn-blue" id="spOpenBtn" type="button">✍️ 开始拼写练习</button>
     </div>
+    <div class="card" id="spellReviewPanel">
+      <h2>拼写复习</h2>
+      <p class="hint" id="spellReviewHint">加载中…</p>
+      <button class="btn btn-blue" id="spReviewBtn" type="button" hidden>✍️ 开始拼写复习</button>
+    </div>
+  </div>
+
+  <!-- 拼写句子 tab：每个词一个例句，看中文打出整句英文；词拼写做对过 1 次以后，它的例句才出现 -->
+  <div class="setup-grid" id="viewSentTab" hidden>
+    <div class="card" id="sentPanel">
+      <h2>拼写句子</h2>
+      <p class="hint" id="sentHint">加载中…</p>
+      <div class="count-grid" id="sentSizeGrid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;" hidden></div>
+      <button class="btn btn-blue" id="sentStartBtn" type="button" hidden>⌨️ 开始拼写句子</button>
+    </div>
+  </div>
+
+  <!-- 拼写句子练习页：一组 3-5 句，看中文打字，错的再打一遍 -->
+  <div class="card" id="viewSent" hidden>
+    <p class="hint" id="sentProgress" style="text-align:center;"></p>
+    <div class="sent-zh" id="sentZh"></div>
+    <div class="sent-words" id="sentWords"></div>
+    <div class="sent-fb" id="sentFeedback" hidden></div>
+    <button class="btn" id="sentCheckBtn" type="button" style="margin-top:12px;">检查</button>
+    <button class="btn btn-ghost" id="sentBackBtn" type="button" style="margin-top:10px;">← 返回拼写句子</button>
   </div>
 
   <!-- 拼写练习：学过 3 次以上的词，分组做闪卡背诵，背好后看中文拼写英文 -->
@@ -789,7 +860,7 @@
   var IDLE_LIMIT_MS = 3 * 60 * 1000;
   var idleTimer = null, idleStart = 0;
   function isIdleScreen() {
-    return !el("viewSetup").hidden || (!el("viewRecord").hidden && !el("afterRecordActions").hidden);
+    return !el("viewSetup").hidden || !el("viewSpellTab").hidden || !el("viewSentTab").hidden || (!el("viewRecord").hidden && !el("afterRecordActions").hidden);
   }
   function updateIdleWatch() {
     if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
@@ -901,28 +972,35 @@
   pickScene(sceneKey);
   var AUDIO_ADMIN_ACCOUNT = "55168";   // 音频管理除总管理员外，也放在这个管理员账号下
   function canAudioAdmin() { return !!state.adminIsSuper || (!state.studentNo && state.referrer === AUDIO_ADMIN_ACCOUNT); }   // 总管理员先保留，同时 55168 也有
-  var AMBIENT_VIEWS = { viewSetup: 1, viewPlayer: 1, viewDone: 1, viewRecord: 1, viewSpell: 1, viewPlan: 1 };   // 只有学生训练界面有背景视频
-  // 浏览器"返回"键：学生在播放/完成/录音/拼写页时，等同于点该页的退出按钮，回到课程选择页，而不是退出网站
-  var SUB_VIEW_EXIT = { viewPlayer: "exitSessionBtn", viewDone: "backToGroupsFromDoneBtn", viewRecord: "recordBackToGroupsBtn", viewSpell: "spBackBtn", viewPlan: "planBackBtn" };
+  var AMBIENT_VIEWS = { viewSetup: 1, viewSpellTab: 1, viewSentTab: 1, viewSent: 1, viewPlayer: 1, viewDone: 1, viewRecord: 1, viewSpell: 1, viewPlan: 1 };   // 只有学生训练界面有背景视频
+  // 学生的三个主页面(tab)：听读单词 / 拼写单词 / 拼写句子。其他地方说"回到课程选择页"(showView("viewSetup"))，实际回到当前所在的 tab
+  var HOME_TAB_VIEW = { listen: "viewSetup", spell: "viewSpellTab", sent: "viewSentTab" };
+  var HOME_VIEWS = { viewSetup: 1, viewSpellTab: 1, viewSentTab: 1 };
+  // 浏览器"返回"键：学生在播放/完成/录音/拼写页时，等同于点该页的退出按钮，回到当前 tab 的主页面，而不是退出网站
+  var SUB_VIEW_EXIT = { viewPlayer: "exitSessionBtn", viewDone: "backToGroupsFromDoneBtn", viewRecord: "recordBackToGroupsBtn", viewSpell: "spBackBtn", viewPlan: "planBackBtn", viewSent: "sentBackBtn" };
   var curView = null, ignorePop = false;
   window.addEventListener("popstate", function(){
     if (ignorePop) { ignorePop = false; return; }
     var b = SUB_VIEW_EXIT[curView]; if (b) el(b).click();
   });
   function showView(id) {
-    ["viewLogin","viewAdmin","viewAdminStudent","viewSuperAdmin","viewAudioAdmin","viewVisualAdmin","viewAdminRecords","viewSetup","viewPlayer","viewDone","viewRecord","viewSpell","viewPlan"].forEach(function(v){
+    if (id === "viewSetup") id = HOME_TAB_VIEW[state.studentTab] || "viewSetup";
+    ["viewLogin","viewAdmin","viewAdminStudent","viewSuperAdmin","viewAudioAdmin","viewVisualAdmin","viewAdminRecords","viewSetup","viewSpellTab","viewSentTab","viewSent","viewPlayer","viewDone","viewRecord","viewSpell","viewPlan"].forEach(function(v){
       el(v).hidden = (v !== id);
     });
     var inSub = !!(history.state && history.state.sub);
     if (SUB_VIEW_EXIT[id] && !inSub) history.pushState({ sub: 1 }, "");
-    else if (id === "viewSetup" && inSub && !ignorePop) { ignorePop = true; history.back(); }   // 用页面按钮回到课程页时，把多出来的历史记录退掉
+    else if (HOME_VIEWS[id] && inSub && !ignorePop) { ignorePop = true; history.back(); }   // 用页面按钮回到主页面时，把多出来的历史记录退掉
     curView = id;
     var ambient = !!AMBIENT_VIEWS[id];
     document.body.classList.toggle("no-ambient", !ambient);
     if (ambient) loadAmbientVideo();
-    if (id === "viewSetup") loadReviewPanel();
+    if (HOME_VIEWS[id]) loadReviewPanel();
+    if (id === "viewSetup") { updateTodaySummary(); renderGoal(); }
     // 登录后的每个界面都显示今天的进度条，方便老师批改后随时能看到状态变化
     var isStudentView = !!(state.referrer && state.studentNo);
+    el("studentTabs").hidden = !(HOME_VIEWS[id] && isStudentView);
+    [].forEach.call(el("studentTabs").children, function(b){ b.classList.toggle("active", b.dataset.tab === (state.studentTab || "listen")); });
     el("batchRoadmapBar").hidden = !isStudentView;
     el("headerWeeklyStatsBtn").hidden = !isStudentView;
     el("headerStudentPwdBtn").hidden = !isStudentView;
@@ -941,6 +1019,69 @@
     if (inAdmin) { try { sessionStorage.setItem("training_admin_view", id); } catch(e) {} }
     updateIdleWatch();
   }
+  el("studentTabs").addEventListener("click", function(e){
+    var t = e.target.closest("[data-tab]"); if (!t) return;
+    state.studentTab = t.dataset.tab;
+    showView("viewSetup");
+  });
+  // 听读单词主页："今天要学的听读" 按已选的课程显示摘要；要改课程点"课程选择"弹窗
+  function updateTodaySummary() {
+    var d = state.difficulty, data = state.wordData[d];
+    if (!data) return;
+    var unit = data.units[state.selectedUnit];
+    var txt = (d === "senior" ? "初中阶段" : "小学阶段") + (unit ? " · " + unit.name : "") + " · 每次学 " + state.selectedCount + " 个词 · " + (state.gender === "female" ? "女声朗读" : "男声朗读");
+    if (state.pendingRecording) txt += "。上一组听完了还没录音，点【开始学习】回到那一组继续。";
+    el("todaySummary").textContent = txt;
+  }
+  // 今日目标：准备学几组。按学生按天存在本机浏览器里，选好后顶部进度条里会先放出接下来的几组
+  function goalKey() { return "at_goal_" + state.referrer + "_" + state.studentNo + "_" + dk(new Date()); }
+  function getGoal() { try { return +localStorage.getItem(goalKey()) || 0; } catch (e) { return 0; } }
+  function todayLearnedCount() { return (state.todayBatches || []).filter(function(b){ return b.cursor_start >= 0; }).length; }
+  function renderGoal() {
+    if (!state.referrer || !state.studentNo) return;
+    var goal = getGoal(), grid = el("goalGrid"), learned = todayLearnedCount();
+    grid.innerHTML = "";
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].forEach(function(n){
+      var cell = document.createElement("div");
+      cell.className = "count-cell" + (n === goal ? " selected" : "");
+      cell.textContent = n;
+      cell.addEventListener("click", function(){
+        try { if (n === goal) localStorage.removeItem(goalKey()); else localStorage.setItem(goalKey(), String(n)); } catch (e) {}
+        renderGoal(); renderBatchPills();
+      });
+      grid.appendChild(cell);
+    });
+    el("goalNote").textContent = !goal ? "选一个数字，接下来的几组会先放到上面的进度条里；再点一次可以取消。"
+      : learned >= goal ? "🎉 今天的目标 " + goal + " 组已经学完（已学 " + learned + " 组）。"
+      : "今天的目标 " + goal + " 组，已学 " + learned + " 组，还差 " + (goal - learned) + " 组。";
+  }
+  // 拼写单词 / 拼写句子 两个标签上的"今天完成数/今天可完成数"。完成的词 id 按天存在本机浏览器里(同一个词只算一次)
+  function cntKey() { return "at_cnt_" + state.referrer + "_" + state.studentNo + "_" + dk(new Date()); }
+  function getCnt() { try { return JSON.parse(localStorage.getItem(cntKey()) || "{}"); } catch (e) { return {}; } }
+  function markDone(kind, id) {
+    try { var c = getCnt(); c[kind] = c[kind] || []; if (c[kind].indexOf(id) < 0) { c[kind].push(id); localStorage.setItem(cntKey(), JSON.stringify(c)); } } catch (e) {}
+    renderTabCounts();
+  }
+  function setTabCount(tab, done, total) {
+    var s = document.querySelector('#studentTabs [data-tab="' + tab + '"] .tab-count');
+    if (!s) return;
+    s.textContent = total ? done + "/" + total + (done >= total ? " ✓" : "") : "";
+    s.classList.toggle("done", total > 0 && done >= total);
+  }
+  function renderTabCounts() {
+    if (!state.referrer || !state.studentNo) return;
+    var c = getCnt(), rows = state.memRows || [];
+    // 拼写单词：完成 = 今天拼对的词；总数 = 可练习的词(学过 3 次以上)，和"拼写练习"卡片上的数一致
+    var doneS = (c.spell || []).length, map = rows.length ? wordMap() : {};
+    var canSpell = rows.filter(function(r){ return r.learn_count >= 3 && map[r.word_id]; }).length;
+    setTabCount("spell", doneS, Math.max(doneS, canSpell));
+    // 拼写句子：完成 = 今天把一个词的 5 步句子全部打对；总数 = 可练的词(拼写做对过 1 次以上、有例句的词)
+    var doneT = (c.sent || []).length;
+    setTabCount("sent", doneT, Math.max(doneT, sent.pool.length));
+  }
+  function closeCourse() { el("courseModal").hidden = true; updateTodaySummary(); }
+  el("courseOpenBtn").addEventListener("click", function(){ el("courseModal").hidden = false; });
+  ["courseCloseBtn", "courseBackdrop", "courseOkBtn"].forEach(function(id){ el(id).addEventListener("click", closeCourse); });
 
   // ---------- login ----------
   el("loginBtn").addEventListener("click", function(){
@@ -1463,6 +1604,8 @@
       var hint = el("reviewHint"), btn = el("reviewStartBtn");
       btn.hidden = true; el("rvSizeGrid").hidden = true; el("planOpenBtn").hidden = true;
       state.memRows = rows;
+      sentRefresh();
+      renderTabCounts();
       if (rows) el("planOpenBtn").hidden = false;
       if (!rows) { hint.textContent = "复习计划还没开通（需要先在数据库里建 word_memory 表）。"; el("spellHint").textContent = "拼写练习还没开通（需要先建 word_memory 表）。"; el("spellReviewHint").textContent = "拼写复习还没开通（需要先建 word_memory 表）。"; return; }
       var now = Date.now(), map = wordMap();
@@ -1657,6 +1800,157 @@
     planLoadBatches().then(planRender);
   });
   el("planBackBtn").addEventListener("click", function(){ showView("viewSetup"); });
+
+  // ---------- 拼写句子：词拼写做对过 1 次(spell_count>=1)以后，它的例句才出现 ----------
+  // 每个词 5 步"由短到长"的句子(I run. → I run fast. → …)，每个英文词带中文。每句两步：①看：中英文对照 ②打字：英文隐藏，只留中文提示。
+  // 打完一个词(按空格)读一遍这个词，整句打对读整句。判对：不分大小写、不管标点和多余空格。读音用浏览器自带的朗读。
+  var SENT_SIZE = 2;
+  var sent = { data: null, pool: [], left: [], queue: [], cur: null, total: 0, done: 0, firstOk: 0, phase: "look", boxes: [] };
+  function speakEn(t) {
+    try { if (!window.speechSynthesis) return; speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(t); u.lang = "en-US"; u.rate = 0.85; speechSynthesis.speak(u); } catch (e) {}
+  }
+  function loadSentences() {
+    if (sent.data) return Promise.resolve(sent.data);
+    return fetch("training/sentences.json").then(function(r){ return r.ok ? r.json() : null; }).then(function(d){ sent.data = d; return d; }).catch(function(){ return null; });
+  }
+  function sentRefresh() {
+    loadSentences().then(function(data){
+      el("sentStartBtn").hidden = el("sentSizeGrid").hidden = true;
+      if (!data) { el("sentHint").textContent = "例句还没准备好。"; return; }
+      var rows = state.memRows;
+      if (!rows) { el("sentHint").textContent = "拼写句子还没开通（需要先建 word_memory 表）。"; return; }
+      var map = wordMap();
+      sent.pool = rows.filter(function(r){ return r.spell_count >= 1 && Array.isArray(data[r.word_id]) && data[r.word_id].length >= 2 && map[r.word_id]; })
+        .map(function(r){ return { id: r.word_id, word: map[r.word_id].word, s: data[r.word_id] }; });
+      sent.left = sent.pool.slice();
+      sentRender();
+      renderTabCounts();
+    });
+  }
+  function sentRender() {
+    var n = sent.pool.length, grid = el("sentSizeGrid"), btn = el("sentStartBtn");
+    if (!n) { el("sentHint").textContent = "还没有可练的句子。先在【拼写单词】里把某个词拼对一次，它的例句就会出现在这里。"; return; }
+    el("sentHint").textContent = "可练 " + n + " 个词的句子（拼写做对过 1 次以上的词）。每个词有 5 步由短到长的句子：先看中英文对照，再把句子打出来；打完一个词会读一遍，整句打完读整句。每组几个词：";
+    grid.innerHTML = "";
+    [1, 2, 3].forEach(function(k){
+      var cell = document.createElement("div");
+      cell.className = "count-cell" + (k === SENT_SIZE ? " selected" : "");
+      cell.textContent = k;
+      cell.addEventListener("click", function(){ SENT_SIZE = k; sentRender(); });
+      grid.appendChild(cell);
+    });
+    grid.hidden = btn.hidden = false;
+    btn.textContent = "开始拼写句子（这一组 " + Math.min(n, SENT_SIZE) + " 个词）";
+  }
+  function sentNewGroup() {
+    if (!sent.left.length) sent.left = sent.pool.slice();   // 这一轮都练完了，重新来一轮
+    var g = ptShuffle(sent.left).slice(0, SENT_SIZE);
+    sent.left = sent.left.filter(function(x){ return g.indexOf(x) < 0; });
+    sent.queue = [];
+    g.forEach(function(p){ p.s.forEach(function(s, i){ sent.queue.push({ id: p.id, word: p.word, level: i + 1, levels: p.s.length, s: s, retry: false }); }); });
+    sent.total = sent.queue.length; sent.done = 0; sent.firstOk = 0;
+    showView("viewSent"); sentNext();
+  }
+  // 一句的两个界面：look = 中英文对照(英文可见)；type = 英文隐藏，每个字母一个格子，只打字母(词间空格、标点自动带上)，只留每个词的中文
+  // 点任何一个词(看和打字时都行)都会读这个词。
+  var LETTER = /[A-Za-z0-9]/;
+  function wordLetters(tok) { return tok.replace(/[^A-Za-z0-9]/g, ""); }
+  function speakWordAt(i) { speakEn(sent.cur.s.w[i][0].replace(/[.,?!]/g, "")); }
+  function sentChips(typing) {
+    var box = el("sentWords"); box.innerHTML = ""; sent.boxes = [];
+    sent.cur.s.w.forEach(function(x, wi){
+      var c = document.createElement("div"), en = document.createElement("div"), zh = document.createElement("div"), ins = [];
+      c.className = "sw"; en.className = "en"; zh.className = "zh"; zh.textContent = x[1];
+      if (!typing) en.textContent = x[0];
+      else x[0].split("").forEach(function(ch){
+        if (LETTER.test(ch)) {
+          var i = document.createElement("input");
+          i.className = "sl"; i.maxLength = 1; i.autocomplete = "off"; i.spellcheck = false; i.setAttribute("autocapitalize", "off"); i.setAttribute("autocorrect", "off");
+          i.dataset.w = wi; i.dataset.l = ins.length; ins.push(i); en.appendChild(i);
+        } else { var f = document.createElement("span"); f.className = "fx"; f.textContent = ch; en.appendChild(f); }
+      });
+      c.append(en, zh);
+      c.addEventListener("click", function(e){ if (e.target.tagName !== "INPUT") speakWordAt(wi); });
+      sent.boxes.push(ins); box.appendChild(c);
+    });
+    if (typing) { for (var k = 0; k < sent.boxes.length; k++) if (sent.boxes[k].length) { sent.boxes[k][0].focus(); break; } }
+  }
+  function boxWord(wi) { return sent.boxes[wi].map(function(i){ return i.value; }).join(""); }
+  function sentWordCheck(wi) {   // 一个词的格子填满了：判对错、标颜色，打对了读这个词
+    var ins = sent.boxes[wi], chip = ins[0] && ins[0].closest(".sw"), exp = wordLetters(sent.cur.s.w[wi][0]);
+    if (!chip) return;
+    chip.classList.remove("ok", "bad");
+    if (!ins.every(function(i){ return i.value; })) return;
+    var ok = boxWord(wi).toLowerCase() === exp.toLowerCase();
+    chip.classList.add(ok ? "ok" : "bad");
+    if (ok) { ins.forEach(function(i, k){ i.value = exp[k]; }); speakWordAt(wi); }
+  }
+  function focusAfter(wi, li) {   // 下一个格子：本词的下一个字母，没有就去下一个词的第一个字母
+    if (li + 1 < sent.boxes[wi].length) { sent.boxes[wi][li + 1].focus(); return; }
+    for (var k = wi + 1; k < sent.boxes.length; k++) if (sent.boxes[k].length) { sent.boxes[k][0].focus(); return; }
+  }
+  function focusBefore(wi, li) {
+    if (li > 0) { sent.boxes[wi][li - 1].focus(); return; }
+    for (var k = wi - 1; k >= 0; k--) if (sent.boxes[k].length) { sent.boxes[k][sent.boxes[k].length - 1].focus(); return; }
+  }
+  el("sentWords").addEventListener("input", function(e){
+    var t = e.target; if (!t.classList.contains("sl")) return;
+    var wi = +t.dataset.w, li = +t.dataset.l;
+    t.value = t.value.slice(-1);
+    if (t.value) { sentWordCheck(wi); focusAfter(wi, li); } else t.closest(".sw").classList.remove("ok", "bad");
+  });
+  el("sentWords").addEventListener("keydown", function(e){
+    var t = e.target; if (!t.classList.contains("sl")) return;
+    var wi = +t.dataset.w, li = +t.dataset.l;
+    if (e.key === "Backspace" && !t.value) {
+      e.preventDefault(); focusBefore(wi, li);
+      var p = document.activeElement; if (p && p.classList.contains("sl")) { p.value = ""; p.closest(".sw").classList.remove("ok", "bad"); }
+    } else if (e.key === "ArrowLeft") { e.preventDefault(); focusBefore(wi, li); }
+    else if (e.key === "ArrowRight") { e.preventDefault(); focusAfter(wi, li); }
+    else if (e.key === " ") e.preventDefault();   // 空格不用打，打满一个词会自动跳到下一个词
+  });
+  function sentNext() {
+    el("sentFeedback").hidden = true;
+    if (!sent.queue.length) { sentFinish(); return; }
+    sent.cur = sent.queue.shift(); sent.phase = "look";
+    el("sentProgress").textContent = "「" + sent.cur.word + "」第 " + sent.cur.level + " / " + sent.cur.levels + " 步　本组已完成 " + sent.done + " / " + sent.total + (sent.cur.retry ? "　（刚才打错了，再来一遍）" : "");
+    el("sentZh").textContent = sent.cur.s.zh;
+    sentChips(false);
+    el("sentCheckBtn").textContent = "我看懂了，开始打字";
+    speakEn(sent.cur.s.en);
+  }
+  function sentFinish() {
+    var fb = el("sentFeedback");
+    sent.cur = null; sent.phase = "finish";
+    el("sentZh").textContent = ""; el("sentProgress").textContent = ""; el("sentWords").innerHTML = ""; sent.boxes = [];
+    fb.hidden = false; fb.className = "sent-fb ok";
+    fb.textContent = "🎉 这一组完成：" + sent.total + " 句里一次就打对了 " + sent.firstOk + " 句。";
+    el("sentCheckBtn").textContent = sent.left.length ? "下一组" : "再来一轮";
+  }
+  function sentCheck() {
+    var fb = el("sentFeedback"), cur = sent.cur;
+    if (sent.phase === "finish") { sentNewGroup(); return; }
+    if (sent.phase === "next") { sentNext(); return; }
+    if (sent.phase === "look") {   // 看完了，开始打字：英文隐藏，换成字母格子
+      sent.phase = "type"; el("sentCheckBtn").textContent = "检查"; sentChips(true);
+      return;
+    }
+    var full = sent.boxes.every(function(ins){ return ins.every(function(i){ return i.value; }); });
+    if (!full) { fb.hidden = false; fb.className = "sent-fb bad"; fb.textContent = "还没打完，把每个词的格子都填满。"; return; }
+    var ok = cur.s.w.every(function(x, wi){ return boxWord(wi).toLowerCase() === wordLetters(x[0]).toLowerCase(); });
+    var typed = cur.s.w.map(function(x, wi){ return boxWord(wi); }).join(" ");
+    sent.boxes.forEach(function(ins, wi){ ins.forEach(function(i){ i.disabled = true; }); sentWordCheck(wi); });
+    fb.hidden = false; fb.className = "sent-fb " + (ok ? "ok" : "bad");
+    if (ok) { fb.textContent = "✓ 对了！" + cur.s.en; sent.done++; if (!cur.retry) sent.firstOk++; speakEn(cur.s.en); if (cur.level === cur.levels) markDone("sent", cur.id); }
+    else { fb.textContent = "✗ 正确答案：" + cur.s.en + "（你打的：" + typed + "）。马上再来一遍。"; sent.queue.unshift({ id: cur.id, word: cur.word, level: cur.level, levels: cur.levels, s: cur.s, retry: true }); }
+    sent.phase = "next"; el("sentCheckBtn").textContent = "下一句";
+  }
+  el("sentStartBtn").addEventListener("click", sentNewGroup);
+  el("sentCheckBtn").addEventListener("click", sentCheck);
+  el("sentBackBtn").addEventListener("click", function(){ try { speechSynthesis.cancel(); } catch (e) {} showView("viewSetup"); });
+  document.addEventListener("keydown", function(e){
+    if (e.key === "Enter" && !el("viewSent").hidden) { e.preventDefault(); sentCheck(); }
+  });
   el("reviewStartBtn").addEventListener("click", function(){
     var map = wordMap(), words = (state.reviewDue || []).slice(0, REVIEW_SIZE).map(function(r){ return map[r.word_id]; });
     if (!words.length) return;
@@ -1783,6 +2077,8 @@
         inp.addEventListener("input", function(){
           inp.value = inp.value.replace(/[^a-z]/gi, "").slice(-1);
           if (!inp.value) return;
+          // 这个词的格子填满了、而且拼对了：朗读一次英文
+          if (row.inputs.every(function(i){ return i.value; }) && row.inputs.map(function(i){ return i.value; }).join("").toLowerCase() === row.letters) spPlayWord(w);
           var next = sp.slots[idx + 1];
           if (next) next.focus(); else el("spSubmitBtn").focus();
         });
@@ -1808,7 +2104,7 @@
     sp.rows.forEach(function(r){
       var ok = r.ok = r.inputs.map(function(i){ return i.value; }).join("").toLowerCase() === r.letters;
       r.inputs.forEach(function(i){ i.disabled = true; i.classList.add(ok ? "ok" : "bad"); });
-      if (!ok) { wrong++; r.fix.textContent = "正确拼写：" + r.word.word; }
+      if (!ok) { wrong++; r.fix.textContent = "正确拼写：" + r.word.word; } else markDone("spell", r.word.id);
     });
     sp.allOk = wrong === 0;
     if (!sp.scored) { sp.scored = true; spSchedule(); }
@@ -2896,12 +3192,13 @@
     var q = "referral_code=eq." + state.referrer + "&student_no=eq." + state.studentNo;
     sbGet("training_batches", q + "&cursor_start=gte.0&order=created_at.desc&limit=1").then(function(rows){
       var b = Array.isArray(rows) && rows[0];
-      if (!b) { state.pendingRecording = null; state.pendingBatch = null; return; }
+      if (!b) { state.pendingRecording = null; state.pendingBatch = null; updateTodaySummary(); return; }
       return sbGet("training_recordings", q + "&created_at=gte." + encodeURIComponent(b.created_at) + "&select=difficulty,unit_index,words").then(function(recs){
         var key = batchKey(b.difficulty, b.unit_index, b.words);
         var done = Array.isArray(recs) && recs.some(function(r){ return batchKey(r.difficulty, r.unit_index, r.words) === key; });
         state.pendingRecording = done ? null : key;
         state.pendingBatch = done ? null : b;
+        updateTodaySummary();
       });
     });
   }
@@ -3165,8 +3462,10 @@
       state.todayBatches = Array.isArray(results[0]) ? results[0] : [];
       state.todayRecordings = Array.isArray(results[1]) ? results[1] : [];
       // 组号和"老师反馈"里用同一个算法（该 Unit 里的第几组），这样两边说的"第3组"是同一组
-      state.groupNoOf = makeGroupNoFinder(Array.isArray(results[2]) ? results[2] : []);
+      state.allBatches = Array.isArray(results[2]) ? results[2] : [];
+      state.groupNoOf = makeGroupNoFinder(state.allBatches);
       renderBatchPills();
+      renderGoal();
     });
   }
 
@@ -3229,7 +3528,9 @@
     var todayKeys = {};
     batches.forEach(function(b){ todayKeys[batchKey(b.difficulty, b.unit_index, b.words)] = 1; });
     var olds = (state.retryRecs || []).filter(function(r){ return !todayKeys[batchKey(r.difficulty, r.unit_index, r.words)]; });
-    if (!batches.length && !olds.length) { row.innerHTML = "<span class=\"hint\">今天还没开始学习</span>"; return; }
+    // 今日目标：目标组数 - 今天已学的组数 = 还要放进进度条的"未开始"的组
+    var planned = Math.max(0, getGoal() - batches.filter(function(b){ return b.cursor_start >= 0; }).length);
+    if (!batches.length && !olds.length && !planned) { row.innerHTML = "<span class=\"hint\">今天还没开始学习</span>"; return; }
 
     function addPill(batch, label, isCurrent, isRetry) {
       var pill = document.createElement("button");
@@ -3266,6 +3567,18 @@
       var groupNo = (state.groupNoOf && state.groupNoOf(b)) || (i + 1);
       addPill(b, b.cursor_start < 0 ? "复习" : "第" + groupNo + "组", i === batches.length - 1, !!(rec && rec.admin_status === "retry"));
     });
+    // 接下来的几组：组号接着这个年级已学的组数往后排；第一个点一下就开始学，后面的要按顺序来
+    var unitKey = state.difficulty + "_" + state.selectedUnit;
+    var doneInUnit = (state.allBatches || []).filter(function(b){ return b.cursor_start >= 0 && b.difficulty + "_" + b.unit_index === unitKey; }).length;
+    for (var j = 1; j <= planned; j++) (function(j){
+      var pill = document.createElement("button");
+      pill.className = "batch-pill bp-plan";
+      pill.innerHTML = "<span>第" + (doneInUnit + j) + "组</span><span class=\"status-badge\">未开始</span>";
+      pill.addEventListener("click", function(){
+        if (j === 1) el("startSessionBtn").click(); else alert("请按顺序学习，先把前面的组学完、录好音。");
+      });
+      row.appendChild(pill);
+    })(j);
   }
 
   // 登录期间每30秒刷新一次今天的进度条，老师批改后学生这边能较快看到状态变化
@@ -3274,7 +3587,7 @@
     if (roadmapRefreshTimer) clearInterval(roadmapRefreshTimer);
     roadmapRefreshTimer = setInterval(function(){
       loadTodayBatches();
-      if (!el("viewSetup").hidden) loadMyFeedback();
+      if (HOME_VIEWS[curView]) loadMyFeedback();
     }, 30000);
   }
   function stopRoadmapAutoRefresh() {
