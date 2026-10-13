@@ -237,6 +237,32 @@ function sentStarts(words, sents) {
     const t = t0 + (t1 - t0) * (off - wOff[k]) / len; off += x.length; return +t.toFixed(2);
   });
 }
+// 纯享版自动分句：PPT 讲稿按行断句 → 短于 5 秒的并入后一句 → 再按两条规则把切点挪到句子真正的边界（PPT 换行经常切在一句话中间）：
+//  规则B：上一行末尾挂着下一句的开头语（"所以呢""发现呢"）→ 切点挪到它前面
+//  规则A：下一行以"共有/总共/则/变成/看能/再减去"开头（是上一句的尾巴）→ 切点挪到它后面
+function fixLineCuts(txt, cuts) {
+  const lines = txt.split(/(?<=\n)/), off = []; let o = 0; lines.forEach(l => { off.push(o); o += l.length; });
+  const at = new Map(off.map((x, i) => [x, i])), clean = s => s.replace(/\s+/g, ""), UP = /(所以呢|发现呢(这个)?)$/, DOWN = /^(共有|总共|则|变成|看能|再减去)/;
+  const out = cuts.map(c => {
+    const i = at.get(c); if (!c || i === undefined) return c;
+    if (UP.test(clean(lines[i - 1]))) return off[i - 1];
+    if (DOWN.test(clean(lines[i])) && i + 1 < lines.length) return off[i + 1];
+    return c;
+  });
+  return [...new Set(out)].sort((a, b) => a - b);
+}
+function buildUnits(w, total) {   // w = videos[].words，total = 视频总秒数；返回 [{text, start}]
+  const txt = w.map(x => x[1]).join(""), hasNL = txt.includes("\n"), sents = hasNL ? txt.split(/(?<=\n)/).filter(x => x.trim()) : splitSents(txt);   // PPT 讲稿按行，没有换行的（识别文字）用规则
+  const starts = sentStarts(w, sents), units = sents.map((t, i) => ({ text: t, start: starts[i] }));
+  for (let i = 0; i < units.length - 1;) { if ((units[i + 1].start - units[i].start) < 5) { units[i + 1] = { text: units[i].text + units[i + 1].text, start: units[i].start }; units.splice(i, 1); } else i++; }   // 短于 5 秒并入后一句
+  if (units.length > 1 && total - units[units.length - 1].start < 5) { const l = units.pop(); units[units.length - 1].text += l.text; }   // 最后一句太短并入前一句
+  if (!hasNL) return units;
+  const offs = []; let o = 0; units.forEach(u => { offs.push(o); o += u.text.length; });
+  const fixed = fixLineCuts(txt, offs);
+  if (fixed.length === offs.length && fixed.every((c, k) => c === offs[k])) return units;
+  const ns = fixed.map((c, k) => txt.slice(c, fixed[k + 1] ?? txt.length)), st = sentStarts(w, ns);
+  return ns.map((t, k) => ({ text: t, start: st[k] }));
+}
 // 按波形算每句真正的"开口"和"说完"：在每个切割点附近找最近的一段静音，上一句在静音刚开始后一点点停，下一句在静音快结束时开始；
 // 附近没有静音（连着说）就退回"到切割点前 0.12 秒停"。P 是 loadPeaks 的结果（没有就退回起点即终点）。返回 [[起,终],...]，最后一句终点 Infinity。
 function refineCuts(starts, P) {
@@ -648,12 +674,7 @@ function renderGen1(host, q, submitter) {
   function buildGroups() {
     const w = vids[part].words || []; groups = []; gi = 0; cancelStop(player);
     if (w.length) {
-      const txt = w.map(x => x[1]).join(""), sents = txt.includes("\n") ? txt.split(/(?<=\n)/).filter(x => x.trim()) : splitSents(txt);   // PPT 讲稿按行断句，没有换行的（识别文字）用规则断句
-      const starts = sentStarts(w, sents);
-      // 短于 5 秒的句子并入后一句（最后一句太短就并入前一句）
-      const total = player.duration || w[w.length - 1][0] + 3, units = sents.map((t, i) => ({ text: t, start: starts[i] }));
-      for (let i = 0; i < units.length - 1;) { if ((units[i + 1].start - units[i].start) < 5) { units[i + 1] = { text: units[i].text + units[i + 1].text, start: units[i].start }; units.splice(i, 1); } else i++; }
-      if (units.length > 1 && total - units[units.length - 1].start < 5) { const l = units.pop(); units[units.length - 1].text += l.text; }
+      const units = buildUnits(w, player.duration || w[w.length - 1][0] + 3);   // 自动分句：按行/规则断句 → 短句并入 → 规则 A、B 修正切点
       // 起点：管理员手动改过的(visual_cuts)优先，没有就用自动分句；每组的文字按起点从 words 里取
       autoStarts = units.map(u => u.start); ukey = cur.chapter.dir + "/" + vids[part].src;
       ustarts = cutOv[ukey] ? cutOv[ukey].slice() : autoStarts.slice();
