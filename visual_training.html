@@ -263,29 +263,37 @@ function buildUnits(w, total) {   // w = videos[].words，total = 视频总秒�
   const ns = fixed.map((c, k) => txt.slice(c, fixed[k + 1] ?? txt.length)), st = sentStarts(w, ns);
   return ns.map((t, k) => ({ text: t, start: st[k] }));
 }
-// 按波形算每句真正的"开口"和"说完"：在每个切割点附近找最近的一段静音，上一句在静音刚开始后一点点停，下一句在静音快结束时开始；
-// 附近没有静音（连着说）就退回"到切割点前 0.12 秒停"。P 是 loadPeaks 的结果（没有就退回起点即终点）。返回 [[起,终],...]，最后一句终点 Infinity。
+// 按波形算每句真正的起止，不留硬切：每个切点都落在静音(停顿)里；
+//  - 切点已经在静音里：就用这个静音；
+//  - 否则在前后 3 秒内找最近的静音，前后差不多近时看句子长度（短的那句往长里放）；
+//  - 前后 3 秒内一个停顿都没有(一直连着说)：落在这一段声音最小的位置。
+// 上一句停在静音开始后 0.1 秒，下一句从静音结束前 0.1 秒开始。starts 是按文字对齐的句子起点(不变)，返回 [[起,终],...]，最后一句终点 Infinity。
 function refineCuts(starts, P) {
-  const cuts = startsToCuts(starts);
-  if (!P) return cuts;
-  const { pk, PER } = P, thr = 0.04, minGap = Math.round(0.12 * PER), quiet = i => pk[i] < thr;
-  const gapNear = (t, lo, hi) => {   // 在 [lo,hi] 秒里找离 t 最近的静音段，没有返回 null
-    let best = null;
-    for (let i = Math.max(0, Math.floor(lo * PER)), end = Math.min(pk.length, Math.ceil(hi * PER)); i < end;) {
-      if (!quiet(i)) { i++; continue; }
-      let a = i, j = i; while (a > 0 && quiet(a - 1)) a--; while (j < pk.length && quiet(j)) j++;   // 静音段可能在查找范围之前就开始了，向前补全
-      if (j - a >= minGap) { const d = Math.abs((a + j) / 2 / PER - t); if (!best || d < best.d) best = { d, a: a / PER, b: j / PER }; }
-      i = j;
+  const n = starts.length, cuts = startsToCuts(starts);
+  if (!P || n < 2) return cuts;
+  const { pk, PER } = P, dur = P.dur ?? pk.length / PER, thr = 0.04, minGap = Math.round(0.12 * PER), MAX = 3, TAIL = 0.1;
+  const gaps = [];   // 所有静音段 [起,止] 秒
+  for (let i = 0; i < pk.length;) { if (pk[i] >= thr) { i++; continue; } let j = i; while (j < pk.length && pk[j] < thr) j++; if (j - i >= minGap) gaps.push([i / PER, j / PER]); i = j; }
+  const dist = (g, s) => Math.max(0, g[0] - s, s - g[1]);
+  const fin = [{ start: starts[0], end: null }];
+  for (let i = 1; i < n; i++) {
+    const s = starts[i], prevStart = fin[i - 1].start, next = starts[i + 1] ?? dur;
+    const near = gaps.filter(g => dist(g, s) <= MAX && (g[0] + g[1]) / 2 > prevStart + 0.3 && (g[0] + g[1]) / 2 < next - 0.3);   // 不能越过前后句
+    let g = near.find(x => x[0] <= s && s <= x[1]) ?? null;
+    if (!g && near.length) {
+      const near1 = (list) => list.sort((x, y) => dist(x, s) - dist(y, s))[0];
+      const bef = near1(near.filter(x => x[1] <= s)), aft = near1(near.filter(x => x[0] >= s));
+      if (bef && aft) { const d1 = dist(bef, s), d2 = dist(aft, s); g = Math.abs(d1 - d2) > 0.5 ? (d1 < d2 ? bef : aft) : ((s - prevStart) <= (next - s) ? aft : bef); }   // 前后差不多近：短的那句往长里放
+      else g = bef || aft;
     }
-    return best;
-  };
-  starts.forEach((s, i) => {
-    if (i === 0) return;
-    const g = gapNear(s, s - 0.5, s + 0.05);   // 只认"切割点前 0.5 秒内就开始的静音"（切割点在静音里，或静音在它前面）；静音在切割点后面时不动，免得跳过开头的字
-    cuts[i - 1][1] = Math.max(cuts[i - 1][0] + 0.3, g ? Math.min(s - 0.05, g.a + 0.1) : s - 0.12);
-    if (g && g.b - 0.1 > starts[i - 1] + 0.3) cuts[i][0] = g.b - 0.1;   // 下一句从开口前 0.1 秒开始（切割点落在静音中间时，不再空等）
-  });
-  return cuts;
+    if (g) { const mid = (g[0] + g[1]) / 2; fin.push({ start: Math.max(mid, g[1] - TAIL), end: Math.min(mid, g[0] + TAIL) }); continue; }
+    // 前后 3 秒内没有停顿：落在声音最小的位置（0.06 秒窗口的平均）
+    const w = Math.max(1, Math.round(0.06 * PER)), lo = Math.max(Math.round((prevStart + 0.3) * PER), Math.round((s - 1.5) * PER)), hi = Math.min(Math.round((next - 0.3) * PER), Math.round((s + 1.5) * PER));
+    let best = Math.round(s * PER), bv = Infinity;
+    for (let k = lo; k + w <= hi; k++) { let t = 0; for (let m = 0; m < w; m++) t += pk[k + m]; if (t < bv) { bv = t; best = k + Math.floor(w / 2); } }
+    const v = best / PER; fin.push({ start: v, end: v });
+  }
+  return fin.map((f, k) => [f.start, k + 1 < n ? Math.max(f.start + 0.3, fin[k + 1].end) : Infinity]);
 }
 // 到句尾就停。不用 timeupdate（每 250 毫秒才触发一次，会多读进下一句的头两个字），改成每一帧检查
 function stopAtEnd(media, end, onEnd) {
@@ -668,23 +676,24 @@ function renderGen1(host, q, submitter) {
   // ---- 分句听 + 按组录（需要视频有 words 时间戳；没有就只显示整段播放）----
   const sentBox = document.createElement("div"); sentBox.style.marginTop = "10px";
   let sentMode = false, gsize = 1, gi = 0, groups = [];
-  let ustarts = [], autoStarts = [], ukey = "", vpk = null;   // 每句起点（可被管理员改）、自动分句起点、当前视频的 id
+  let ustarts = [], autoStarts = [], ukey = "", vpk = null, scuts = null;   // scuts：内容库里提前算好的每句起止（管理员改过分句后作废）   // 每句起点（可被管理员改）、自动分句起点、当前视频的 id
   const tabRow = (items, cur, on) => { const r = document.createElement("div"); r.className = "row"; items.forEach(([name, v]) => { const t = document.createElement("button");
     t.className = "tab" + (v === cur ? " active" : ""); t.textContent = name; t.onclick = () => on(v); r.appendChild(t); }); return r; };
   function buildGroups() {
     const w = vids[part].words || []; groups = []; gi = 0; cancelStop(player);
     if (w.length) {
-      const units = buildUnits(w, player.duration || w[w.length - 1][0] + 3);   // 自动分句：按行/规则断句 → 短句并入 → 规则 A、B 修正切点
-      // 起点：管理员手动改过的(visual_cuts)优先，没有就用自动分句；每组的文字按起点从 words 里取
-      autoStarts = units.map(u => u.start); ukey = cur.chapter.dir + "/" + vids[part].src;
+      // 起点：管理员手动改过的(visual_cuts)优先；没有就用内容库里提前算好的(starts/cuts)；都没有才在浏览器里现算（按行/规则断句 → 短句并入 → 规则 A、B → 读波形修正起止）
+      const v = vids[part]; ukey = cur.chapter.dir + "/" + v.src;
+      autoStarts = v.starts ? v.starts.slice() : buildUnits(w, player.duration || w[w.length - 1][0] + 3).map(u => u.start);
       ustarts = cutOv[ukey] ? cutOv[ukey].slice() : autoStarts.slice();
+      scuts = !cutOv[ukey] && v.cuts ? v.cuts.map(c => [c[0], c[1] ?? Infinity]) : null;   // 提前按波形算好的每句起止
       vpk = null; regroup();
-      const pp = part; loadPeaks(url(base + vids[part].src)).then(P => { if (pp === part) { vpk = P; regroup(); renderSent(); } }).catch(() => {});   // 视频波形读完后，按真实说话起止重算每组的播放范围
+      if (!scuts) { const pp = part; loadPeaks(url(base + v.src)).then(P => { if (pp === part) { vpk = P; regroup(); renderSent(); } }).catch(() => {}); }   // 没有提前算好的：读完视频波形后按真实说话起止重算
     }
     renderSent();
   }
   function regroup() {
-    const w = vids[part].words || [], rc = refineCuts(ustarts, vpk); groups = [];   // rc：按视频波形算出的每句真实起止
+    const w = vids[part].words || [], rc = scuts ?? refineCuts(ustarts, vpk); groups = [];   // rc：每句真实起止（提前算好的优先，否则按视频波形现算）
     for (let i = 0; i < ustarts.length; i += gsize) groups.push({ text: textBetween(w, ustarts[i], ustarts[i + gsize] ?? Infinity), start: rc[i][0], end: rc[Math.min(i + gsize, rc.length) - 1][1] });
   }
   const gProg = document.createElement("progress"); gProg.max = 1; gProg.value = 0; gProg.style.cssText = "width:100%;height:10px;margin:6px 0";   // 当前这一组的播放进度
@@ -714,7 +723,7 @@ function renderGen1(host, q, submitter) {
         const bar = document.createElement("div"); bar.className = "row sentedit";
         const b = document.createElement("button"); b.textContent = "🎬 调整分句位置（时间轴）";
         b.onclick = () => { player.pause(); openCutEditor({ src: url(base + vids[part].src), isVideo: true, title: "调整分句：" + vids[part].src, id: ukey, starts: ustarts, auto: autoStarts, words: vids[part].words,
-          onDone: () => { regroup(); gi = Math.max(0, Math.min(gi, groups.length - 1)); renderSent(); } }); };
+          onDone: async () => { scuts = null; vpk ??= await loadPeaks(url(base + vids[part].src)).catch(() => null); regroup(); gi = Math.max(0, Math.min(gi, groups.length - 1)); renderSent(); } }); };
         const st = document.createElement("span"); st.style.cssText = "font-size:12px;color:var(--muted)"; st.textContent = cutOv[ukey] ? "已用人工分句" : "自动分句";
         bar.append(b, st); kids.push(bar);
       }
@@ -872,10 +881,10 @@ function renderGen2(host, q, submitter) {
           if (!sentMode) { ctl.replaceChildren(); $q(".sentedit")?.replaceChildren(); audio.play(); return; }
           // 起点：管理员手动改过的(visual_cuts)优先，没有就用自动分句
           const key = base + "audio/" + s.audio;
-          const auto = s._auto ??= (s.words?.length ? wordCuts(s.words) : await sentenceCuts(audio.src, s.text)).map(c => c[0]);
+          const auto = s._auto ??= s.starts ?? (s.words?.length ? wordCuts(s.words) : await sentenceCuts(audio.src, s.text)).map(c => c[0]);   // 内容库里提前算好的起点优先
           const starts = s._starts = cutOv[key] ? cutOv[key].slice() : auto.slice();
-          const P = await loadPeaks(audio.src).catch(() => null);   // 按真实波形找每句的开口/说完（失败就退回按起点）
-          let cuts = refineCuts(starts, P), i = 0;
+          let P = null; const peaks = async () => P ??= await loadPeaks(audio.src).catch(() => null);   // 需要时才读波形（失败就退回按起点）
+          let cuts = !cutOv[key] && s.cuts ? s.cuts.map(c => [c[0], c[1] ?? Infinity]) : refineCuts(starts, await peaks()), i = 0;   // 提前按波形算好的每句起止优先
           const label = document.createElement("span"), mk = (t, f) => { const x = document.createElement("button"); x.textContent = t; x.onclick = f; return x; };
           const prev = mk("⏮ 上一句", () => { i--; play(); }), again = mk("🔁 重听", () => play()), next = mk("下一句 ⏭", () => { i++; play(); });
           const upd = () => { label.textContent = " 第 " + (i + 1) + " / " + cuts.length + " 句 "; prev.disabled = i <= 0; next.disabled = i >= cuts.length - 1; };
@@ -888,7 +897,7 @@ function renderGen2(host, q, submitter) {
           if (isAdmin()) {   // 管理员：打开时间轴编辑器调整这个回答的分句
             const eb = document.createElement("button"); eb.textContent = "🎬 调整分句位置（时间轴）";
             eb.onclick = () => { audio.pause(); openCutEditor({ src: audio.src, isVideo: false, title: "调整分句：" + s.audio, id: key, starts, auto, words: s.words,
-              onDone: () => { cuts = refineCuts(starts, P); i = Math.min(i, cuts.length - 1); upd(); } }); };
+              onDone: async () => { cuts = refineCuts(starts, await peaks()); i = Math.min(i, cuts.length - 1); upd(); } }); };
             $q(".sentedit").replaceChildren(eb, Object.assign(document.createElement("span"), { textContent: cutOv[key] ? "已用人工分句" : "自动分句", style: "font-size:12px;color:var(--muted)" }));
           }
         };
