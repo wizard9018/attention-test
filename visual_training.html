@@ -242,7 +242,7 @@ function sentStarts(words, sents) {
 //  规则A：下一行以"共有/总共/则/变成/看能/再减去"开头（是上一句的尾巴）→ 切点挪到它后面
 function fixLineCuts(txt, cuts) {
   const lines = txt.split(/(?<=\n)/), off = []; let o = 0; lines.forEach(l => { off.push(o); o += l.length; });
-  const at = new Map(off.map((x, i) => [x, i])), clean = s => s.replace(/\s+/g, ""), UP = /(所以呢|发现呢(这个)?)$/, DOWN = /^(共有|总共|则|变成|看能|再减去)/;
+  const at = new Map(off.map((x, i) => [x, i])), clean = s => s.replace(/\s+/g, ""), UP = /(所以呢|发现呢(这个)?|这里(一定|我们)?要注意了哈?|问我们呢)$/, DOWN = /^(共有|总共|则|变成|看能|再减去|也是|问船|方便)/;
   const out = cuts.map(c => {
     const i = at.get(c); if (!c || i === undefined) return c;
     if (UP.test(clean(lines[i - 1]))) return off[i - 1];
