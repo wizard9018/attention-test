@@ -112,10 +112,32 @@
   .spk.done{background:#eafbe0}.spk.on{background:#ddf4ff;border-color:var(--blue)}
   .spk.sel{border-color:#ff9600;box-shadow:0 0 0 3px rgba(255,150,0,.35)}
   .titleCard{font-size:22px;font-weight:800;line-height:1.6;padding:24px 10px;color:#2b2b2b}
+  .spk.ok::after{content:"✓";position:absolute;right:-5px;top:-7px;width:19px;height:19px;border-radius:50%;background:#58cc02;color:#fff;font-size:13px;line-height:19px;text-align:center;font-weight:800}
+  .spPanels.pick .spk{border:2px dashed #ff9600}.spPanels.pick .spk.sel{border-style:solid;background:#fff1d6}
+  .spSel .tab.active{background:#fff1d6;border-color:#ff9600;color:#b36b00}
   .spLbl{position:absolute;display:flex;align-items:center;font-weight:800;color:var(--muted);white-space:nowrap}
   .spBar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:4px}.spBar .modeRow{display:flex;gap:8px}
   .spSel{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:6px 0}.spRec{margin-top:4px}
-  .spRec .segrec{flex-direction:row;align-items:center;flex-wrap:wrap}.spRec .segrec button{width:auto}.spRec .segrec .st{max-width:none}
+  .spSel .segrec{flex-direction:row;align-items:center;flex-wrap:wrap;width:auto}.spSel .segrec button{width:auto}.spSel .segrec .st{max-width:none}
+  /* 新版面压缩：页面加宽、三栏（题目 | 喇叭 | 画板+最后一起录），尽量一屏放下 */
+  body.wide .wrap{max-width:1680px;padding-bottom:12px}
+  body.wide #viewLearn:not([hidden]){display:flex;flex-wrap:wrap;align-items:center;column-gap:14px}   /* 返回课程+标题 和 题号栏 并成一行 */
+  body.wide #learnBody{flex:0 0 100%}body.wide .learn-top{margin:0 0 6px}body.wide #pills{margin:0 0 6px}
+  .g2f.g2final{display:flex;flex-direction:row;flex:none;gap:12px;align-items:center;flex-wrap:nowrap;margin-top:8px;padding:8px 14px}   /* 最后一起录：一条窄栏（标题、录音、参考讲解、下一题同一行） */
+  .g2final .finalbox{display:flex;align-items:center;gap:12px;flex:1 1 0;min-width:0;flex-wrap:wrap}.g2final .finalbox .g2h{margin:0}
+  .g2final .reveal{flex:none;white-space:nowrap}.g2final .nextbar{margin:0;flex:none}.g2final .nextbar button{padding:9px 22px;white-space:nowrap}
+  @media (max-width:1100px){.g2f.g2final{flex-wrap:wrap}}
+  .g2final .recbar{margin-top:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .g2final .recbar .main{width:310px;padding:10px;font-size:15px}.g2final .recbar .status{margin-top:0}
+  .g2final .recbar audio{width:240px;height:36px;margin-top:0}.g2final .recbar .acts{margin-top:0}
+  .g2final .reveal{margin:0}
+  body.wide .nextbar{margin-top:8px}body.wide .nextbar button{padding:9px}
+  .g2grid{display:grid;gap:10px;align-items:start;grid-template-columns:minmax(240px,1fr) minmax(400px,1.7fr) 250px}
+  .g2side{display:flex;flex-direction:column;gap:10px}.g2side .g2d canvas{width:100%;height:auto;aspect-ratio:320/150}.g2side .g2d{padding:8px 10px}
+  .g2sp .sentctl{min-width:0;min-height:0}.g2sp.sm .sentctl{min-height:40px}
+  .g2sp .spPanels{display:flex;flex-direction:column;align-items:flex-start}
+  @media (max-width:1100px){.g2grid{grid-template-columns:minmax(220px,1fr) minmax(360px,1.5fr)}.g2side{grid-column:1/-1;flex-direction:row}.g2side>.card{flex:1 1 0}}
+  @media (max-width:700px){.g2grid{grid-template-columns:1fr}.g2side{flex-direction:column}}
   .sentedit{min-height:44px;margin-bottom:6px;padding:4px 8px;border-radius:10px;background:#fff7e0}.sentedit button{padding:5px 10px}   /* 管理员编辑条：固定占位，点喇叭时版面不跳 */
   .g2listen .tabsrow{margin-bottom:6px}.g2listen .tab{padding:5px 14px}
   .ctlline{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
@@ -446,7 +468,7 @@ let user = null, index = null, status = {};   // status: question_id -> {status,
 let sel = { stage: "初中", mode: "gen1", subject: "数学", grade: "初一", term: "上" };
 let cur = null;   // {course, chapter, manifest, qi}
 
-function show(v) { ["viewLogin", "viewCourse", "viewLearn"].forEach(x => $(x).hidden = x !== v); $("logoutBtn").hidden = v === "viewLogin"; }
+function show(v) { if (v !== "viewLearn") document.body.classList.remove("wide"); ["viewLogin", "viewCourse", "viewLearn"].forEach(x => $(x).hidden = x !== v); $("logoutBtn").hidden = v === "viewLogin"; }
 const qidOf = (dir, q) => dir + "/" + q.id;
 const esc = s => String(s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
 
@@ -575,7 +597,7 @@ function renderPills() {
 let mediaEls = [];
 function stopMedia() { mediaEls.forEach(m => { try { m.pause(); } catch (e) {} }); mediaEls = []; }
 function loadQuestion(i) {
-  stopMedia();
+  stopMedia(); document.body.classList.remove("wide");   // 新版面的题会在 renderGen2Free 里再加上
   cur.qi = i;
   const q = cur.manifest.questions[i];
   renderPills();
@@ -595,7 +617,7 @@ function loadQuestion(i) {
   nextBar.appendChild(nb);
   const submitter = makeSubmitter(qid, () => { renderPills(); nextBar.hidden = false; });
   if (cur.course.mode === "gen1") renderGen1(host, q, submitter); else renderGen2(host, q, submitter);
-  body.appendChild(nextBar);
+  const fbar = host.querySelector(".g2final"); (fbar || body).appendChild(nextBar);   // 新版面：下一题按钮放进"最后一起录"那一条的最右边，省一行
 }
 
 // ---------- 录音 + 提交给老师批改（两种版本共用）----------
@@ -780,27 +802,30 @@ function overlapScore(said, ref) {
   for (let i = 0; i < b.length - 1; i++) { total++; if (set.has(b[i] + " " + b[i + 1])) hit++; }
   return total ? Math.round(hit / total * 100) : 0;
 }
-function segRecorder(getRef, label) {
+function segRecorder(getRef, label, onDone) {
   const box = document.createElement("div"); box.className = "segrec";
   const btn = document.createElement("button"), st = document.createElement("span"); st.className = "st";
   const idle = "🎙 " + label; btn.textContent = idle; box.append(btn, st);
-  let mr, chunks = [], rec = false;
+  let mr, chunks = [], rec = false, t0 = 0;
   btn.onclick = async () => {
     if (!rec) {
       let stream; try { stream = await getMic(); } catch (e) { st.textContent = "⚠ 无法使用麦克风"; return; }
       mr = new MediaRecorder(stream); chunks = []; mr.ondataavailable = e => chunks.push(e.data); mr.onstop = onStop;
-      mr.start(); rec = true; btn.textContent = "■ 停止"; btn.classList.add("on"); st.textContent = "录音中…";
+      mr.start(); t0 = Date.now(); rec = true; btn.textContent = "■ 停止"; btn.classList.add("on"); st.textContent = "录音中…";
     } else { mr.stop(); rec = false; btn.textContent = idle; btn.classList.remove("on"); btn.disabled = true; }
   };
   async function onStop() {
+    const info = { ms: Date.now() - t0 };
     st.textContent = "识别中（第一次要下载语音识别模型，请稍等）…";
     try {
       await getPinyin();
       const asr = await getAsr();
       const res = await asr(URL.createObjectURL(new Blob(chunks, { type: "audio/webm" })), { language: "chinese", task: "transcribe", chunk_length_s: 30, return_timestamps: true });
-      btn.classList.add("done"); st.innerHTML = "重合度 <b>" + overlapScore(res.text, getRef()) + "%</b>　" + esc(res.text);
+      info.score = overlapScore(res.text, getRef()); info.text = res.text; info.ok = true;
+      btn.classList.add("done"); st.innerHTML = "重合度 <b>" + info.score + "%</b>　" + esc(res.text);
     } catch (e) { st.textContent = "⚠ 识别失败：" + e.message; }
     btn.disabled = false;
+    if (onDone) onDone(info);   // 录完（识别成功或失败）都通知调用方
   }
   return box;
 }
@@ -875,18 +900,19 @@ async function sentencePlay(audio, s, base, ctl, editHost) {
 // 需要题目带位置数据：steps[].pos = [页码, x, y, cx, cy]（EMU），questions[].layout = [{slide, labels:[{t,x,y,cx,cy}]}]；没有就走旧版面。
 function renderGen2Free(host, q, submitter) {
   const base = cur.chapter.dir + "/", qid = qidOf(cur.chapter.dir, q), qNum = cur.qi + 1, REVEAL = 5;
-  host.innerHTML = '<div class="g2top fr"><div class="card g2q"><div class="g2h">1. 题目</div><div class="stage"></div></div>' +
+  document.body.classList.add("wide");   // 页面加宽（离开学习页或换到旧版面的题时取消）
+  const SHORT_FINAL = "4. 全部听完后，完整复述一遍（交给老师批改）";
+  host.innerHTML = '<div class="g2grid"><div class="card g2q"><div class="g2h">1. 题目</div><div class="stage"></div></div>' +
     '<div class="card g2sp"><div class="g2h">2. 点小喇叭听讲解；想复述哪几个，就把它们选中，再点"录音"</div><div class="spPanels"></div>' +
-    '<div class="spBar"><div class="modeRow"></div><div class="sentctl"></div></div>' + (isAdmin() ? '<div class="row sentedit"></div>' : '') +
-    '<div id="curQuestion"></div><div class="spSel"></div><div class="spRec"></div></div></div>' +
-    '<div class="g2top fr2"><div class="card g2d"><div class="g2h">3. 默画图形</div><canvas width="320" height="240"></canvas>' +
-    '<div class="g2btns"><button class="clr">清空</button><button class="save">💾 保存这张图</button></div><div class="draw-gallery" style="display:none"></div></div>' +
-    '<div class="card g2f"><div class="finalbox"></div><button class="reveal tab">5. 听不懂？看参考讲解</button></div></div>' +
+    '<div id="curQuestion"></div><div class="spSel"></div></div>' +
+    '<div class="g2side"><div class="card g2d"><div class="g2h">3. 默画图形</div><canvas width="320" height="150"></canvas>' +
+    '<div class="g2btns"><button class="clr">清空</button><button class="save">💾 保存这张图</button></div><div class="draw-gallery" style="display:none"></div></div></div></div>' +
+    '<div class="card g2f g2final"><div class="finalbox"></div><button class="reveal tab">5. 听不懂？看参考讲解</button></div>' +
     '<div class="card backcard" style="display:none;margin-top:10px"><div class="back"></div></div>';
   const $q = s => host.querySelector(s);
-  renderStage($q(".stage"), q.fronts[0], base, 330); renderStage($q(".back"), q.backs[0], base);
+  renderStage($q(".stage"), q.fronts[0], base, 300); renderStage($q(".back"), q.backs[0], base);
   if (!q.fronts.length) { const t = $q(".stage"); t.className = "stage titleCard"; t.textContent = q.layout[0]?.title || "（这一题没有题目图，请听右边的小喇叭）"; }   // 只有标题+喇叭的页：左边显示页面标题
-  const finalLbl = document.createElement("div"); finalLbl.className = "g2h"; finalLbl.textContent = "4. 全部听完后，完整复述一遍（交给老师批改）";
+  const finalLbl = document.createElement("div"); finalLbl.className = "g2h"; finalLbl.textContent = SHORT_FINAL;
   $q(".finalbox").append(finalLbl, submitter.el);
   if (q.backs.length) $q(".reveal").onclick = () => { const c = $q(".backcard"), s = c.style.display === "none"; c.style.display = s ? "block" : "none"; $q(".reveal").textContent = s ? "收起参考讲解" : "5. 听不懂？看参考讲解"; };
   else $q(".reveal").remove();   // 没有参考讲解的题不显示这个按钮
@@ -894,58 +920,88 @@ function renderGen2Free(host, q, submitter) {
   setupDrawing($q, qid, qNum);
 
   const audio = new Audio(); mediaEls.push(audio);
-  const qText = $q("#curQuestion"), ctl = $q(".sentctl"), editHost = $q(".sentedit"), sel = new Set(), btns = [];
-  let sentMode = false;
+  const qText = $q("#curQuestion"), sel = new Set(), btns = [];
   const stop = () => { audio.pause(); cancelStop(audio); audio.onended = null; };
   async function playStep(i, b, whole) {
-    const s = q.steps[i]; stop(); ctl.replaceChildren(); editHost?.replaceChildren();
+    const s = q.steps[i]; stop();
     audio.src = url(base + "audio/" + s.audio);
     btns.forEach(x => x && x.classList.remove("on")); b.classList.add("on", "done");
     s._plays = (s._plays || 0) + 1;
     qText.textContent = s._plays >= REVEAL ? (s.text || "") : "🔊 已听 " + s._plays + " / " + REVEAL + " 遍，听不懂就多听几遍，满" + REVEAL + "遍会显示文字";
-    if (sentMode && !whole && (s.words?.length || s.text)) await sentencePlay(audio, s, base, ctl, editHost); else audio.play();
+    audio.play();
   }
 
-  const rec = segRecorder(() => [...sel].sort((a, b) => a - b).map(i => q.steps[i].text || "").join(""), "录音（录选中的喇叭内容）");
+  // ---- 选中喇叭录音：点"选中喇叭录音"进入选择状态 → 点要录的喇叭 → 点"开始录音"；录完这些喇叭打勾 ✓；所有喇叭都打勾后，才解锁下面的整体复述（交给老师批改）----
+  const recKey = "vt_recspk_" + user.referrer + "_" + user.studentNo + "_" + qid;
+  const recorded = new Set(); try { JSON.parse(localStorage.getItem(recKey) || "[]").forEach(i => i < q.steps.length && recorded.add(i)); } catch (e) {}
+  let pick = false;
+  const rec = segRecorder(() => [...sel].sort((a, b) => a - b).map(i => q.steps[i].text || "").join(""), "开始录音（录选中的喇叭）", r => {
+    if (r.ms >= 1500) {   // 至少录满 1.5 秒才算数，防止点一下就打勾
+      sel.forEach(i => recorded.add(i)); try { localStorage.setItem(recKey, JSON.stringify([...recorded])); } catch (e) {}
+      sel.clear(); btns.forEach(b => b && b.classList.remove("sel"));
+    } else rst.textContent = "录音太短（不到 1.5 秒），没记上，请再录一次";
+    refresh();
+  });
   const rb = rec.querySelector("button"), rst = rec.querySelector(".st"), recording = () => rb.classList.contains("on");
   rb.addEventListener("click", e => {   // 先拦一道：没选喇叭不能录；开始录音前停掉正在播的声音
     if (recording()) return;
-    if (!sel.size) { e.stopImmediatePropagation(); rst.textContent = "先点选要复述的小喇叭（可以选一个，也可以选几个）"; return; }
+    if (!sel.size) { e.stopImmediatePropagation(); rst.textContent = "先点选要录的小喇叭（可以选一个，也可以选几个）"; return; }
     stop();
   }, true);
   const info = document.createElement("span"); info.className = "st";
-  const updSel = () => { info.textContent = sel.size ? "已选 " + sel.size + " 个，录音时按它们原来的先后顺序对照" : "还没选小喇叭"; };
   const mkBtn = (t, f) => { const x = document.createElement("button"); x.className = "tab"; x.textContent = t; x.onclick = f; return x; };
-  const clr = mkBtn("清除选择", () => { if (recording()) return; sel.clear(); btns.forEach(b => b && b.classList.remove("sel")); updSel(); });
-  const playSel = mkBtn("▶ 依次播放选中的", async () => {
-    const order = [...sel].sort((a, b) => a - b); if (!order.length || recording()) return;
-    const run = async k => { await playStep(order[k], btns[order[k]], true); if (k + 1 < order.length) audio.onended = () => run(k + 1); };
-    await run(0);
+  const lockMsg = "🎙 先把每个小喇叭都录完，再整体复述", total = q.steps.length;
+  const refresh = () => {
+    btns.forEach((b, i) => b && b.classList.toggle("ok", recorded.has(i)));
+    info.textContent = (pick ? (sel.size ? "已选 " + sel.size + " 个　" : "点要录的小喇叭（可多选）　") : "") + "已录 " + recorded.size + " / " + total;
+    submitter.setEnabled(recorded.size >= total || !!status[qid], lockMsg);   // 全部录完（或这题以前交过、老师让重录）才能整体复述
+  };
+  const clr = mkBtn("清除选择", () => { if (recording()) return; sel.clear(); btns.forEach(b => b && b.classList.remove("sel")); refresh(); });
+  const pickBtn = mkBtn("🎙 选中喇叭录音", () => {
+    if (recording()) return;
+    pick = !pick; sel.clear(); btns.forEach(b => b && b.classList.remove("sel")); stop(); rst.textContent = "";
+    pickBtn.textContent = pick ? "✕ 退出选择" : "🎙 选中喇叭录音"; pickBtn.classList.toggle("active", pick);
+    rec.hidden = clr.hidden = !pick; $q(".spPanels").classList.toggle("pick", pick); refresh();
   });
-  $q(".spSel").append(clr, playSel, info); $q(".spRec").appendChild(rec); updSel();
+  rec.hidden = clr.hidden = true;
+  $q(".spSel").append(pickBtn, clr, rec, info);
 
-  const boxes = q.layout.map(L => {   // 每个题目页的范围（喇叭+标签）；多页时所有页共用同一个缩放比例，喇叭大小才一致
+  const gap = (spans, gmax) => {   // 去掉空白：占位区间(喇叭、标签)之间超过 gmax 的空隙压成 gmax；返回坐标换算函数
+    const sp = spans.slice().sort((p, r) => p[0] - r[0]), merged = [];
+    sp.forEach(([a, b]) => { const L = merged[merged.length - 1]; if (L && a <= L[1]) L[1] = Math.max(L[1], b); else merged.push([a, b]); });
+    const cuts = []; let cum = 0;
+    for (let k = 1; k < merged.length; k++) { const g = merged[k][0] - merged[k - 1][1]; if (g > gmax) { cum += g - gmax; cuts.push([merged[k][0], cum]); } }
+    return v => { let sub = 0; for (const [at, c] of cuts) if (v >= at) sub = c; return v - sub; };
+  };
+  const boxes = q.layout.map(L => {   // 每个题目页：压缩后的喇叭/标签坐标和范围；多页共用同一缩放比例，喇叭大小才一致
     const items = q.steps.map((s, i) => [s, i]).filter(([s]) => s.pos && s.pos[0] === L.slide);
+    const lh = l => l.cy || 380000, lw = l => Math.min(l.cx || 1e9, l.t.length * lh(l) * 0.75 + 150000);   // 标签的占位宽度（按字数估）
+    const sz = items.map(([s]) => s.pos[3]).sort((a, b) => a - b)[Math.floor(items.length / 2)] || 487363, G = sz * 0.28;
+    const mx = gap([...items.map(([s]) => [s.pos[1], s.pos[1] + s.pos[3]]), ...L.labels.map(l => [l.x, l.x + lw(l)])], G);
+    const my = gap([...items.map(([s]) => [s.pos[2], s.pos[2] + s.pos[4]]), ...L.labels.map(l => [l.y, l.y + lh(l)])], G);
+    const it = items.map(([s, i]) => ({ i, x: mx(s.pos[1]), y: my(s.pos[2]), cx: s.pos[3], cy: s.pos[4] }));
+    const lb = L.labels.map(l => ({ t: l.t, x: mx(l.x), y: my(l.y), cx: lw(l), cy: lh(l) }));
     let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
-    items.forEach(([s]) => { x0 = Math.min(x0, s.pos[1]); y0 = Math.min(y0, s.pos[2]); x1 = Math.max(x1, s.pos[1] + s.pos[3]); y1 = Math.max(y1, s.pos[2] + s.pos[4]); });
-    L.labels.forEach(l => { x0 = Math.min(x0, l.x); y0 = Math.min(y0, l.y); x1 = Math.max(x1, l.x + (l.cx || 900000)); y1 = Math.max(y1, l.y + (l.cy || 380000)); });
-    const m = 120000; x0 -= m; y0 -= m; x1 += m; y1 += m;
-    return { items, x0, y0, W: x1 - x0, H: y1 - y0 };
+    [...it, ...lb].forEach(e => { x0 = Math.min(x0, e.x); y0 = Math.min(y0, e.y); x1 = Math.max(x1, e.x + e.cx); y1 = Math.max(y1, e.y + e.cy); });
+    const m = 50000; x0 -= m; y0 -= m; x1 += m; y1 += m;
+    return { it, lb, x0, y0, W: x1 - x0, H: y1 - y0, sz };
   }), Wmax = Math.max(...boxes.map(b => b.W));
-  q.layout.forEach((L, pi) => {   // 每个题目页一块；喇叭和文字标签都按它们在 PPT 页面上的位置摆
-    const { items, x0, y0, W, H } = boxes[pi], panel = document.createElement("div"); panel.className = "spPanel"; panel.style.aspectRatio = W + " / " + H; panel.style.width = W / Wmax * 100 + "%";
-    L.labels.forEach(l => {
+  q.layout.forEach((L, pi) => {   // 每个题目页一块；喇叭每个最大约 48 像素
+    const { it, lb, x0, y0, W, H, sz } = boxes[pi], panel = document.createElement("div"); panel.className = "spPanel";
+    panel.style.aspectRatio = W + " / " + H; panel.style.width = W / Wmax * 100 + "%"; panel.style.maxWidth = Math.min(W / sz * 48, 255 * W / H) + "px";
+    lb.forEach(l => {
       const e = document.createElement("div"); e.className = "spLbl"; e.textContent = l.t;
-      Object.assign(e.style, { left: (l.x - x0) / W * 100 + "%", top: (l.y - y0) / H * 100 + "%", height: (l.cy || 380000) / H * 100 + "%", fontSize: "max(13px, " + (l.cy || 380000) * 0.5 / W * 100 + "cqw)" });   // 字号随面板宽度缩放，但不小于 13px
+      Object.assign(e.style, { left: (l.x - x0) / W * 100 + "%", top: (l.y - y0) / H * 100 + "%", height: l.cy / H * 100 + "%", fontSize: "clamp(13px, " + l.cy * 0.5 / W * 100 + "cqw, 18px)" });
       panel.appendChild(e);
     });
-    items.forEach(([s, i]) => {
-      const b = document.createElement("button"); b.className = "spk"; b.textContent = "🔊"; btns[i] = b;
-      Object.assign(b.style, { left: (s.pos[1] - x0) / W * 100 + "%", top: (s.pos[2] - y0) / H * 100 + "%", width: s.pos[3] / W * 100 + "%", height: s.pos[4] / H * 100 + "%", fontSize: s.pos[3] * 0.5 / W * 100 + "cqw" });
-      b.onclick = () => {   // 点一下：选中并播放；再点一下：取消选中
+    it.forEach(e => {
+      const b = document.createElement("button"); b.className = "spk"; b.textContent = "🔊"; btns[e.i] = b;
+      Object.assign(b.style, { left: (e.x - x0) / W * 100 + "%", top: (e.y - y0) / H * 100 + "%", width: e.cx / W * 100 + "%", height: e.cy / H * 100 + "%", fontSize: e.cx * 0.5 / W * 100 + "cqw" });
+      b.onclick = () => {   // 平时：点一下播放；"选中喇叭录音"状态下：点一下选中/取消（不播放）
+        if (!pick) { playStep(e.i, b); return; }
         if (recording()) return;
-        if (sel.has(i)) { sel.delete(i); b.classList.remove("sel"); updSel(); return; }
-        sel.add(i); b.classList.add("sel"); updSel(); playStep(i, b);
+        if (sel.has(e.i)) { sel.delete(e.i); b.classList.remove("sel"); } else { sel.add(e.i); b.classList.add("sel"); }
+        refresh();
       };
       panel.appendChild(b);
     });
@@ -953,12 +1009,7 @@ function renderGen2Free(host, q, submitter) {
     $q(".spPanels").appendChild(panel);
   });
 
-  const modeRow = $q(".modeRow");
-  [["整句播放", false], ["分句播放", true]].forEach(([name, v]) => {
-    const t = document.createElement("button"); t.className = "tab mtab" + (!v ? " active" : ""); t.textContent = name;
-    t.onclick = () => { sentMode = v; modeRow.querySelectorAll(".mtab").forEach(x => x.classList.remove("active")); t.classList.add("active"); stop(); ctl.replaceChildren(); editHost?.replaceChildren(); };
-    modeRow.appendChild(t);
-  });
+  refresh();
 }
 
 function renderGen2(host, q, submitter) {
@@ -1031,9 +1082,6 @@ function renderGen2(host, q, submitter) {
   const tabs = $q(".tabsrow");   // 一行放下：几组一起 ｜ 整句/分句播放（两组各自有"选中"状态）
   [1, 2, 3, 4].forEach(n => { const t = document.createElement("button"); t.className = "tab gtab" + (n === 1 ? " active" : ""); t.textContent = n === 1 ? "1组一起" : n + "组一起";
     t.onclick = () => { tabs.querySelectorAll(".gtab").forEach(x => x.classList.remove("active")); t.classList.add("active"); renderGroups(n); }; tabs.appendChild(t); });
-  const sep = document.createElement("span"); sep.textContent = "｜"; sep.style.color = "var(--border)"; tabs.appendChild(sep);
-  [["整句播放", false], ["分句播放", true]].forEach(([name, v]) => { const t = document.createElement("button"); t.className = "tab mtab" + (!v ? " active" : ""); t.textContent = name;
-    t.onclick = () => { sentMode = v; tabs.querySelectorAll(".mtab").forEach(x => x.classList.remove("active")); t.classList.add("active"); renderGroups(+tabs.querySelector(".gtab.active").textContent[0]); }; tabs.appendChild(t); });
   const sc = document.createElement("div"); sc.className = "sentctl"; sc.style.marginLeft = "auto"; tabs.appendChild(sc);   // 分句控制条放在选项同一行右侧，不占新的一行
   renderGroups(1);
 }
