@@ -111,6 +111,7 @@
   .spk{position:absolute;display:flex;align-items:center;justify-content:center;padding:0;min-width:0;line-height:1;border:2px solid transparent;border-radius:14px;background:#f1efe8;box-shadow:none;cursor:pointer}
   .spk.done{background:#eafbe0}.spk.on{background:#ddf4ff;border-color:var(--blue)}
   .spk.sel{border-color:#ff9600;box-shadow:0 0 0 3px rgba(255,150,0,.35)}
+  .titleCard{font-size:22px;font-weight:800;line-height:1.6;padding:24px 10px;color:#2b2b2b}
   .spLbl{position:absolute;display:flex;align-items:center;font-weight:800;color:var(--muted);white-space:nowrap}
   .spBar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:4px}.spBar .modeRow{display:flex;gap:8px}
   .spSel{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:6px 0}.spRec{margin-top:4px}
@@ -884,9 +885,11 @@ function renderGen2Free(host, q, submitter) {
     '<div class="card backcard" style="display:none;margin-top:10px"><div class="back"></div></div>';
   const $q = s => host.querySelector(s);
   renderStage($q(".stage"), q.fronts[0], base, 330); renderStage($q(".back"), q.backs[0], base);
+  if (!q.fronts.length) { const t = $q(".stage"); t.className = "stage titleCard"; t.textContent = q.layout[0]?.title || "（这一题没有题目图，请听右边的小喇叭）"; }   // 只有标题+喇叭的页：左边显示页面标题
   const finalLbl = document.createElement("div"); finalLbl.className = "g2h"; finalLbl.textContent = "4. 全部听完后，完整复述一遍（交给老师批改）";
   $q(".finalbox").append(finalLbl, submitter.el);
-  $q(".reveal").onclick = () => { const c = $q(".backcard"), s = c.style.display === "none"; c.style.display = s ? "block" : "none"; $q(".reveal").textContent = s ? "收起参考讲解" : "5. 听不懂？看参考讲解"; };
+  if (q.backs.length) $q(".reveal").onclick = () => { const c = $q(".backcard"), s = c.style.display === "none"; c.style.display = s ? "block" : "none"; $q(".reveal").textContent = s ? "收起参考讲解" : "5. 听不懂？看参考讲解"; };
+  else $q(".reveal").remove();   // 没有参考讲解的题不显示这个按钮
   $q(".stage").after(hideWhileRecording($q(".stage"), submitter));
   setupDrawing($q, qid, qNum);
 
@@ -933,7 +936,7 @@ function renderGen2Free(host, q, submitter) {
     const { items, x0, y0, W, H } = boxes[pi], panel = document.createElement("div"); panel.className = "spPanel"; panel.style.aspectRatio = W + " / " + H; panel.style.width = W / Wmax * 100 + "%";
     L.labels.forEach(l => {
       const e = document.createElement("div"); e.className = "spLbl"; e.textContent = l.t;
-      Object.assign(e.style, { left: (l.x - x0) / W * 100 + "%", top: (l.y - y0) / H * 100 + "%", height: (l.cy || 380000) / H * 100 + "%", fontSize: (l.cy || 380000) * 0.5 / W * 100 + "cqw" });
+      Object.assign(e.style, { left: (l.x - x0) / W * 100 + "%", top: (l.y - y0) / H * 100 + "%", height: (l.cy || 380000) / H * 100 + "%", fontSize: "max(13px, " + (l.cy || 380000) * 0.5 / W * 100 + "cqw)" });   // 字号随面板宽度缩放，但不小于 13px
       panel.appendChild(e);
     });
     items.forEach(([s, i]) => {
