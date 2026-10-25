@@ -112,6 +112,7 @@
   .spk.done{background:#eafbe0}.spk.on{background:#ddf4ff;border-color:var(--blue)}
   .spk.sel{border-color:#ff9600;box-shadow:0 0 0 3px rgba(255,150,0,.35)}
   .titleCard{font-size:22px;font-weight:800;line-height:1.6;padding:24px 10px;color:#2b2b2b}
+  .qtextCard{font-size:19px;font-weight:700;line-height:1.75;padding:8px 6px;color:#2b2b2b}
   .spk.ok::after{content:"✓";position:absolute;right:-5px;top:-7px;width:19px;height:19px;border-radius:50%;background:#58cc02;color:#fff;font-size:13px;line-height:19px;text-align:center;font-weight:800}
   .spPanels.pick .spk{border:2px dashed #ff9600}.spPanels.pick .spk.sel{border-style:solid;background:#fff1d6}
   .spSel .tab.active{background:#fff1d6;border-color:#ff9600;color:#b36b00}
@@ -132,7 +133,7 @@
   .g2final .recbar audio{width:240px;height:36px;margin-top:0}.g2final .recbar .acts{margin-top:0}
   .g2final .reveal{margin:0}
   body.wide .nextbar{margin-top:8px}body.wide .nextbar button{padding:9px}
-  .g2grid{display:grid;gap:10px;align-items:start;grid-template-columns:minmax(240px,1fr) minmax(400px,1.7fr) 250px}
+  .g2grid{display:grid;gap:10px;align-items:start;grid-template-columns:minmax(240px,1.35fr) minmax(400px,1.7fr) 250px}
   .g2side{display:flex;flex-direction:column;gap:10px}.g2side .g2d canvas{width:100%;height:auto;aspect-ratio:320/150}.g2side .g2d{padding:8px 10px}
   .g2sp .sentctl{min-width:0;min-height:0}.g2sp.sm .sentctl{min-height:40px}
   .g2sp .spPanels{display:flex;flex-direction:column;align-items:flex-start}
@@ -911,7 +912,10 @@ function renderGen2Free(host, q, submitter) {
     '<div class="card backcard" style="display:none;margin-top:10px"><div class="back"></div></div>';
   const $q = s => host.querySelector(s);
   renderStage($q(".stage"), q.fronts[0], base, 300); renderStage($q(".back"), q.backs[0], base);
-  if (!q.fronts.length) { const t = $q(".stage"); t.className = "stage titleCard"; t.textContent = q.layout[0]?.title || "（这一题没有题目图，请听右边的小喇叭）"; }   // 只有标题+喇叭的页：左边显示页面标题
+  if (!q.fronts.length) {   // 没有题目图：左边显示 PPT 里的题干文字；没有题干就显示页面标题（带 PPT 编号/品牌名的标题不显示）
+    const t = $q(".stage"), L0 = q.layout[0] || {}, ttl = /X\dSX|大良课堂/.test(L0.title || "") ? "" : L0.title;
+    t.style.cssText = ""; t.className = L0.text ? "stage qtextCard" : "stage titleCard"; t.textContent = L0.text || ttl || "（这一题没有题目图，请听右边的小喇叭）";
+  }
   const finalLbl = document.createElement("div"); finalLbl.className = "g2h"; finalLbl.textContent = SHORT_FINAL;
   $q(".finalbox").append(finalLbl, submitter.el);
   if (q.backs.length) $q(".reveal").onclick = () => { const c = $q(".backcard"), s = c.style.display === "none"; c.style.display = s ? "block" : "none"; $q(".reveal").textContent = s ? "收起参考讲解" : "5. 听不懂？看参考讲解"; };
@@ -975,12 +979,15 @@ function renderGen2Free(host, q, submitter) {
   };
   const boxes = q.layout.map(L => {   // 每个题目页：压缩后的喇叭/标签坐标和范围；多页共用同一缩放比例，喇叭大小才一致
     const items = q.steps.map((s, i) => [s, i]).filter(([s]) => s.pos && s.pos[0] === L.slide);
-    const lh = l => l.cy || 380000, lw = l => Math.min(l.cx || 1e9, l.t.length * lh(l) * 0.75 + 150000);   // 标签的占位宽度（按字数估）
+    const lh = l => l.cy || 380000, lw = l => l.cx || l.t.length * lh(l) + 150000;   // 标签的占位宽度＝PPT 文字框宽度（标签在框内自动换行，不会横着伸出去盖住喇叭）
     const sz = items.map(([s]) => s.pos[3]).sort((a, b) => a - b)[Math.floor(items.length / 2)] || 487363, G = sz * 0.28;
     const mx = gap([...items.map(([s]) => [s.pos[1], s.pos[1] + s.pos[3]]), ...L.labels.map(l => [l.x, l.x + lw(l)])], G);
     const my = gap([...items.map(([s]) => [s.pos[2], s.pos[2] + s.pos[4]]), ...L.labels.map(l => [l.y, l.y + lh(l)])], G);
     const it = items.map(([s, i]) => ({ i, x: mx(s.pos[1]), y: my(s.pos[2]), cx: s.pos[3], cy: s.pos[4] }));
-    const lb = L.labels.map(l => ({ t: l.t, x: mx(l.x), y: my(l.y), cx: lw(l), cy: lh(l) }));
+    const lb = L.labels.map(l => ({ t: l.t, x: mx(l.x), y: my(l.y), cx: lw(l), cy: lh(l) })).filter(l => !it.some(e => {   // 压在喇叭上的标签（PPT 里属于没带过来的示意图，如"8分""被减数"）不显示，免得盖住喇叭
+      const ox = Math.min(l.x + l.cx, e.x + e.cx) - Math.max(l.x, e.x), oy = Math.min(l.y + l.cy, e.y + e.cy) - Math.max(l.y, e.y);
+      return ox > 0 && oy > 0 && ox * oy > 0.25 * l.cx * l.cy;
+    }));
     let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
     [...it, ...lb].forEach(e => { x0 = Math.min(x0, e.x); y0 = Math.min(y0, e.y); x1 = Math.max(x1, e.x + e.cx); y1 = Math.max(y1, e.y + e.cy); });
     const m = 50000; x0 -= m; y0 -= m; x1 += m; y1 += m;
@@ -988,10 +995,10 @@ function renderGen2Free(host, q, submitter) {
   }), Wmax = Math.max(...boxes.map(b => b.W));
   q.layout.forEach((L, pi) => {   // 每个题目页一块；喇叭每个最大约 48 像素
     const { it, lb, x0, y0, W, H, sz } = boxes[pi], panel = document.createElement("div"); panel.className = "spPanel";
-    panel.style.aspectRatio = W + " / " + H; panel.style.width = W / Wmax * 100 + "%"; panel.style.maxWidth = Math.min(W / sz * 48, 255 * W / H) + "px";
+    panel.style.aspectRatio = W + " / " + H; panel.style.width = W / Wmax * 100 + "%"; panel.style.maxWidth = Math.max(Math.min(W / sz * 48, 255 * W / H), W / sz * 30) + "px";   // 喇叭至少约 30 像素（宁可多占点高度，也不让喇叭小到点不准）
     lb.forEach(l => {
       const e = document.createElement("div"); e.className = "spLbl"; e.textContent = l.t;
-      Object.assign(e.style, { left: (l.x - x0) / W * 100 + "%", top: (l.y - y0) / H * 100 + "%", height: l.cy / H * 100 + "%", fontSize: "clamp(13px, " + l.cy * 0.5 / W * 100 + "cqw, 18px)" });
+      Object.assign(e.style, { left: (l.x - x0) / W * 100 + "%", top: (l.y - y0) / H * 100 + "%", width: l.cx / W * 100 + "%", whiteSpace: "normal", lineHeight: "1.15", height: l.cy / H * 100 + "%", fontSize: "clamp(13px, " + l.cy * 0.5 / W * 100 + "cqw, 18px)" });
       panel.appendChild(e);
     });
     it.forEach(e => {
@@ -1007,6 +1014,13 @@ function renderGen2Free(host, q, submitter) {
     });
     if (q.layout.length > 1) { const t = document.createElement("div"); t.className = "g2h"; t.textContent = "第 " + (pi + 1) + " 页"; $q(".spPanels").appendChild(t); }
     $q(".spPanels").appendChild(panel);
+  });
+  host.querySelectorAll(".spPanel").forEach(p => {   // 文字实际渲染后还压着喇叭的标签不显示（喇叭比标签重要）
+    const ks = [...p.querySelectorAll(".spk")].map(k => k.getBoundingClientRect());
+    p.querySelectorAll(".spLbl").forEach(l => {
+      const r = document.createRange(); r.selectNodeContents(l); const t = r.getBoundingClientRect();
+      if (t.width && ks.some(b => t.left < b.right - 2 && t.right > b.left + 2 && t.top < b.bottom - 2 && t.bottom > b.top + 2)) l.style.display = "none";
+    });
   });
 
   refresh();
