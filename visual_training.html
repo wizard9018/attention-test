@@ -112,6 +112,11 @@
   .spk.done{background:#eafbe0}.spk.on{background:#ddf4ff;border-color:var(--blue)}
   .spk.sel{border-color:#ff9600;box-shadow:0 0 0 3px rgba(255,150,0,.35)}
   .titleCard{font-size:22px;font-weight:800;line-height:1.6;padding:24px 10px;color:#2b2b2b}
+  .g2sp .spPanels[hidden]{display:none}
+  .g2grid.g2bg{grid-template-columns:minmax(400px,1fr) 250px}.g2bg .g2q{display:none}
+  .spPanel.bg{border:1px solid #e4e0d6;border-radius:8px;overflow:hidden;background:#fff}.spPanel.bg>img{position:absolute;left:0;top:0;width:100%;height:100%;user-select:none}
+  .spk.ov{background:transparent;font-size:0;border-radius:10px}.spk.ov:hover{background:rgba(28,176,246,.14)}.spk.ov.on{background:rgba(28,176,246,.25)}.spk.ov.done{background:rgba(88,204,2,.14)}
+  .spPanels.pick .spk.ov.sel{background:rgba(255,150,0,.28)}
   .qtextCard{font-size:19px;font-weight:700;line-height:1.75;padding:8px 6px;color:#2b2b2b}
   .spk.ok::after{content:"✓";position:absolute;right:-5px;top:-7px;width:19px;height:19px;border-radius:50%;background:#58cc02;color:#fff;font-size:13px;line-height:19px;text-align:center;font-weight:800}
   .spPanels.pick .spk{border:2px dashed #ff9600}.spPanels.pick .spk.sel{border-style:solid;background:#fff1d6}
@@ -901,9 +906,10 @@ async function sentencePlay(audio, s, base, ctl, editHost) {
 // 需要题目带位置数据：steps[].pos = [页码, x, y, cx, cy]（EMU），questions[].layout = [{slide, labels:[{t,x,y,cx,cy}]}]；没有就走旧版面。
 function renderGen2Free(host, q, submitter) {
   const base = cur.chapter.dir + "/", qid = qidOf(cur.chapter.dir, q), qNum = cur.qi + 1, REVEAL = 5;
+  const bgMode = q.layout.every(L => L.bg && L.crop);   // 有整页 PPT 图的题（初三上册化学）：按 PPT 原样显示整页，喇叭位置盖透明按钮
   document.body.classList.add("wide");   // 页面加宽（离开学习页或换到旧版面的题时取消）
   const SHORT_FINAL = "4. 全部听完后，完整复述一遍（交给老师批改）";
-  host.innerHTML = '<div class="g2grid"><div class="card g2q"><div class="g2h">1. 题目</div><div class="stage"></div></div>' +
+  host.innerHTML = '<div class="g2grid' + (bgMode ? ' g2bg' : '') + '"><div class="card g2q"><div class="g2h">1. 题目</div><div class="stage"></div></div>' +
     '<div class="card g2sp"><div class="g2h">2. 点小喇叭听讲解；想复述哪几个，就把它们选中，再点"录音"</div><div class="spPanels"></div>' +
     '<div id="curQuestion"></div><div class="spSel"></div></div>' +
     '<div class="g2side"><div class="card g2d"><div class="g2h">3. 默画图形</div><canvas width="320" height="150"></canvas>' +
@@ -920,7 +926,8 @@ function renderGen2Free(host, q, submitter) {
   $q(".finalbox").append(finalLbl, submitter.el);
   if (q.backs.length) $q(".reveal").onclick = () => { const c = $q(".backcard"), s = c.style.display === "none"; c.style.display = s ? "block" : "none"; $q(".reveal").textContent = s ? "收起参考讲解" : "5. 听不懂？看参考讲解"; };
   else $q(".reveal").remove();   // 没有参考讲解的题不显示这个按钮
-  $q(".stage").after(hideWhileRecording($q(".stage"), submitter));
+  if (bgMode) $q(".spPanels").after(hideWhileRecording($q(".spPanels"), submitter));   // 整页图里有题目，整体复述时把整页藏起来
+  else $q(".stage").after(hideWhileRecording($q(".stage"), submitter));
   setupDrawing($q, qid, qNum);
 
   const audio = new Audio(); mediaEls.push(audio);
@@ -977,7 +984,7 @@ function renderGen2Free(host, q, submitter) {
     for (let k = 1; k < merged.length; k++) { const g = merged[k][0] - merged[k - 1][1]; if (g > gmax) { cum += g - gmax; cuts.push([merged[k][0], cum]); } }
     return v => { let sub = 0; for (const [at, c] of cuts) if (v >= at) sub = c; return v - sub; };
   };
-  const boxes = q.layout.map(L => {   // 每个题目页：压缩后的喇叭/标签坐标和范围；多页共用同一缩放比例，喇叭大小才一致
+  const boxes = bgMode ? [] : q.layout.map(L => {   // 每个题目页：压缩后的喇叭/标签坐标和范围；多页共用同一缩放比例，喇叭大小才一致
     const items = q.steps.map((s, i) => [s, i]).filter(([s]) => s.pos && s.pos[0] === L.slide);
     const lh = l => l.cy || 380000, lw = l => l.cx || l.t.length * lh(l) + 150000;   // 标签的占位宽度＝PPT 文字框宽度（标签在框内自动换行，不会横着伸出去盖住喇叭）
     const sz = items.map(([s]) => s.pos[3]).sort((a, b) => a - b)[Math.floor(items.length / 2)] || 487363, G = sz * 0.28;
@@ -994,6 +1001,25 @@ function renderGen2Free(host, q, submitter) {
     return { it, lb, x0, y0, W: x1 - x0, H: y1 - y0, sz };
   }), Wmax = Math.max(...boxes.map(b => b.W));
   q.layout.forEach((L, pi) => {   // 每个题目页一块；喇叭每个最大约 48 像素
+    if (bgMode) {   // PPT 原样：整页图当背景，喇叭按 PPT 里的位置盖透明按钮（图上自带喇叭图标）
+      const [cx0, cy0, cw, ch] = L.crop, panel = document.createElement("div"); panel.className = "spPanel bg";
+      panel.style.aspectRatio = cw + " / " + ch; panel.style.width = "min(100%, calc((100vh - 360px) * " + cw / ch + "))";
+      const im = document.createElement("img"); im.src = url(base + L.bg); im.draggable = false; panel.appendChild(im);
+      q.steps.forEach((s, i) => {
+        if (!s.pos || s.pos[0] !== L.slide) return;
+        const b = document.createElement("button"); b.className = "spk ov"; btns[i] = b; b.title = "点一下播放";
+        Object.assign(b.style, { left: (s.pos[1] / 12192000 * 1920 - cx0) / cw * 100 + "%", top: (s.pos[2] / 6858000 * 1080 - cy0) / ch * 100 + "%", width: s.pos[3] / 12192000 * 1920 / cw * 100 + "%", height: s.pos[4] / 6858000 * 1080 / ch * 100 + "%" });
+        b.onclick = () => {   // 平时：点一下播放；"选中喇叭录音"状态下：点一下选中/取消（不播放）
+          if (!pick) { playStep(i, b); return; }
+          if (recording()) return;
+          if (sel.has(i)) { sel.delete(i); b.classList.remove("sel"); } else { sel.add(i); b.classList.add("sel"); }
+          refresh();
+        };
+        panel.appendChild(b);
+      });
+      if (q.layout.length > 1) { const t = document.createElement("div"); t.className = "g2h"; t.textContent = "第 " + (pi + 1) + " 页"; $q(".spPanels").appendChild(t); }
+      $q(".spPanels").appendChild(panel); return;
+    }
     const { it, lb, x0, y0, W, H, sz } = boxes[pi], panel = document.createElement("div"); panel.className = "spPanel";
     panel.style.aspectRatio = W + " / " + H; panel.style.width = W / Wmax * 100 + "%"; panel.style.maxWidth = Math.max(Math.min(W / sz * 48, 255 * W / H), W / sz * 30) + "px";   // 喇叭至少约 30 像素（宁可多占点高度，也不让喇叭小到点不准）
     lb.forEach(l => {
